@@ -246,12 +246,20 @@ define(function(require, exports){
 					self.css(config);
 				}
 				var el = self.$el;
-				var h  = Math.max(0, (BODY_BOUND.clientHeight - (c.height || el.outerHeight(true)))/2);
-				var sh = Math.max(DOC_ELEMENT.scrollTop, BODY_ELEMENT.scrollTop);
-				self.css({
-					'top': parseInt(sh + h, 10),
-					'marginLeft': (-el.outerWidth() / 2) + 'px'
-				});
+				if (el.css('position') == 'fixed'){
+					self.css({
+						'top': '50%',
+						'marginLeft': (-el.outerWidth() / 2) + 'px',
+						'marginTop': (-el.outerHeight() / 2) + 'px'
+					})
+				}else {
+					var h  = Math.max(0, (BODY_BOUND.clientHeight - (c.height || el.outerHeight(true)))/2);
+					var sh = Math.max(DOC_ELEMENT.scrollTop, BODY_ELEMENT.scrollTop);
+					self.css({
+						'top': parseInt(sh + h, 10),
+						'marginLeft': (-el.outerWidth() / 2) + 'px'
+					});
+				}
 			}
 			// 更新遮罩层
 			self.updateMask();

@@ -561,4 +561,204 @@ define(function(require, exports){
 		}
 	});
 	exports.timeRange = TimeRange;
+
+	// 该模块用来生成多个checkbox
+	var CheckBoxGroup = view.container.extend({
+		init: function(config) {
+			config = pubjs.conf(config, {
+				'class': 'M-commonCheckboxGroup',
+				'url': null,
+				// items为该模块要构建的item数组
+				// {'text': label中的文字, 'value': radio中的value, 'checked': 是否选中, 不填则不选}
+				'items': null,
+				'autoLoad': true,
+				// 根据请求数据生成时用到，对应checkbox的value
+				'key': 'Id',
+				// 根据请求数据生成时用到，对应checkbox的label
+				'name': 'Name'
+			});
+
+			// 使用唯一id以防重复
+			this.$checkboxName = 'checkbox' + util.guid();
+			// 因为有异步情况，需要$ready来标记已经构建好界面
+			this.$ready = false;
+
+			this.Super('init', arguments);
+
+		},
+		afterBuild: function() {
+			var c = this.getConfig();
+			if (c.items) {
+				this.buildItems(c.items);
+			}
+			this.$ready = true;
+
+			// 当存在url的情况通过拉取数据来构建checkbox
+			if (c.autoLoad && c.url) {
+				this.load();
+			}
+		},
+		load: function() {
+			// 未构建好页面
+			this.$ready = false;
+
+			var c = this.getConfig();
+			pubjs.data.get(c.url, null, this, 'onData');
+		},
+		onData: function(err, data) {
+			// 存在错误测话弹出错误信息
+			if (err) {
+				pubjs.alert(err.message);
+				return;
+			}
+
+			var c = this.getConfig();
+			// 使用buildItems来构建界面
+			this.buildItems(data.items, c.name, c.key);
+			// 构建界面成功后将$ready设为true
+			this.$ready = true;
+			// 查看是否需要setData
+			if (this.$needToSetData) {
+				this.setData(this.$data);
+			}
+		},
+		// 根据参数或后端数据构建页面
+		// 后面两个参数是读取后端数据是指定生成value与label的对应属性名，不设置的话默认为value与text
+		buildItems: function(items, newTextKey, newValueKey) {
+			var el = this.getDOM();
+
+			var textKey = (newTextKey ? newTextKey : 'text');
+			var valueKey = (newValueKey ? newValueKey: 'value');
+
+			// 添加checkbox和label
+			var i, len;
+			for (i = 0, len = items.length; i < len; i++) {
+				var item = items[i];
+				var label = $('<label></label>').text(item[textKey]);
+				$('<input type="checkbox">').attr({
+					'name': this.$checkboxName,
+					'value': item[valueKey]
+				}).prependTo(label);
+				label.appendTo(el);
+			}
+			this.$checkboxes = el.find('input[type="checkbox"]');
+		},
+		// 返回id数组
+		getData: function() {
+			// checkboxes还没构建的情况下调用getData的话直接返回空
+			var checkboxes = this.$checkboxes;
+			if (!checkboxes) {
+				return null;
+			}
+
+			var data = this.$data = [];
+			// 把checked中的值push到data
+			checkboxes.filter(':checked').each(function(index, elm) {
+				data.push($(elm).val());
+			})
+			return data;
+		},
+		// 传入的数据应为一个id数组
+		setData: function(data) {
+			this.$data = data;
+			// 界面还没构建好的情况下直接退出，设needToSetData为true
+			if (!this.$ready) {
+				this.$needToSetData = true;
+				return;
+			}
+
+			this.$needToSetData = false;
+			this.$checkboxes.each(function(index, elm) {
+				elm = $(elm);
+				// value出现在data内的话将该radio选中
+				var needToCheck = false;
+				var i, len;
+				for (i = 0, len = data.length; i < len; i++) {
+					if (elm.val() == data[i]) {
+						needToCheck = true;
+						break;
+					}
+				}
+				elm.prop('checked', needToCheck);
+			});
+		}
+	});
+	exports.checkboxGroup = CheckBoxGroup;
+
+	// 该模块用于生成多个radio
+	// TODO: 未添加从远程拉取数据的功能，编写时可考虑将与CheckboxGroup重复的部分提取出来
+	var RadioGroup = view.container.extend({
+		init: function(config) {
+			config = pubjs.conf(config, {
+				// 当items要从远端拉取时的url地址
+				'class': 'M-commonRadioGroup',
+				'url': null,
+				// items为该模块要构建的item数组
+				// {'text': label中的文字, 'value': radio中的value, 'checked': 是否选中, 不填则不选}
+				'items': null,
+				// 根据请求数据生成时用到，对应checkbox的value
+				'key': 'Id',
+				// 根据请求数据生成时用到，对应checkbox的label
+				'name': 'Name'
+			});
+
+			// 使用guid来生成不重复的name
+			this.$radioName = 'radio' + util.guid();
+			// 日后远程拉取数据的情况需要用到$ready
+			this.$ready = false;
+
+			this.Super('init', arguments);
+		},
+		afterBuild: function() {
+			var c = this.getConfig();
+			if (c.items) {
+				this.buildItems(c.items);
+			}
+			this.$ready = true;
+		},
+		// 构建radios
+		buildItems: function(items) {
+			var el = this.getDOM();
+
+			var textKey = 'text';
+			var valueKey = 'value';
+
+			// 添加radio和label
+			var i, len;
+			for (i = 0, len = items.length; i < len; i++) {
+				var item = items[i];
+				var label = $('<label></label>').text(item[textKey]);
+				var input = $('<input type="radio" name="' + this.$radioName + '">').attr({
+					'value': item[valueKey]
+				}).prependTo(label);
+				// 设置选中
+				if (item.checked) {
+					input.prop('checked', true);
+				}
+				label.appendTo(el);
+			}
+			this.$radios = el.find('input[type="radio"]');
+		},
+		// 没选中的情况下返回undefined
+		getData: function() {
+			this.$data = this.$radios.filter(':checked').val();
+			return this.$data;
+		},
+		// 传入value
+		setData: function(data) {
+			this.$data = data;
+			this.$radios.each(function(index, elm) {
+				// value等于data的话将该radio选中
+				elm = $(elm);
+				var needToCheck = (elm.val() == data ? true : false);
+				elm.prop('checked', needToCheck);
+			})
+		},
+		reset: function() {
+			this.$data = null;
+			// 所有checked的radio都设为unchecked
+			this.$radios.filter(':checked').prop('checked', false);
+		}
+	});
+	exports.radioGroup = RadioGroup;
 });

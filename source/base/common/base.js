@@ -1306,6 +1306,7 @@ define(function(require, exports){
 			// 计算容器大小
 			var w = con.clientWidth, h = con.clientHeight;
 			if (con === d.body){
+				el.css('position','fixed');
 				var b = (d.compatMode === "CSS1Compat"?d.documentElement:d.body);
 				h = b.clientHeight;
 			}

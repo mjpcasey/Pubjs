@@ -2566,7 +2566,7 @@ define(function(require, exports){
 				if (lastSelect){
 					self.body.unbind('change', self.eventSelectChange);
 				}else {
-					self.dg(self.body, 'input[data-select]', 'change', 'eventSelectChange');
+					self.uiProxy(self.body, 'input[data-select]', 'change', 'eventSelectChange');
 				}
 			}
 
@@ -2761,7 +2761,7 @@ define(function(require, exports){
 				row = div.parent();
 				self.$subs_div.push(row[0]);
 				// 绑定收起事件
-				self.jq(row.find('.collapse'), 'click', 'eventClickCollapse');
+				self.uiBind(row.find('.collapse'), 'click', 'eventClickCollapse');
 			}else {
 				sub.css('display', '');
 				div = sub.find('div.subgrid:first');

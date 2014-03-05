@@ -63,6 +63,8 @@ define(function(require, exports){
 				doms.code.val(item.code);
 				doms.message.hide();
 				this.$active = index;
+				// 预加载粘贴板flash模块
+				this.eventPrepareCopy(null, doms.copy);
 			}
 			return false;
 		},
