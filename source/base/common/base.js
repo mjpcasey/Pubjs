@@ -29,6 +29,7 @@ define(function(require, exports){
 				'width': 0, // 指定滚动容器宽度
 				'height': 0, // 指定滚动容器高度
 				'auto': true, // 自动隐藏
+				'watch': 0, // 监控大小变化, 设置正数表示监控间隔时间, 建议200
 				'wrap': false, // 自动包含子元素
 				'step': 100, // 滚轮滚动距离
 				'wheel': true // 绑定鼠标滚轮事件
@@ -99,8 +100,27 @@ define(function(require, exports){
 			// 绑定事件
 			self.bindEvent();
 
+			// 监控尺寸变化
+			if (c.watch){
+				if (c.watch === true){
+					c.watch = 200;
+				}
+				self.$watchSize = isH ? c.content.width() : c.content.height();
+				self.$watchCallback = function(){
+					var size = isH ? c.content.width() : c.content.height();
+					if (size && size != self.$watchSize){
+						self.$watchSize = size;
+						self.update();
+					}
+				}
+				self.$watchId = setInterval(self.$watchCallback, c.watch);
+			}
+
 			// 计算滚动条数据
 			self.update();
+		},
+		beforeDestroy: function(){
+			clearInterval(this.$watchId);
 		},
 		bindEvent: function(){
 			var self = this;
@@ -944,8 +964,15 @@ define(function(require, exports){
 				param.tmpl = 'export';
 
 				if(reqMethod === "get"){
-					// 普通get方式导出
-					window.location.href = pubjs.data.resolve(url, param);
+					// TODO: 这里比较坑，试试寻找更好的方法
+					// 因为自定义导出与普通导出使用的地址不同，所以要区别对待
+					if (custom) {
+						window.location.href = pubjs.data.resolve('/feed/trend', param);
+					} else {
+						// 普通get方式导出
+						window.location.href = pubjs.data.resolve(url, param);
+					}
+
 				}else{
 					// psot的形式
 					var cExp = /^condition\d+$/;

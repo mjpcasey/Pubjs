@@ -12,7 +12,7 @@ define(function(require, exports){
 	var ModulePrototype = {
 		init: function(config, parent){
 			config = app.conf(config, {
-				'width': 600,
+				'width': 800,
 				'data': null,
 				"buttons": ['cancel', und],
 				"buttonConfig":{

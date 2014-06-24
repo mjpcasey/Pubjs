@@ -641,15 +641,16 @@ define(function(require, exports){
 		execute: function(request){
 			// 转换uri节点
 			var uri = this.resolve(request[dcURI], request[dcParam]);
+			var json = (config('postType') == 'json');
 
 			request[dcAjax] = $.ajax({
 				type: request[dcMode],
 				url: uri,
-				data: request[dcData],// && JSON.stringify(request[dcData]),
+				data: (json ? JSON.stringify(request[dcData]) : request[dcData]),
 				dataType: 'json',
 				success: this.onSuccess,
 				error: this.onError,
-				// complete: this.onComplete,
+				contentType: (json ? 'application/json; charset=UTF-8' : UDF),
 				context: request
 			});
 

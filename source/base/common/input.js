@@ -562,203 +562,285 @@ define(function(require, exports){
 	});
 	exports.timeRange = TimeRange;
 
-	// 该模块用来生成多个checkbox
-	var CheckBoxGroup = view.container.extend({
-		init: function(config) {
-			config = pubjs.conf(config, {
-				'class': 'M-commonCheckboxGroup',
-				'url': null,
-				// items为该模块要构建的item数组
-				// {'text': label中的文字, 'value': radio中的value, 'checked': 是否选中, 不填则不选}
-				'items': null,
-				'autoLoad': true,
-				// 根据请求数据生成时用到，对应checkbox的value
-				'key': 'Id',
-				// 根据请求数据生成时用到，对应checkbox的label
-				'name': 'Name'
-			});
-
-			// 使用唯一id以防重复
-			this.$checkboxName = 'checkbox' + util.guid();
-			// 因为有异步情况，需要$ready来标记已经构建好界面
-			this.$ready = false;
-
-			this.Super('init', arguments);
-
-		},
-		afterBuild: function() {
-			var c = this.getConfig();
-			if (c.items) {
-				this.buildItems(c.items);
-			}
-			this.$ready = true;
-
-			// 当存在url的情况通过拉取数据来构建checkbox
-			if (c.autoLoad && c.url) {
-				this.load();
-			}
-		},
-		load: function() {
-			// 未构建好页面
-			this.$ready = false;
-
-			var c = this.getConfig();
-			pubjs.data.get(c.url, null, this, 'onData');
-		},
-		onData: function(err, data) {
-			// 存在错误测话弹出错误信息
-			if (err) {
-				pubjs.alert(err.message);
-				return;
-			}
-
-			var c = this.getConfig();
-			// 使用buildItems来构建界面
-			this.buildItems(data.items, c.name, c.key);
-			// 构建界面成功后将$ready设为true
-			this.$ready = true;
-			// 查看是否需要setData
-			if (this.$needToSetData) {
-				this.setData(this.$data);
-			}
-		},
-		// 根据参数或后端数据构建页面
-		// 后面两个参数是读取后端数据是指定生成value与label的对应属性名，不设置的话默认为value与text
-		buildItems: function(items, newTextKey, newValueKey) {
-			var el = this.getDOM();
-
-			var textKey = (newTextKey ? newTextKey : 'text');
-			var valueKey = (newValueKey ? newValueKey: 'value');
-
-			// 添加checkbox和label
-			var i, len;
-			for (i = 0, len = items.length; i < len; i++) {
-				var item = items[i];
-				var label = $('<label></label>').text(item[textKey]);
-				$('<input type="checkbox">').attr({
-					'name': this.$checkboxName,
-					'value': item[valueKey]
-				}).prependTo(label);
-				label.appendTo(el);
-			}
-			this.$checkboxes = el.find('input[type="checkbox"]');
-		},
-		// 返回id数组
-		getData: function() {
-			// checkboxes还没构建的情况下调用getData的话直接返回空
-			var checkboxes = this.$checkboxes;
-			if (!checkboxes) {
-				return null;
-			}
-
-			var data = this.$data = [];
-			// 把checked中的值push到data
-			checkboxes.filter(':checked').each(function(index, elm) {
-				data.push($(elm).val());
-			})
-			return data;
-		},
-		// 传入的数据应为一个id数组
-		setData: function(data) {
-			this.$data = data;
-			// 界面还没构建好的情况下直接退出，设needToSetData为true
-			if (!this.$ready) {
-				this.$needToSetData = true;
-				return;
-			}
-
-			this.$needToSetData = false;
-			this.$checkboxes.each(function(index, elm) {
-				elm = $(elm);
-				// value出现在data内的话将该radio选中
-				var needToCheck = false;
-				var i, len;
-				for (i = 0, len = data.length; i < len; i++) {
-					if (elm.val() == data[i]) {
-						needToCheck = true;
-						break;
-					}
-				}
-				elm.prop('checked', needToCheck);
-			});
-		}
-	});
-	exports.checkboxGroup = CheckBoxGroup;
-
 	// 该模块用于生成多个radio
-	// TODO: 未添加从远程拉取数据的功能，编写时可考虑将与CheckboxGroup重复的部分提取出来
 	var RadioGroup = view.container.extend({
 		init: function(config) {
 			config = pubjs.conf(config, {
 				// 当items要从远端拉取时的url地址
 				'class': 'M-commonRadioGroup',
 				'url': null,
-				// items为该模块要构建的item数组
+				'param': null,
+				'auto_load': true,
+				// data为初始化列表
 				// {'text': label中的文字, 'value': radio中的value, 'checked': 是否选中, 不填则不选}
-				'items': null,
+				'data': null,
+				// 初始化状态
+				'value': null,
 				// 根据请求数据生成时用到，对应checkbox的value
-				'key': 'Id',
+				'key': 'value',
 				// 根据请求数据生成时用到，对应checkbox的label
-				'name': 'Name'
+				'name': 'text',
+				// 是否显示搜索框
+				'search': false,
+				// 限制高度出现滚动条
+				'height': 0
 			});
 
+			var self = this;
 			// 使用guid来生成不重复的name
-			this.$radioName = 'radio' + util.guid();
-			// 日后远程拉取数据的情况需要用到$ready
-			this.$ready = false;
+			self.$inputName = 'input' + util.guid();
+			self.$inputType = self.$inputType || 'radio';
 
-			this.Super('init', arguments);
+			// 储存所有item数据
+			self.$data = null;
+			self.$list = null;
+			self.$value = null;
+			self.$index = null;
+
+			self.Super('init', arguments);
 		},
 		afterBuild: function() {
-			var c = this.getConfig();
-			if (c.items) {
-				this.buildItems(c.items);
+			var self = this;
+			var el = self.getDOM();
+			var c = self.getConfig();
+			// 添加搜索框
+			if (c.search) {
+				var searchDiv = $('<div class="M-commonRadioGroupSearch"/>').appendTo(el);
+				var input = self.$searchInput = $('<input type="text" class="checkBoxGroupSearch" />');
+				input.attr('placeholder', LANG('请输入搜索关键字')).appendTo(searchDiv);
+				self.uiBind(input, 'keyup', 'eventSearchInputKeyup');
+
+				var btn = $('<button class="uk-button" />').text(LANG('取消')).appendTo(searchDiv);
+				self.uiBind(btn, 'click', 'eventClearSearch');
 			}
-			this.$ready = true;
+
+			var itemCon = self.$itemsDiv = $('<div class="items"></div>').appendTo(el);
+			if (c.height){
+				var con = $('<div />').css('max-height', c.height).appendTo(el);
+				self.$itemsDiv.appendTo(con);
+				self.createAsync('scroller', '@base/common/base.scroller', {
+					'dir': 'V',
+					'target': con,
+					'content': itemCon,
+					'wrap': true,
+					'watch': true
+				});
+			}
+
+			self.uiProxy(itemCon, 'input', 'change', 'eventValueChange');
+
+			if (c.data) {
+				self.setData(c.data);
+			}else if (c.url && c.auto_load){
+				self.load();
+			}
 		},
-		// 构建radios
+		// 构建选项项目
 		buildItems: function(items) {
-			var el = this.getDOM();
+			var self = this;
+			var c = self.getConfig();
+			var con = self.$itemsDiv;
+			var type = self.$inputType;
+			var name = self.$inputName;
 
-			var textKey = 'text';
-			var valueKey = 'value';
+			// 首先清空所有item
+			con.empty();
 
-			// 添加radio和label
-			var i, len;
-			for (i = 0, len = items.length; i < len; i++) {
-				var item = items[i];
-				var label = $('<label></label>').text(item[textKey]);
-				var input = $('<input type="radio" name="' + this.$radioName + '">').attr({
-					'value': item[valueKey]
-				}).prependTo(label);
-				// 设置选中
-				if (item.checked) {
-					input.prop('checked', true);
-				}
-				label.appendTo(el);
+			util.each(items, function(item, index){
+				var label = $('<label/>').text(item[c.name]).appendTo(con);
+				var input = $('<input type="'+type+'"/>').prependTo(label);
+				input.attr('name', name).attr('value', index);
+			});
+
+			if (self.$value !== null){
+				self.setValue(self.$value);
 			}
-			this.$radios = el.find('input[type="radio"]');
 		},
-		// 没选中的情况下返回undefined
+		// 搜索框的事件，每有输入的时候就进行搜索
+		eventSearchInputKeyup: function(ev) {
+			var self = this;
+			var items = self.$list;
+
+			if (items){
+				// 获得输入框文字
+				var inputText = this.$searchInput.val();
+				if (inputText){
+					// 过滤项目
+					var result = {};
+					var name = self.getConfig('name');
+					util.each(items, function(item, index){
+						if (item[name].indexOf(inputText) !== -1) {
+							result[index] = item;
+						}
+					});
+					self.buildItems(result);
+				}else {
+					// 显示所有项目
+					self.buildItems(items);
+				}
+			}
+		},
+		eventClearSearch: function(evt){
+			this.$searchInput.val('');
+			this.eventSearchInputKeyup(evt);
+			return false;
+		},
+		eventValueChange: function(evt, elm){
+			var self = this;
+			self.$index = elm.value;
+			var item = (self.$list && self.$list[elm.value]);
+			if (item){
+				this.$value = item[self.getConfig('key')];
+			}
+		},
+		// 设置加载参数
+		setParam: function(param){
+			return this.extendConfig('param', param);
+		},
+		// 加载数据
+		load: function(){
+			var self = this;
+			var c = self.getConfig();
+
+			pubjs.sync();
+			pubjs.data.get(c.url, c.param, self, 'afterLoad');
+			return self;
+		},
+		afterLoad: function(err, data){
+			if (err){
+				if (err.message){
+					pubjs.alert(err.message);
+				}
+				pubjs.error(err);
+			}else {
+				this.setData(data.items);
+			}
+			pubjs.sync(true);
+		},
+		// 设置当前值
+		setValue: function(value){
+			var self = this;
+			var con = self.$itemsDiv;
+			var key = self.getConfig('key');
+			// 保存数据
+			self.$value = value;
+			if (self.$list){
+				self.$index = util.index(self.$list, value, key);
+
+				// 更新状态
+				con.find('input').prop('checked', false);
+				con.find('input[value="'+self.$index+'"]').prop('checked', true);
+			}
+			return self;
+		},
+		// 获取当前值
+		getValue: function(){
+			return this.$value;
+		},
+		getFullValue: function(){
+			var self = this;
+			return (self.$list && self.$list[self.$index]);
+		},
+
+		// 返回当前显示数据对象列表
 		getData: function() {
-			this.$data = this.$radios.filter(':checked').val();
 			return this.$data;
 		},
-		// 传入value
+		// 设置要显示的对象列表, 构建对象
 		setData: function(data) {
 			this.$data = data;
-			this.$radios.each(function(index, elm) {
-				// value等于data的话将该radio选中
-				elm = $(elm);
-				var needToCheck = (elm.val() == data ? true : false);
-				elm.prop('checked', needToCheck);
-			})
+			var list = this.$list = {};
+			util.each(data, function(item, index){
+				list[index] = item;
+			});
+			// 构建子项目
+			this.buildItems(list);
+
+			return this;
 		},
+		// 重置模块
 		reset: function() {
-			this.$data = null;
-			// 所有checked的radio都设为unchecked
-			this.$radios.filter(':checked').prop('checked', false);
+			var self = this;
+			self.$data = self.$value = self.$index = self.$list = null;
+			self.$itemsDiv.empty();
+			if (self.$searchInput){
+				this.$searchInput.val('');
+			}
+
+			var c = self.getConfig();
+			if (c.data){
+				self.setData(c.data);
+			}else if (c.auto_load && c.url){
+				self.load();
+			}
+			return self;
 		}
 	});
 	exports.radioGroup = RadioGroup;
+
+	// 多选框Checkbox分组模块
+	var CheckBoxGroup = RadioGroup.extend({
+		init: function(){
+			var self = this;
+			self.$inputType = 'checkbox';
+			self.Super('init', arguments);
+		},
+		eventValueChange: function(evt, elm){
+			var self = this;
+			var val = elm.value;
+			var key = self.getConfig('key');
+			var item = (self.$list && self.$list[val]);
+			var index = self.$index = (self.$index || []);
+			var value = self.$value = (self.$value || []);
+
+			var pos = util.index(index, val);
+			if (elm.checked){
+				if (pos === null){
+					index.push(val);
+					value.push(item[key]);
+				}
+			}else {
+				if (index !== null){
+					index.splice(pos, 1);
+					value.splice(pos, 1);
+				}
+			}
+		},
+		setValue: function(value){
+			var self = this;
+			var con = self.$itemsDiv;
+			var key = self.getConfig('key');
+			var list = self.$list;
+			// 保存数据
+			self.$value = value;
+			// 查找选中的项目
+			if (list){
+				var index = self.$index = [];
+				util.each(value, function(id){
+					var idx = util.index(list, id, key);
+					if (idx !== null){
+						index.push(idx);
+					}
+				});
+
+				// 更新状态
+				con.find('input').prop('checked', false).each(function(idx, input){
+					input.checked = (util.index(index, input.value) !== null);
+				});
+			}
+			return self;
+		},
+		getFullValue: function(){
+			var self = this;
+			var list = self.$list;
+			var result = [];
+			if (list){
+				util.each(self.$index, function(idx){
+					result.push(list[idx]);
+				})
+			}
+			return result;
+		}
+	});
+	exports.checkboxGroup = CheckBoxGroup;
 });

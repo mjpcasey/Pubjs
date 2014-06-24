@@ -356,12 +356,8 @@ define(function(require, ex){
 			// 数组类型
 			c = list.length;
 			for (i=0; i<c; i++){
-				ret = list[i];
-				if (al){
-					if (ret && ret[field] === value){
-						return i;
-					}
-				}else if (ret === value){
+				ret = al ? list[i][field] : list[i];
+				if ((value === ret) || (value && value == ret)){
 					return i;
 				}
 			}
@@ -369,12 +365,8 @@ define(function(require, ex){
 			// 对象类型
 			for (i in list){
 				if (!_has.call(list, i)) {continue;}
-				ret = list[i];
-				if (al){
-					if (ret && ret[field] === value){
-						return i;
-					}
-				}else if (ret === value){
+				ret = al ? list[i][field] : list[i];
+				if ((value === ret) || (value && value == ret)){
 					return i;
 				}
 			}
