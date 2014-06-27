@@ -76,7 +76,8 @@ define(function(require, exports){
 	}
 	exports.drag = Drag;
 
-	exports.plugin_init = function(pubjs){
+	exports.plugin_init = function(pubjs, callback){
 		pubjs.drag = Drag;
+		callback();
 	}
 })

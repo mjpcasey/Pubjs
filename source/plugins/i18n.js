@@ -27,7 +27,7 @@ define(function(require, exports){
 	 * 加载语言包
 	 * @return {None} 无返回
 	 */
-	exports.load = function(lang, callback){
+	function load(lang, callback){
 		if (typeof(lang) == 'function'){
 			callback = lang;
 			lang = null;
@@ -106,12 +106,6 @@ define(function(require, exports){
 		}
 	}
 
-	// 返回当前语言是否已经加载完成
-	exports.isLoaded = function(){
-		return (!loading_lang);
-	}
-
-
 	/**
 	 * 多语言替换函数
 	 * @param  {String} text   语言文字
@@ -141,12 +135,13 @@ define(function(require, exports){
 	}
 
 
-	exports.plugin_init = function(context){
+	exports.plugin_init = function(context, callback){
 		pubjs = context;
 		config = pubjs.config;
 		cookie_name = config('language/cookie') || cookie_name;
 		style_base  = config('language/style') || style_base;
 
 		pubjs.i18n = this;
+		load(callback);
 	}
 });

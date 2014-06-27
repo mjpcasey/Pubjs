@@ -76,10 +76,11 @@ define(function(require, exports){
 		}
 	};
 
-	exports.plugin_init = function(pubjs){
+	exports.plugin_init = function(pubjs, callback){
 		appCore = pubjs.core;
 		pubjs.alert = Alert;
 		pubjs.confirm = Confirm;
 		pubjs.loading = SystemMask;
+		callback();
 	}
 })

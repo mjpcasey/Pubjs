@@ -123,12 +123,13 @@ define(function(require, exports){
 	}
 	exports.getDate = getDate;
 
-	exports.plugin_init = function(pubjs){
+	exports.plugin_init = function(pubjs, callback){
 		app = pubjs;
 		pubjs.isLogin = isLogin;
 		pubjs.setUser = setUser;
 		pubjs.getUser = getUser;
 		pubjs.getDate = getDate;
 		pubjs.getDateStorage = getDateStorage;
+		callback();
 	}
 });

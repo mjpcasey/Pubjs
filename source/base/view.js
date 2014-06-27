@@ -114,6 +114,21 @@ define(function(require,exports) {
 			if (!noAfterBuild && util.isFunc(self.afterBuild)){
 				self.afterBuild();
 			}
+
+			// 使用mvvm，扫描绑定dom
+			if (pubjs.MVVM && c.view_model) {
+				this.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+					for (var i in c.view_model){
+						if (c.view_model.hasOwnProperty(i)){
+							vm[i] = c.view_model[i];
+						}
+					}
+				});
+				self.$el.attr('ms-controller', self._.uri);
+				pubjs.MVVM.scan(self.$el[0]);
+				pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
+			}
+
 			return self;
 		},
 		uiBind: function(){
