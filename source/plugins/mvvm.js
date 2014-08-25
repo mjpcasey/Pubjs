@@ -1,16 +1,15 @@
 /**
  * MVVM功能模块
  * 生成一个MVVM模块，封装avalon框架
- * 生成一个全局VM
+ * 生成了一个全局VM
  *
  */
 define(function(require, exports){
-	var avalon = require('../libs/avalon/avalon.min.js'),
-		pubjs,
-		ajaxId = 0,
+
+	var	pubjs,
 		MVVM = null,
-		pluginCallback = null,
-		vmJsonPath = '/data/grobalVM.json';
+		grobalVMConf = require('grobalVMConf'),
+		avalon = require('../libs/avalon/avalon.min.js');
 
 	function initMVVM() {
 		MVVM = {
@@ -19,33 +18,18 @@ define(function(require, exports){
 			},
 			scan : function(elem, vmodel) {
 				return avalon.scan(elem, vmodel);
-			}
+			},
+			grobalVMDefineName : "grobal_view_model"
 		};
 		return MVVM;
 	}
-
-	// 加载全局变量定义文件
-	function loadGrobalVM(callback){
-		pluginCallback = callback;
-		if (pubjs && pubjs.data && pubjs.data.get){
-			if (ajaxId){
-				pubjs.data.abort(ajaxId);
-			}
-			ajaxId = pubjs.data.get(vmJsonPath, onLoadGrobalVM);
-		}
-	}
-	function onLoadGrobalVM(err, data){
-		ajaxId = 0;
-		if (!err){
-			defineGrobalVM(data);
-		}
-		pluginCallback();
-	}
-	function defineGrobalVM(vmJson){
-		pubjs.GrobalVM = MVVM.define('grobal_view_model', function(vm){
-			for (var i in vmJson){
-				if (vmJson.hasOwnProperty(i)){
-					vm[i] = vmJson[i];
+	function defineGrobalVM(grobalVM){
+		pubjs.GrobalVM = avalon.define(MVVM.grobalVMDefineName, function(vm){
+			if ( grobalVM ) {
+				for (var i in grobalVM){
+					if (grobalVM.hasOwnProperty(i)){
+						vm[i] = grobalVM[i];
+					}
 				}
 			}
 		});
@@ -56,7 +40,8 @@ define(function(require, exports){
 			pubjs = context;
 
 			pubjs.MVVM = initMVVM();
-			loadGrobalVM(callback);
+			defineGrobalVM(grobalVMConf);
+			callback();
 		}
 	}
 });
