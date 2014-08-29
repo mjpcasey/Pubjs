@@ -38,7 +38,7 @@ define(function(require, exports){
 	 */
 	function DragEvent(evt){
 		var ev = evt.data;
-		var X = evt.screenX, Y = evt.screenY;
+		var X = evt.pageX, Y = evt.pageY;
 		ev.type = 'moveDrag';
 		switch (evt.type){
 			case 'mouseup':
@@ -65,8 +65,8 @@ define(function(require, exports){
 				ev.dy = ev.cdy = 0;
 				ev.type = 'startDrag';
 				if (ev.cb.call(ev.ct, ev, evt)){
-					$(document).bind('mouseup.drag', ev, DragEvent);
-					$(document).bind('mousemove.drag', ev, DragEvent);
+					$(dom.ownerDocument).bind('mouseup.drag', ev, DragEvent);
+					$(dom.ownerDocument).bind('mousemove.drag', ev, DragEvent);
 				}else {
 					return;
 				}
