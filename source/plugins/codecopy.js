@@ -19,7 +19,7 @@ define(function(require, exports){
 					"ok": und,
 					"cancel": {"value": LANG("关闭"), "class": "uk-button-success"}
 				},
-				"class": 'M-dialogCodecopy',
+				"class": 'M-dialogCodecopy uk-form',
 				"showHead": false,
 				"showClose": true
 			});
@@ -39,8 +39,7 @@ define(function(require, exports){
 			// 生成说明消息容器
 			doms.text = $('<p class="M-dialogCodecopyNote" />').appendTo(doms.body);
 			// 生成代码显示框
-			doms.code = $('<textarea class="M-dialogCodecopyCode" readonly />');
-			$('<div class="M-dialogCodecopyCodeWrap uk-form"/>').append(doms.code).appendTo(doms.body);
+			doms.code = $('<textarea class="M-dialogCodecopyCode" readonly />').appendTo(doms.body);
 			// 操作提示信息
 			doms.message = $('<p class="uk-text-success tc" />').appendTo(doms.body).hide();
 			// 生成复制按钮代码
