@@ -203,8 +203,18 @@ define(function(require, exports){
 		// 显示完毕后, 更新状态
 		updatePosition: function(){
 			// 更新位置
-			if (this.$visible){
-				this.css(this.getPos());
+			var self = this;
+			if (self.$visible){
+				var el = self.getDOM();
+				// 如果超出浏览器底部范围，重新更改位置
+				if(el.height()+self.getPos().top > $(window).height()){
+					self.css({
+						left: self.getPos().left,
+						top: self.getPos().top-el.height()
+					});
+				}else{
+					self.css(self.getPos());
+				}
 			}
 		},
 		// 显示设置
@@ -348,4 +358,70 @@ define(function(require, exports){
 		}
 	});
 	exports.base = Base;
+
+	var Tooltip = Base.extend({
+		init: function(config, parent){
+			config = pubjs.conf(config, {
+				'class': 'M-tooltip'
+				,'pos': 'bm' // 定位模式
+				,'width': 380
+				,'height': ''
+				,'autoShow': false
+				,'autoHide': 'click_body click_anchor'
+				,'arrowAlign': 'right' // left right middle
+				,'hide': true
+				,'target': pubjs.DEFAULT_POPUP_CONTAINER.find('#SCENES_POPUP')
+			});
+
+			// 初始化模块构造
+			this.Super('init', arguments);
+		}
+		,afterBuild: function(){
+			var self = this;
+			self.Super('afterBuild', arguments);
+
+			var c = self.getConfig();
+			var el = self.getDOM();
+
+			if(c.height){
+				el.height(c.height);
+			}
+
+			var cls = c['class'];
+			if(cls){
+				el.addClass(
+					util.isArray(cls) ? cls.join(' ') : cls
+				);
+			}
+
+			if(c.arrowAlign){
+				self.$doms.arrow.addClass(c.arrowAlign);
+			}
+
+			if(c.hide){
+				self.hide();
+			}
+		}
+		,realHide: function(){
+			if (!this.$isShow){
+				this.css('display', 'none');
+				this.fire(
+					"tooltipHide"
+					,{
+						'hide': true
+					}
+				);
+			}
+		}
+		,show: function(){
+			this.Super('show', arguments);
+			var el = this.getDOM();
+			// 默认设置input聚焦
+			if(el.find('input[type="text"]').length>0){
+				el.find('input[type="text"]').eq(0).focus();
+			}
+		}
+
+	})
+	exports.tooltip = Tooltip;
 });

@@ -357,7 +357,7 @@ define(function(require, exports){
 			doms.list.css('top', el.outerHeight());
 
 			if (c.search){
-				doms.search = $('<div class="search" />').appendTo(doms.list);
+				doms.search = $('<div class="search uk-form" />').appendTo(doms.list);
 				doms.search_key = $('<input type="text" />').appendTo(doms.search);
 				doms.btnSearch = $('<div class="btnSearch"/>').appendTo(doms.search);
 				doms.btnCancel = $('<div class="btnCancel"/>').appendTo(doms.search);

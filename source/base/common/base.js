@@ -21,7 +21,7 @@ define(function(require, exports){
 				'viewport': null, // 滚动区域大小, 配合content来计算虚拟滚动条
 				'type': 'linear', // 滚动方式, manual - 手动滚动方式, 不控制外部DOM
 				'dir': 'H', // 滚动方向 H-横向, V-纵向
-				'size': 8, // 滚动条大小
+				'size': 3, // 滚动条大小
 				'pad': true, // 插入滚动条间隔
 				'side': false, // 是否反方向放置滚动条
 				'margin': 2, // 滚动条两端偏移位置支持数组形式分别制定两端偏移量
@@ -496,7 +496,7 @@ define(function(require, exports){
 		},
 		afterBuild: function(layout){
 			var self = this;
-			self.addClass('M-commonPager');
+			self.addClass('M-commonPager uk-form');
 			self.$doms = {};
 			self.updateUI();
 
@@ -778,7 +778,7 @@ define(function(require, exports){
 	var Search = view.container.extend({
 		init: function(config){
 			config = pubjs.conf(config, {
-				'class':'M-commonSearch',
+				'class':'M-commonSearch uk-form',
 				'inputClass': 'M-commonSearchInput',
 				'searchTip': LANG('请输入搜索内容'),
 				'searchText': '',
@@ -797,7 +797,7 @@ define(function(require, exports){
 			var doms = self.$doms = {};
 
 			// 创建输入框
-			var elm = doms.input = $('<input type="input" />').attr({
+			var elm = doms.input = $('<input type="text" />').attr({
 				'class': cfg.inputClass,
 				'placeholder': cfg.searchTip,
 				'value': cfg.searchText
