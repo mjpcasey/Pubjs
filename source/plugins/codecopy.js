@@ -19,7 +19,7 @@ define(function(require, exports){
 					"ok": und,
 					"cancel": {"value": LANG("关闭"), "class": "uk-button-success"}
 				},
-				"class": 'M-dialogCodecopy',
+				"class": 'M-dialogCodecopy uk-form',
 				"showHead": false,
 				"showClose": true
 			});

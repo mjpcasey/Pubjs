@@ -88,6 +88,9 @@ define(function(require, exports){
 
 			// 绑定操作事件
 			self.uiProxy(foot, 'button', 'click', 'eventButton');
+
+			self.uiBind(document, 'mouseup', 'eventAutoHide');
+			self.uiBind('mouseup', 'eventSkipHide');
 		},
 		//
 		eventButton: function(evt, elm){
@@ -138,6 +141,19 @@ define(function(require, exports){
 			});
 
 			return self.Super('doShow', arguments);
+		},
+		eventSkipHide: function(evt){
+			this.$skipClick = evt.timeStamp;
+		},
+		eventAutoHide: function(evt, elm){
+			var self = this;
+			switch (evt.type){
+				case 'mouseup':
+					if (this.$skipClick != evt.timeStamp){
+						self.hide();
+					}
+					break;
+			}
 		}
 	});
 

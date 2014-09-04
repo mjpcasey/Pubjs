@@ -106,6 +106,12 @@ define(function(require, exports){
 		}
 	}
 
+	// 返回当前语言是否已经加载完成
+	exports.isLoaded = function(){
+		return (!loading_lang);
+	}
+
+
 	/**
 	 * 多语言替换函数
 	 * @param  {String} text   语言文字
