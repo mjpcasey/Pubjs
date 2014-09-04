@@ -646,7 +646,7 @@ define(function(require, exports){
 			request[dcAjax] = $.ajax({
 				type: request[dcMode],
 				url: uri,
-				data: (json ? JSON.stringify(request[dcData]) : request[dcData]),
+				data: (request[dcData] ? (json ? JSON.stringify(request[dcData]) : request[dcData]) : null),
 				dataType: 'json',
 				success: this.onSuccess,
 				error: this.onError,
