@@ -461,9 +461,13 @@ define(function(require, exports){
 
 			con.empty();
 			if (data.html) {
-				$(data.html).appendTo(con);
+				if (util.isString(data.html)){
+					con.html(data.html);
+				}else {
+					con.append(data.html);
+				}
 			} else if (util.isString(data.text)){
-				$('<p class="con"/>').appendTo(con).text(data.text);
+				con.append($('<p class="con"/>').text(data.text));
 			}
 
 			if (data.type == 'confirm'){
