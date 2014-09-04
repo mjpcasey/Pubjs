@@ -293,6 +293,44 @@ define(function(require,exports) {
 			if (dom.jquery){
 				dom.remove();
 			}
+		},
+		/**
+		 * 从模版创建
+		 * @param  {Object} pubConfig 配置
+		 */
+		buildFromTemplate: function(globalCfg){
+			var self = this,
+				doms = this.getDOM();
+
+			var el, mod, name,config,cfg,elm,ns;
+			doms.find("[pub-mod]").each(function(index){
+				el = $(this);
+				mod = el.attr('pub-mod');
+				name = el.attr('pub-name');
+				config = el.attr('pub-config');
+
+				// 配置名称, 使用 / 分隔层次
+				cfg = globalCfg;
+				if(cfg && name){
+					if (!util.isString(name)) { name = '';}
+					ns = name.split('/');
+					while (ns.length){
+						elm = ns.shift();
+						cfg = cfg ? cfg[elm] :'';
+					}
+					name = name.replace('\/','');
+				}
+
+				config = config ? $.parseJSON(config) : cfg;
+				config = config ? $.extend({target: el}, config) :{target: el};
+
+				// 防止重复创建
+				var isExist = self.get(name);
+				if(!isExist){
+					self.createDelay(name, mod, config);
+				}
+			});
+			self.createDelay(true, globalCfg && globalCfg.cb || "afterBuildTemplate");
 		}
 	});
 	exports.container = Container;
@@ -459,6 +497,45 @@ define(function(require,exports) {
 		},
 		hide: function(){
 			return _uiFunction.call(this, 'hide', arguments);
+		},
+		/**
+		 * 从模版创建
+		 * @param  {Object} pubConfig 配置
+		 */
+		buildFromTemplate: function(globalCfg){
+			var self = this,
+				doms = this.getDOM();
+
+			var el, mod, name,config,cfg,elm,ns;
+			doms.find("[pub-mod]").each(function(index){
+				el = $(this);
+				mod = el.attr('pub-mod');
+				name = el.attr('pub-name');
+				config = el.attr('pub-config');
+
+				// 配置名称, 使用 / 分隔层次
+				cfg = globalCfg;
+				if(name){
+					if (!util.isString(name)) { name = '';}
+					ns = name.split('/');
+					while (ns.length){
+						elm = ns.shift();
+						cfg = cfg ? cfg[elm] :'';
+					}
+					name = name.replace('\/','');
+				}
+
+				config = config ? $.parseJSON(config) : cfg;
+				config = $.extend({target: el}, config);
+
+				if(!self.$){
+					self.createDelay(name, mod, config);
+				}
+				else if(!self.$[name]){
+					self.createDelay(name, mod, config);
+				}
+			});
+			self.createDelay(true,globalCfg && globalCfg.cb || "afterBuildTemplate");
 		}
 	});
 	exports.widget = Widget;

@@ -603,10 +603,11 @@ define(function(require, ex){
 			if (remove){ delete dst[key]; }
 		}else if (value && (isArray(value) || isPlainObject(value))){
 			// 新值为对象
-			if (dst[key] === value){ return; }
-			if (deep !== 0){
+			var old = dst[key];
+			if (old === value){ return; }
+			if (deep !== 0 && (isArray(old) || isPlainObject(old))){
 				// 继续合并数组和简答对象
-				dst[key] = ExtendObject(dst[key], value, --deep);
+				dst[key] = ExtendObject(old, value, --deep);
 			}else {
 				// 克隆新对象赋值
 				dst[key] = Clone(value);
