@@ -17,6 +17,48 @@ define(function(require,exports) {
 		return args;
 	}
 
+	function _buildFromTemplate(module_config, callback, param){
+		var self = this,
+			doms = this.getDOM();
+
+		doms.find("[pub-mod]").each(function(index){
+			var el = $(this);
+			var mod = el.attr('pub-mod');
+			var name = el.attr('pub-name');
+			var config = el.attr('pub-config');
+			var mod_name = null;
+
+			// 获取模块配置
+			if (config){
+				try {
+					config = JSON.parse(config);
+				}catch(e){
+					config = null;
+				}
+			}
+			// 有模块名称, 判断模块是否存在
+			if (name){
+				mod_name = name.replace(/\//g, '_');
+				if (self.get(mod_name)){
+					return;
+				}
+				// 读取模块配置
+				if (!config && module_config){
+					config = util.prop(module_config, name);
+				}
+			}
+			// 修正创建容器对象参数
+			if (!config){
+				config = {target: el};
+			}else if (!config.target){
+				config.target = el;
+			}
+			// 创建模块
+			self.createDelay(mod_name, mod, config);
+		});
+		self.createDelay(true, callback || "afterBuildTemplate", param);
+	}
+
 	/**
 	 * 容器视图类
 	 */
@@ -314,7 +356,12 @@ define(function(require,exports) {
 			if (dom.jquery){
 				dom.remove();
 			}
-		}
+		},
+		/**
+		 * 从模版创建
+		 * @param  {Object} pubConfig 配置
+		 */
+		buildFromTemplate: _buildFromTemplate
 	});
 	exports.container = Container;
 
@@ -480,7 +527,12 @@ define(function(require,exports) {
 		},
 		hide: function(){
 			return _uiFunction.call(this, 'hide', arguments);
-		}
+		},
+		/**
+		 * 从模版创建
+		 * @param  {Object} pubConfig 配置
+		 */
+		buildFromTemplate: _buildFromTemplate
 	});
 	exports.widget = Widget;
 
