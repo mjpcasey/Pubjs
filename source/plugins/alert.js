@@ -10,13 +10,13 @@ define(function(require, exports){
 		}
 		return alertQueue.length;
 	}
-	function Alert(text, callback, alertType){
+	function Alert(html, callback, alertType){
 		if (!alertType){
 			alertType = 'alert';
 		}
 
 		alertQueue.push({
-			text: text,
+			html: html,
 			type: alertType,
 			callback: callback,
 			next: popQueue
@@ -41,8 +41,8 @@ define(function(require, exports){
 			}
 		}
 	}
-	function Confirm(text, callback){
-		Alert(text, callback, 'confirm');
+	function Confirm(html, callback){
+		Alert(html, callback, 'confirm');
 	}
 
 

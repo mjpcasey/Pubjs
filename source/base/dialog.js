@@ -4,6 +4,7 @@ define(function(require, exports){
 	var util = require('../core/util');
 	var view = require('./view');
 	var input = require('./common/input');
+	var plugin_drag = require('@plugins/drag');
 	var maxZIndex = 1000;
 
 	var DOCUMENG = document;
@@ -70,6 +71,8 @@ define(function(require, exports){
 				,"position":"auto"
 				// 不发送事件
 				,"silence":true
+				// 是否可以拖拽
+				,"drag": true
 			});
 
 			var self = this;
@@ -103,6 +106,9 @@ define(function(require, exports){
 				doms.title = $('<div class="M-dialogTitle" />').appendTo(doms.head);
 				if (c.title){
 					self.setTitle(c.title);
+				}
+				if (c.drag) {
+					plugin_drag.drag(doms.head, self.eventDrag, self);
 				}
 			}else {
 				doms.head.hide();
@@ -298,6 +304,41 @@ define(function(require, exports){
 			}
 			return self;
 		},
+		eventDrag: function(data, evt) {
+			var pos,
+				self = this,
+				el = self.$el,
+				cache = self.$drag_cache;
+
+			switch(data.type) {
+				case 'startDrag':
+					self.$drag_cache = $.extend({
+						screenWidth: $(window).width(),
+						screenHeight: $(window).height(),
+						outerWidth: el.outerWidth(),
+						outerHeight: el.outerHeight()
+					}, el.offset());
+				break;
+				case 'moveDrag':
+					pos = {
+						marginLeft: 0,
+						top: cache.top + data.dy,
+						left: cache.left + data.dx
+					};
+
+					if (pos.top < 0) {pos.top = 0;}
+					if (pos.left < 0) {pos.left = 0;}
+					if (pos.top + cache.outerHeight > cache.screenHeight) { pos.top = cache.screenHeight - cache.outerHeight;}
+					if (pos.left + cache.outerWidth > cache.screenWidth) { pos.left = cache.screenWidth - cache.outerWidth;}
+
+					self.css(pos);
+				break;
+				case 'endDrag':
+					self.$drag_cache = {};
+				break;
+			}
+			return true;
+		},
 		/**
 		 * 尺寸改变响应函数
 		 * @param  {Object}    ev 事件消息对象
@@ -319,7 +360,6 @@ define(function(require, exports){
 			if(!c.silence){
 				self.fire("dialogOk");
 			}
-			self.hide();
 			return false;
 		},
 		/**
@@ -406,7 +446,6 @@ define(function(require, exports){
 		afterBuild: function(){
 			var self = this;
 			self.Super('afterBuild', arguments);
-			self.$content = $('<p class="con"/>').appendTo(self.$doms.body);
 
 			var data = self.getConfig('data');
 			if (data){
@@ -417,13 +456,18 @@ define(function(require, exports){
 		setData: function(data){
 			var self = this;
 			var c = self.getConfig();
+			var con = self.$doms.body;
 			c.data = data;
 
-			var con = self.$content;
-			if (util.isString(data.text)){
-				con.text(data.text);
-			}else {
-				con.empty().append(data.text);
+			con.empty();
+			if (data.html) {
+				if (util.isString(data.html)){
+					con.html(data.html);
+				}else {
+					con.append(data.html);
+				}
+			} else if (util.isString(data.text)){
+				con.append($('<p class="con"/>').text(data.text));
 			}
 
 			if (data.type == 'confirm'){
