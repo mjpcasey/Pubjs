@@ -17,6 +17,48 @@ define(function(require,exports) {
 		return args;
 	}
 
+	function _buildFromTemplate(module_config, callback, param){
+		var self = this,
+			doms = this.getDOM();
+
+		doms.find("[pub-mod]").each(function(index){
+			var el = $(this);
+			var mod = el.attr('pub-mod');
+			var name = el.attr('pub-name');
+			var config = el.attr('pub-config');
+			var mod_name = null;
+
+			// 获取模块配置
+			if (config){
+				try {
+					config = JSON.parse(config);
+				}catch(e){
+					config = null;
+				}
+			}
+			// 有模块名称, 判断模块是否存在
+			if (name){
+				mod_name = name.replace(/\//g, '_');
+				if (self.get(mod_name)){
+					return;
+				}
+				// 读取模块配置
+				if (!config && module_config){
+					config = util.prop(module_config, name);
+				}
+			}
+			// 修正创建容器对象参数
+			if (!config){
+				config = {target: el};
+			}else if (!config.target){
+				config.target = el;
+			}
+			// 创建模块
+			self.createDelay(mod_name, mod, config);
+		});
+		self.createDelay(true, callback || "afterBuildTemplate", param);
+	}
+
 	/**
 	 * 容器视图类
 	 */
@@ -298,40 +340,7 @@ define(function(require,exports) {
 		 * 从模版创建
 		 * @param  {Object} pubConfig 配置
 		 */
-		buildFromTemplate: function(globalCfg){
-			var self = this,
-				doms = this.getDOM();
-
-			var el, mod, name,config,cfg,elm,ns;
-			doms.find("[pub-mod]").each(function(index){
-				el = $(this);
-				mod = el.attr('pub-mod');
-				name = el.attr('pub-name');
-				config = el.attr('pub-config');
-
-				// 配置名称, 使用 / 分隔层次
-				cfg = globalCfg;
-				if(cfg && name){
-					if (!util.isString(name)) { name = '';}
-					ns = name.split('/');
-					while (ns.length){
-						elm = ns.shift();
-						cfg = cfg ? cfg[elm] :'';
-					}
-					name = name.replace('\/','');
-				}
-
-				config = config ? $.parseJSON(config) : cfg;
-				config = config ? $.extend({target: el}, config) :{target: el};
-
-				// 防止重复创建
-				var isExist = self.get(name);
-				if(!isExist){
-					self.createDelay(name, mod, config);
-				}
-			});
-			self.createDelay(true, globalCfg && globalCfg.cb || "afterBuildTemplate");
-		}
+		buildFromTemplate: _buildFromTemplate
 	});
 	exports.container = Container;
 
@@ -502,41 +511,7 @@ define(function(require,exports) {
 		 * 从模版创建
 		 * @param  {Object} pubConfig 配置
 		 */
-		buildFromTemplate: function(globalCfg){
-			var self = this,
-				doms = this.getDOM();
-
-			var el, mod, name,config,cfg,elm,ns;
-			doms.find("[pub-mod]").each(function(index){
-				el = $(this);
-				mod = el.attr('pub-mod');
-				name = el.attr('pub-name');
-				config = el.attr('pub-config');
-
-				// 配置名称, 使用 / 分隔层次
-				cfg = globalCfg;
-				if(name){
-					if (!util.isString(name)) { name = '';}
-					ns = name.split('/');
-					while (ns.length){
-						elm = ns.shift();
-						cfg = cfg ? cfg[elm] :'';
-					}
-					name = name.replace('\/','');
-				}
-
-				config = config ? $.parseJSON(config) : cfg;
-				config = $.extend({target: el}, config);
-
-				if(!self.$){
-					self.createDelay(name, mod, config);
-				}
-				else if(!self.$[name]){
-					self.createDelay(name, mod, config);
-				}
-			});
-			self.createDelay(true,globalCfg && globalCfg.cb || "afterBuildTemplate");
-		}
+		buildFromTemplate: _buildFromTemplate
 	});
 	exports.widget = Widget;
 
