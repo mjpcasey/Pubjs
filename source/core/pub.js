@@ -1661,18 +1661,24 @@ define(function(require, exports){
 		}
 		if (loads.length){
 			require.async(loads, function(){
-				var i, mod;
-				for (i=list.length; i>0;){
-					mod = arguments[--i];
-					// 中间件初始化
-					if (mod && mod.plugin_init){
-						mod.plugin_init(exports);
+				var i = list.length;
+				var mods = arguments;
+				function next() {
+					if ( i === 0 ) {
+						if (callback){
+							runPluginCallback(names, callback, context);
+						}
+					} else {
+						var mod = mods[--i];
+						plugins[list[i]] = mod;
+						if (mod && mod.plugin_init){
+							mod.plugin_init(exports, next);
+						} else {
+							next();
+						}
 					}
-					plugins[list[i]] = mod;
-				}
-				if (callback){
-					runPluginCallback(names, callback, context);
-				}
+				};
+				next();
 			});
 		}else if (callback){
 			runPluginCallback(names, callback, context);

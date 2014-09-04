@@ -296,8 +296,9 @@ define(function(require, exports){
 		this.engine.set(name, value);
 	}
 
-	exports.plugin_init = function(pubjs){
+	exports.plugin_init = function(pubjs, callback){
 		app = pubjs;
 		app.template = exports;
+		callback();
 	}
 });

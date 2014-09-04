@@ -446,7 +446,7 @@ define(function(require, exports){
 	}
 
 
-	exports.plugin_init = function(pubjs){
+	exports.plugin_init = function(pubjs, callback){
 		if (!Model){
 			noop = pubjs.noop;
 			define_module();
@@ -454,5 +454,6 @@ define(function(require, exports){
 			pubjs.store = exports.store = new Model();
 			pubjs.conf = exports.conf = conf;
 		}
+		callback();
 	}
 });

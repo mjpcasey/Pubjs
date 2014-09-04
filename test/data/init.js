@@ -152,12 +152,6 @@
 			], INIT_PROCESS);
 		},
 
-		// 初始化多语言环境
-		function(CONTROLLER, I18N){
-			controller = CONTROLLER;
-			I18N.load(INIT_PROCESS);
-		},
-
 		// 系统模块初始化完成, 创建全局框架
 		function(){
 			app.setUser(app.config('user_data'));

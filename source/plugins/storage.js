@@ -68,7 +68,8 @@ define(function(require, exports){
 		}
 	}
 
-	exports.plugin_init = function(pubjs){
+	exports.plugin_init = function(pubjs, callback){
 		pubjs.storage = storage;
+		callback();
 	}
 });
