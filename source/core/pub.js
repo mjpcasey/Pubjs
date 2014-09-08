@@ -429,7 +429,7 @@ define(function(require, exports){
 			}
 
 			// 事件冒泡
-			listener = sender; // 优先从本对象内广播
+			listener = sender.parent(); // 改为不再出发自身模块
 			evt.data = null;
 			while (listener){
 				if (this.triggerEvent(listener, evt) === false){
@@ -455,7 +455,7 @@ define(function(require, exports){
 				return false;
 			}
 			this.busy = 1;
-			var pend = [sender];
+			var pend = sender.childs(); // 广播不再触发自身, 从子模块开始
 			var target;
 			var evt = this.createEvent(sender, type, param);
 
