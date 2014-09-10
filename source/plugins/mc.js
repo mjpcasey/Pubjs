@@ -213,7 +213,7 @@ define(function(require, exports, module){
 		var cb = self.$callbacks[message.mid];
 		if (cb){
 			delete self.$callbacks[message.mid];
-			cb.callback.call(cb, null, message.data);
+			cb.callback.call(cb, message.error, message.data);
 		}
 
 		// 触发绑定uri的消息
