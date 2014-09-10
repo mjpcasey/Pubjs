@@ -155,7 +155,7 @@ define(function(require, exports){
 		load: function(param){
 			var c = this.getConfig();
 			if (param){
-				c.param = util.merge(c.param, param);
+				c.param = util.extend(c.param, param);
 			}
 			//todo: 加入加载状态提示
 			pubjs.data.get(c.url, c.param, this);

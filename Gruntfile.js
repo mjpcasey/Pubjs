@@ -15,19 +15,10 @@ module.exports = function(grunt) {
 		'Gruntfile.js'
 	];
 	var CLIENT_FILES = [
-		'modules/*/*.js',
-		'modules/*.js',
-		'core/*.js',
-		'app/*.js',
-		'project/*/*/*.js',
-		'project/*/*.js',
-		'project/*/*/*.js',
-		'project/*.js',
-		'controller/*.js',
-		'pubjs/core/*.js',
-		'pubjs/base/*.js',
-		'pubjs/base/*/*.js',
-		'pubjs/plugins/*.js'
+		'source/core/*.js',
+		'source/base/*.js',
+		'source/base/*/*.js',
+		'source/plugins/*.js'
 	];
 
 	function excludeJS(filepath){

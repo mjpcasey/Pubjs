@@ -458,25 +458,6 @@ define(function(require, ex){
 		};
 	}
 
-	// todo: 统一使用extend方法
-	ex.merge = function(target, source, retrun_change){
-		var is_change = false;
-		ex.each(source, function(val, name){
-			if (val === null || val === UD){
-				if (target && has(target, name)){
-					delete target[name];
-					is_change = true;
-				}
-			}else {
-				if (!target){ target = {};}
-				if (target[name] !== val){
-					target[name] = val;
-					is_change = true;
-				}
-			}
-		});
-		return (retrun_change ? is_change : target);
-	}
 	ex.first = function(list){
 		var ret;
 		if (isArray(list)){
@@ -856,106 +837,6 @@ define(function(require, ex){
 		return result.join(exp1);
 	}
 
-	var zero = window.ZeroClipboard = {
-		flash: null,
-		text: '',
-		ready: false,
-		callback: null,
-		context: null,
-		setText: function(text){
-			this.text = text;
-		},
-		dispatch: function(evt, args){
-			switch (evt){
-				case 'load':
-					this.flash.setHandCursor(true);
-					this.ready = true;
-				break;
-				case 'dataRequested':
-					this.flash.setText(this.text);
-				break;
-				case 'mouseOut':
-					this.hide();
-				break;
-				case 'complete':
-					if (this.callback){
-						this.callback.call(this.context || window, evt, args);
-					}
-				break;
-			}
-		},
-		hide: function(){
-			if (this.div){
-				this.div.css('top', -99999);
-			}
-		},
-		build: function(){
-			var url = PUBJS('libs/clipboard/ZeroClipboard.swf');
-			var html = [
-				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="global-zeroclipboard-flash-bridge" width="100%" height="100%">',
-				'<param name="movie" value="'+url+'"/>',
-				'<param name="allowScriptAccess" value="always"/>',
-				'<param name="scale" value="exactfit"/>',
-				'<param name="loop" value="false"/>',
-				'<param name="menu" value="false"/>',
-				'<param name="quality" value="best" />',
-				'<param name="bgcolor" value="#ffffff"/>',
-				'<param name="wmode" value="transparent"/>',
-				'<embed src="'+url+'" ',
-				'loop="false" menu="false" quality="best" bgcolor="#ffffff" ',
-				'width="100%" height="100%" name="global-zeroclipboard-flash-bridge" ',
-				'allowScriptAccess="always" allowFullScreen="false" ',
-				'type="application/x-shockwave-flash" wmode="transparent" ',
-				'pluginspage="http://www.macromedia.com/go/getflashplayer" scale="exactfit"></embed>',
-				'</object>'
-			]
-			this.div = $('<div />').css({position: 'absolute', zIndex: 9999}).appendTo('body').html(html.join(''));
-			this.flash = document["global-zeroclipboard-flash-bridge"] || this.div.get(0).children[0].lastElementChild;
-		}
-	};
-
-	ex.clip = function(text, elm, cb, ctx){
-		if (window.clipboardData){
-			window.clipboardData.setData("Text", text);
-			return;
-		}
-		if (!elm){
-			zero.hide();
-			return false;
-		}
-		if (!zero.flash){ zero.build(); }
-		// 移动容器
-		elm = $(elm);
-		zero.div.css(elm.offset()).width(elm.width()).height(elm.height());
-		zero.setText(text);
-		zero.callback = cb;
-		zero.context = ctx;
-	}
-
-	var imageErrorCbs = {};
-	function imageErrorCb(type){
-		return function(){
-			var img = $(this);
-			var src = img.attr('src');
-			var url = require('app').config('default_img/'+type);
-			if (src == url) { return false; }
-			img.attr('src', url);
-		};
-	}
-	/**
-	 * 绑定图片错误, 自动打开对应的系统配置的默认图片地址
-	 * @param  {Element} dom  要绑定事件的IMG对象DOM/jQuery
-	 * @param  {String}  type 自动覆盖的默认图片类型, 对应config的 default_img/<type>
-	 * @return {None}         无返回
-	 */
-	ex.imageError = function(dom, type){
-		var func = imageErrorCbs[type];
-		if (!func){
-			func = imageErrorCbs[type] = imageErrorCb(type);
-		}
-		$(dom).bind('error', func);
-	}
-
 	/**
 	 * 计算DOM元素相对另外一个DOM的相对位置
 	 * @param  {Element} dom    要计算位置的DOM对象
@@ -1083,7 +964,6 @@ define(function(require, ex){
 		}
 	}
 	ex.cookie = Cookie;
-
 
 
 	var UIQueue = [];

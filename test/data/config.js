@@ -21,6 +21,29 @@ define(function(){
 			cookie_expires: 30, // 保存30天
 			user_cookie_name: 'bx_user_cookie'
 		},
+		app: {
+			mc: {
+				"uri_prefix": "/msg/",
+				"prefix": {
+					"/": "default://",
+					"/dsp/": "dsp://msg/"
+				},
+				"remotes": {
+					"default": {
+						"type": "websocket",
+						"resource": "dsp_socket",
+						"url": "http://localhost:8099"
+					},
+					"dsp": {
+						"type": "websocket",
+						"url": "http://localhost:8099"
+					},
+					"local": {
+						"type": "local"
+					}
+				}
+			}
+		},
 		// 控制器所在目录
 		app_base: ROOT('controller/'),
 		// 中间件基础目录

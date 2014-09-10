@@ -1,8 +1,10 @@
-define(function(require, exports){
+define(function(require, exports, module){
 	var $ = require('jquery');
 	var util = require('./util');
 	var version = exports.version = '0.2.0';
 	var UDF;
+
+	exports.ROOT_PATH = module.uri.split(/\/|\\/).slice(0,-3).join('/');
 
 	// 类式继承功能函数
 	function argv_run(proto, scope, func, args){
@@ -1677,7 +1679,7 @@ define(function(require, exports){
 							next();
 						}
 					}
-				};
+				}
 				next();
 			});
 		}else if (callback){

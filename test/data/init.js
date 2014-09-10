@@ -70,7 +70,6 @@
 	}
 
 	Win.ROOT = ROOT;
-	Win.PUBJS = PUBJS;
 	Win._T = function(text){ return text; }
 
 
@@ -148,8 +147,10 @@
 				'@plugins/user',
 				'@plugins/alert',
 				'@plugins/codecopy',
-				'@plugins/storage'
-			], INIT_PROCESS);
+				'@plugins/storage',
+				'@plugins/mc'
+			]);
+			// ], INIT_PROCESS);
 		},
 
 		// 系统模块初始化完成, 创建全局框架

@@ -73,7 +73,7 @@ define(function(require, exports){
 			var self = this;
 			var item = self.$data[self.$active];
 			if (item){
-				util.clip(item.code, elm, self.afterCopy, self);
+				Clip(item.code, elm, self.afterCopy, self);
 			}
 		},
 		// 复制完成提示
@@ -136,9 +136,88 @@ define(function(require, exports){
 		}
 	}
 
+	// Flash 粘贴板
+	var zero = {
+		flash: null,
+		text: '',
+		ready: false,
+		callback: null,
+		context: null,
+		setText: function(text){
+			this.text = text;
+		},
+		dispatch: function(evt, args){
+			switch (evt){
+				case 'load':
+					this.flash.setHandCursor(true);
+					this.ready = true;
+				break;
+				case 'dataRequested':
+					this.flash.setText(this.text);
+				break;
+				case 'mouseOut':
+					this.hide();
+				break;
+				case 'complete':
+					if (this.callback){
+						this.callback.call(this.context || window, evt, args);
+					}
+				break;
+			}
+		},
+		hide: function(){
+			if (this.div){
+				this.div.css('top', -99999);
+			}
+		},
+		build: function(){
+			var url = app.ROOT_PATH + '/source/libs/clipboard/ZeroClipboard.swf';
+			var html = [
+				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" id="global-zeroclipboard-flash-bridge" width="100%" height="100%">',
+				'<param name="movie" value="'+url+'"/>',
+				'<param name="allowScriptAccess" value="always"/>',
+				'<param name="scale" value="exactfit"/>',
+				'<param name="loop" value="false"/>',
+				'<param name="menu" value="false"/>',
+				'<param name="quality" value="best" />',
+				'<param name="bgcolor" value="#ffffff"/>',
+				'<param name="wmode" value="transparent"/>',
+				'<embed src="'+url+'" ',
+				'loop="false" menu="false" quality="best" bgcolor="#ffffff" ',
+				'width="100%" height="100%" name="global-zeroclipboard-flash-bridge" ',
+				'allowScriptAccess="always" allowFullScreen="false" ',
+				'type="application/x-shockwave-flash" wmode="transparent" ',
+				'pluginspage="http://www.macromedia.com/go/getflashplayer" scale="exactfit"></embed>',
+				'</object>'
+			]
+			this.div = $('<div />').css({position: 'absolute', zIndex: 9999}).appendTo('body').html(html.join(''));
+			this.flash = document["global-zeroclipboard-flash-bridge"] || this.div.get(0).children[0].lastElementChild;
+		}
+	};
+
+	function Clip(text, elm, cb, ctx){
+		window.ZeroClipboard = zero;
+		if (window.clipboardData){
+			window.clipboardData.setData("Text", text);
+			return;
+		}
+		if (!elm){
+			zero.hide();
+			return false;
+		}
+		if (!zero.flash){ zero.build(); }
+		// 移动容器
+		elm = $(elm);
+		zero.div.css(elm.offset()).width(elm.width()).height(elm.height());
+		zero.setText(text);
+		zero.callback = cb;
+		zero.context = ctx;
+	}
+
 	exports.plugin_init = function(pubjs, callback){
 		app = pubjs;
 		pubjs.codecopy = CodeCopy;
+		pubjs.clip = Clip;
 		callback();
 	}
 });
