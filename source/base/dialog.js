@@ -16,6 +16,7 @@ define(function(require, exports){
 		init: function(config, parent){
 			config = pubjs.conf(config, {
 				'style': {
+					"layoutClass":"",
 					// 顶部标题与关闭按钮区域样式
 					"headClass":"",
 					// 内容区域样式
@@ -86,6 +87,10 @@ define(function(require, exports){
 			var c = self.getConfig();
 			var el = self.getDOM();
 			self.addClass('M-dialog');
+
+			if(c.style.layoutClass){
+				self.addClass(c.style.layoutClass);
+			}
 
 			var styles = c.style;
 			var doms = self.$doms = {
@@ -234,9 +239,20 @@ define(function(require, exports){
 
 			// 手动指定位置设置
 			if(!isAuto){
-				// 不是自动设定的话则更新设定值
-				config = util.extend(c.position, config);
-				self.css(config);
+				var mode = c.position.mode;
+				var element = c.position.element;
+				if(mode && element){
+					var opsition = this._getElementPosition(this.getDOM(), element, mode);
+					self.css({
+						left: opsition.left,
+						top: opsition.top
+					});
+
+				}else{
+					// 不是自动设定的话则更新设定值
+					config = util.extend(c.position, config);
+					self.css(config);
+				}
 			}
 			// 调整高度限制
 			if (c.height){
@@ -270,6 +286,32 @@ define(function(require, exports){
 			// 更新遮罩层
 			self.updateMask();
 			return self;
+		},
+		/**
+		 * 获取位置
+		 * @param  {Object} dom    DOM元素，定位物体
+		 * @param  {Object} subject jQuery对象，定位参照主体目标
+		 * @param  {String} mode    定位模式
+		 * @return {Object}         left, top位置
+		 */
+		_getElementPosition: function(dom, subject, mode){
+			subject = subject.get(0);
+			var position = {};
+
+			var left = mode.match('left') ? subject.offsetLeft : subject.offsetLeft + subject.offsetWidth;
+			var top = mode.match('top') ?  subject.offsetTop : subject.offsetTop + subject.offsetHeight;
+			var current = subject.offsetParent;
+
+			while (current !== null && current !== document.body){
+				left += current.offsetLeft;
+				top += current.offsetTop;
+				current = current.offsetParent;
+			}
+			var m = mode.split(',');
+			position.left = (m[0].match('left') || m[1].match('right')) ? left-dom.outerWidth() : left;
+			position.top = (m[0].match('top') || m[1].match('bottom')) ? top-dom.outerHeight() : top;
+
+			return position;
 		},
 		/**
 		 * 设定遮罩层
