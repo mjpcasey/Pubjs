@@ -361,6 +361,12 @@ define(function(require, exports, module){
 				return 0;
 			}
 
+			if (util.isFunc(data)){
+				param = callback;
+				callback = data;
+				data = null;
+			}
+
 			// 消息存入待发送消息队列
 			var self = this;
 			param = {
