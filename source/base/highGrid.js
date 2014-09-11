@@ -6,6 +6,8 @@ define(function(require, exports){
 	var util = require('util');
 	var dialog = require('@base/dialog');
 
+	var menu = require('@base/common/menu');
+
 	var labels = require('grid/labels');
 	// var format = labels.format;
 	labels = labels.labels;
@@ -33,7 +35,7 @@ define(function(require, exports){
 				'hasAmount': true,		// 是否有总计模块
 				'hasPager': true,		// 是否有分页模块
 				'hasSubGrid': true,		// 是否显示子表格
-				'hasExport': true,		// 是否有导出模块
+				// 'hasExport': true,		// 是否有导出模块
 				'hasSwitch': true,		// 是否有切换到对比表格
 				'hasBatch': false,		// 是否有批量操作
 
@@ -82,9 +84,15 @@ define(function(require, exports){
 			].join('')));
 			var con = el.find('.M-HighGridHeaderLeft');
 
+			// 批量操作
 			if(c.hasBatch){
-				var gridBatch = $('<div class="mr10 M-HighGridBatch fl"><span>'+LANG('批量操作')+'</span><i class="uk-icon-caret-down"/></div>').appendTo(con);
-				this.uiBind(gridBatch, 'click', 'eventBatch');
+				// var gridBatch = $('<div class="mr10 M-HighGridBatch fl"><span>'+LANG('批量操作')+'</span><i class="uk-icon-caret-down"/></div>').appendTo(con);
+				// this.uiBind(gridBatch, 'click', 'eventBatch');
+				this.create('batch', Batch, {
+					'target': con,
+					'grid': this
+				});
+
 			}
 			// 刷新控件
 			if (c.hasRefresh){
@@ -97,8 +105,12 @@ define(function(require, exports){
 
 			// 导出控件
 			if (c.hasExport){
-				var gridExport = $('<div class="mr10 fl M-HighGridExport"><em/></div>').appendTo(con);
-				this.uiBind(gridExport, 'click', 'eventExport');
+				// var gridExport = $('<div class="mr10 fl M-HighGridExport"><em/></div>').appendTo(con);
+				// this.uiBind(gridExport, 'click', 'eventExport');
+				this.createAsync(
+					'excel', '@base/common/base.excelExport',
+					util.extend(c.excelExport, {'target': con})
+				);
 			}
 
 			// 切换对比栏
@@ -360,8 +372,8 @@ define(function(require, exports){
 
 						// 操作列
 						if(column.type == 'op'){
-							html = '<span class="M-HighGridListSidebarMenu"/>';
-							className += ' tc';
+							// html = '<span class="M-HighGridListSidebarMenu"/>';
+							// className += ' tc';
 							hasDataType = true;
 						}
 
@@ -382,12 +394,12 @@ define(function(require, exports){
 							type = 'index';
 						}
 						td = this.buildTd({
-							'text': data[column.name],
 							'html': html,
-							'width': width,
-							'class': className,
-							'title': title,
 							'type': type,
+							'width': width,
+							'title': title,
+							'class': className,
+							'text': data[column.name],
 							'dataType': hasDataType ? column.type : null
 						});
 						tr.append(td);
@@ -406,6 +418,8 @@ define(function(require, exports){
 			}
 			// 绑定选择框事件
 			this.uiProxy(dom, 'input[type="checkbox"]', 'click', 'eventCheckboxClick');
+			// 绑定菜单事件
+			this.uiProxy(dom, '.M-HighGridListSidebarMenu', 'click', 'eventMenuClick');
 			return dom;
 		},
 		buildTableContent: function(){
@@ -502,6 +516,13 @@ define(function(require, exports){
 
 			if(c.name){
 				con.attr('data-name', c.name);
+			}
+
+			if(c.dataType == 'op'){
+				this.create(Menu, {
+					target: td,
+					grid: this
+				});
 			}
 
 			return td;
@@ -645,11 +666,16 @@ define(function(require, exports){
 			var mod = this.$;
 			if(mod){
 				for(var i in mod){
-					if(i != 'tab' && i!= 'refresh'){
+					if(i != 'tab' && i!= 'refresh' && i!= 'excel' && i!= 'batch'){
 						mod[i].destroy();
 					}
 				}
+				// mod.pager.destroy();
+				// mod.scrollerH.destroy();
+				// mod.scrollerV.destroy();
 			}
+
+			// this.$.scrollerV
 			this.$el.find('.M-HighGridList').empty();
 			this.$panelShowing = false;
 		},
@@ -665,10 +691,14 @@ define(function(require, exports){
 			// 设置选中/高亮状态
 			this.setStyles();
 		},
-		getValue: function(){
-			return {
-				selects: this.$selects,
-				highlights: this.$highlights
+		getValue: function(name){
+			if(name){
+				return this['$'+name] || '';
+			}else{
+				return {
+					selects: this.$selects,
+					highlights: this.$highlights
+				}
 			}
 		},
 		resetValue: function(){
@@ -1040,6 +1070,32 @@ define(function(require, exports){
 			this.cast('autoRefresh');
 			return false;
 		},
+		/**
+		 * 导出按钮点击事件
+		 * @param  {Object} ev 事件变量
+		 * @return {Bool}     返回false拦截事件冒泡
+		 */
+		onExcelExport: function(ev){
+			var cfg = this.getConfig();
+			var ud;
+			var param = util.extend(
+				{},
+				cfg.param,
+				this.$sys_param,
+				this.getParam(),
+				{'page':ud, 'order':ud}
+			);
+			if (cfg.sub_exname){
+				param.subex_name = cfg.sub_exname;
+			}
+			delete param.format;
+			ev.returnValue = {
+				'url': cfg.url,
+				'param': param
+			};
+			return false;
+		},
+
 		/** ---------------- 内部函数 ---------------- **/
 		// 获取过滤后的要显示的指标集
 		getMetrics: function(){
@@ -1570,4 +1626,105 @@ define(function(require, exports){
 		}
 	});
 	exports.subgrid = Subgrid;
+
+	// 批量操作
+	var Batch = view.container.extend({
+		init: function(config){
+			config = pubjs.conf(config, {
+				'grid': null,
+				'text': LANG('批量操作'),
+				'class': 'mr10 M-HighGridBatch fl'
+			});
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			this.append($('<i class="ml5 uk-icon-caret-down"/>'));
+			this.uiBind(this.getDOM(), 'click', 'eventButtonClick');
+		},
+		eventButtonClick: function(ev, dom){
+			if(!this.get('menu')){
+				var ids = this.getConfig('grid').getValue('selects');
+				this.fire('batchShow', ids,'afterFire');
+				// return false;
+			}else{
+				this.hide();
+			}
+			return false;
+		},
+		hide: function(){
+			this.$.menu.destroy();
+		},
+		afterFire: function(evt){
+			var data = evt.returnValue;
+
+			var el = this.getDOM();
+
+			// 创建下拉弹框
+			this.create('menu', menu.base, {
+				width: 84,
+				trigger: el,
+				options: data,
+				relate_elm: el,
+				algin: 'left-bottom'
+			});
+		},
+		// 响应菜单选中事件
+		onMenuSelected: function(ev){
+			var data = ev.param[0];
+			var ids = this.getConfig('grid').getValue('selects');
+			this.fire('batchSelect', [data, ids]);
+			return false;
+		}
+	});
+	exports.batch = Batch;
+
+	// 操作菜单
+	var Menu = view.container.extend({
+		init: function(config){
+			config = pubjs.conf(config, {
+				'grid': null,
+				'class': 'M-HighGridListSidebarMenu'
+			});
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			this.uiBind(this.getDOM(), 'click', 'eventButtonClick');
+		},
+		eventButtonClick: function(ev, dom){
+			if(!this.get('mod')){
+				var id = this.getDOM().parents('tr').attr('data-id');
+				this.fire('operateMenuShow', id, 'afterFire');
+				// return false;
+			}else{
+				this.hide();
+			}
+			return false;
+		},
+		hide: function(){
+			this.$.mod.destroy();
+		},
+		afterFire: function(evt){
+			var data = evt.returnValue;
+
+			var el = this.getDOM();
+
+			// 创建下拉弹框
+			this.create('menu', menu.base, {
+				width: 120,
+				trigger: el,
+				options: data,
+				relate_elm: el,
+				algin: 'left-bottom'
+			});
+		},
+		// 响应菜单选中事件
+		onMenuSelected: function(ev){
+			var op = ev.param[0];
+			var id = this.getDOM().parents('tr').attr('data-id');
+			var value = this.getConfig('grid').getData(id);
+			this.fire('operateMenuSelect', [op, value]);
+			return false;
+		}
+	});
+	exports.menu = Menu;
 });
