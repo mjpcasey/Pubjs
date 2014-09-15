@@ -44,7 +44,7 @@ define(function(require,exports) {
 				}
 				// 读取模块配置
 				if (!config && module_config){
-					config = util.prop(module_config, name);
+					config = util.clone(util.prop(module_config, name));
 				}
 			}
 			// 修正创建容器对象参数

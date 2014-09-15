@@ -23,6 +23,7 @@ define(function(require, exports){
 				"functional": null,		// 操作功能按钮
 				"static_date": null,	// 静态查询日期参数
 
+				"reqType": "ajax",		// 	默认通信方式使用ajax，可选websocket
 				"reqMethod":"get",		// 数据获取方式
 				'amount_data': null,	// 静态总计数据
 				'data': null,			// 静态数据
@@ -263,7 +264,8 @@ define(function(require, exports){
 				'order': cfg.order,
 				'key': cfg.sub_field,
 				'functional':cfg.functional,
-				'hasAddSub':cfg.hasAddSub
+				'hasAddSub':cfg.hasAddSub,
+				'hasMenu': cfg.hasMenu
 			}, cfg.list));
 
 			// 如果创建的tab模块, 获取当前显示的列信息, 更新列显示
@@ -495,7 +497,16 @@ define(function(require, exports){
 			if (self.$reqID){
 				pubjs.data.abort(self.$reqID);
 			}
-			self.$reqID = pubjs.data[cfg.reqMethod](cfg.url, param, self, 'onData', auto);
+
+			switch(cfg.reqType){
+				case 'ajax':
+					self.$reqID = pubjs.data[cfg.reqMethod](cfg.url, param, self, 'onData', auto);
+				break;
+				case 'websocket':
+					pubjs.mc.send(cfg.url, param, self.onData.bind(self));
+				break;
+			}
+
 			if (!auto){
 				self.showLoading();
 			}
