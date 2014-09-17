@@ -151,6 +151,7 @@ define(function(require, exports){
 	var Text = Base.extend({
 		init: function(config){
 			config = pubjs.conf(config, {
+				'value': '',
 				'type':'text',
 				'placeholder':null
 			});
@@ -594,7 +595,7 @@ define(function(require, exports){
 			// 储存所有item数据
 			self.$data = null;
 			self.$list = null;
-			self.$value = null;
+			self.$value = config.get('value');
 			self.$index = null;
 
 			self.Super('init', arguments);
