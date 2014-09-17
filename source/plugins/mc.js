@@ -3,6 +3,7 @@
  *   实现与服务器的WebSocket 消息发送与接收
  */
 define(function(require, exports, module){
+	var $ = require('jquery');
 	var app = null;
 	var host_regx = /^([a-z0-9]+):\/\/([^\/]+)[\/]?(.+)?$/i;
 
@@ -62,6 +63,53 @@ define(function(require, exports, module){
 					}
 					return this;
 				},
+				on: function(type, callback){
+					if (type == 'message'){
+						var cbs = this.$message_cbs;
+						if (cbs){
+							cbs.push(callback);
+						}else {
+							this.$message_cbs = [callback];
+						}
+					}
+					return this;
+				}
+			}
+		),
+		// 静态测试文件消息
+		"file": define_class(
+			function(cfg){
+				// 文件路径
+				this.$base = cfg.base;
+				this.$message_cbs = false;
+			},
+			{
+				isDown: function(){ return false; },
+				connect: function(){ return this; },
+				send: function(data){
+					// 拼凑静态文件路径
+					var url = this.$base + data.name + '.json';
+
+					var mid = data.mid;
+					var cbs = this.$message_cbs;
+					$.getJSON(url, function(data){
+						// 支持发送多数据 @todo 不太理解？
+						data = [data];
+
+						$.each(data, function(i, val){
+							// 拼凑dispatchMessage解析结构
+							var item = {
+								mid: mid,
+								data: val
+							}
+							for (var i=0; i<cbs.length; i++){
+								cbs[i](item);
+							}
+						})
+					})
+					return this;
+				},
+				// @todo 要修改不?
 				on: function(type, callback){
 					if (type == 'message'){
 						var cbs = this.$message_cbs;

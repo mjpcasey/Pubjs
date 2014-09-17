@@ -1490,10 +1490,6 @@ define(function(require, exports){
 					cell.attr('data-ctype', col.type);
 				}
 
-				// 操作菜单
-				if(col.type == 'menu'){
-					cell.attr('data-id', data.userId);
-				}
 				self.buildCell(cell, col, env,row);
 			}
 

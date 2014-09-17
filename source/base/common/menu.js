@@ -22,8 +22,8 @@ define(function( require, exports ){
 				'options': null,		// 自定义选项<数组形式>
 				'option_render': null, 	// 选项渲染函数
 				'url': null,	 		// 选项数据拉取地址
-				'key': 'Id',	 		// 选项 关键字 字段名
-				'name': 'Name',	 		// 选项 显示文字 字段名
+				'key': 'id',	 		// 选项 关键字 字段名
+				'name': 'name',	 		// 选项 显示文字 字段名
 				'skey': 'subs',	 		// 选项 子项关键字 字段名
 				'sub_dir': 'right', 	// 子菜单的展开方向<只能是right或left>
 				'param': null,  		// 拉取数据时的参数

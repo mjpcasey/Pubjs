@@ -49,6 +49,7 @@ define(function(require, exports){
 				'hasAmount': true,		// 是否有总计模块
 				'hasTab': true,			// 是否显示栏目切换栏
 				"hasSelect":false,		// 是否显示多选列
+				"hasMenu":true,			// 是否允许创建操作菜单
 				'default_sort': true,	// 默认栏目排序
 
 				'excelExport': null,	// 导出模块参数
