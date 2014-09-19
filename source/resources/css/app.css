@@ -1165,6 +1165,15 @@ ul li {
   width: 10px;
   display: inline-block;
 }
+.M-tableListMenu {
+  background-image: url("../images/icons.png?0919");
+  background-repeat: no-repeat;
+  background-position: -104px -106px;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  display: inline-block;
+}
 .M-tableList .functionalHover .M-tableListFunctional,
 .M-tableList .functionalHover .M-tableListOtherFunc {
   z-index: 12;
@@ -1894,4 +1903,320 @@ ul li {
   z-index: 2;
   position: absolute;
   margin-top: -45px;
+}
+.border-box {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.M-Menu {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1px solid #D4D0D0;
+  border-radius: 2px;
+  box-shadow: 2px 3px 9px #CCC;
+  background: #FFF;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.M-MenuOptions {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.M-MenuOptions .option-line {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  height: 0;
+  overflow: hidden;
+  border-bottom: 1px solid #EEE;
+}
+.M-MenuOptions .more {
+  position: absolute;
+  display: block;
+  right: 10px;
+  top: 0;
+  width: 10px;
+  height: 100%;
+  background: url(../images/menu/more1.png) no-repeat center center;
+  z-index: 2;
+}
+.M-MenuOptions .option {
+  position: relative;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.M-MenuOptions .option i {
+  display: inline-block;
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+.M-MenuOptions .option .icon-icon1 {
+  background: url(../images/menu/icon1.png) no-repeat center center;
+}
+.M-MenuOptions .option .icon-icon2 {
+  background: url(../images/menu/icon2.png) no-repeat center center;
+}
+.M-MenuOptions .option .icon-icon3 {
+  background: url(../images/menu/icon3.png) no-repeat center center;
+}
+.M-MenuOptions .option a {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  padding-left: 10px;
+  width: 100%;
+  height: 100%;
+  color: #444;
+  z-index: 2;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.M-MenuOptions .option a:hover {
+  color: #444;
+}
+.M-MenuOptions .option:hover,
+.M-MenuOptions .act {
+  background: #F0F0F0;
+}
+.M-MenuSearch {
+  position: relative;
+  height: 30px;
+  padding: 5px;
+  z-index: 10;
+  background: #FFF;
+}
+.M-MenuSearchInput {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+  display: block;
+  width: 95%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 5px 25px 5px 5px;
+  border: 1px solid #DDD;
+  outline: none;
+  border-radius: 2px;
+}
+.M-MenuSearchInput:focus {
+  border-color: #679dff;
+}
+.M-MenuSearch em {
+  display: block;
+  width: 20px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 10px;
+  cursor: pointer;
+}
+.M-MenuSearchClearWord {
+  background: url(../images/menu/clearsearch.png) no-repeat center center;
+}
+.M-MenuSearchBtnClick {
+  background: url(../images/menu/btnsearch.png) no-repeat center center;
+}
+.M-tagLabels {
+  position: relative;
+}
+.M-tagLabelsWrapper {
+  font-size: 14px;
+  margin: 0 0 15px;
+  padding: 10px 0;
+  min-height: 1.35em;
+  background: #F8F8F8;
+  border-radius: 5px;
+}
+.M-tagLabelsWrapper .M-tagLabelsSimpleContainer {
+  margin: 0px;
+}
+.M-tagLabels .M-commonInput input {
+  min-width: 300px;
+  padding: 3px;
+}
+.M-tagLabels input {
+  margin: 0 0 10px;
+}
+.M-tagLabels p {
+  margin: 0 0 5px;
+}
+.M-tagLabels .tips {
+  position: absolute;
+  top: 29px;
+  left: 294px;
+  color: #aaa;
+}
+.M-tagLabels .spLabelTitle {
+  font-weight: bold;
+}
+.M-tagLabelsContainer,
+.M-tagLabelsSimpleContainer {
+  font-size: 12px;
+  margin: 0 0 15px;
+  padding: 10px 20px;
+  min-height: 1.35em;
+  background: #f8f8f8;
+  border-radius: 5px;
+}
+.M-tagLabelsContainer .spLabelTitle,
+.M-tagLabelsSimpleContainer .spLabelTitle {
+  font-weight: bold;
+  width: 60px;
+  text-align: right;
+  display: inline-block;
+}
+.M-tagLabelsContainer .wraper span,
+.M-tagLabelsSimpleContainer .wraper span {
+  margin-bottom: 5px;
+}
+.M-tagLabelsContainer span,
+.M-tagLabelsSimpleContainer span {
+  cursor: pointer;
+  margin: 0 5px 8px 0;
+  padding: 0 5px;
+  display: inline-block;
+}
+.M-tagLabelsContainer span:hover,
+.M-tagLabelsSimpleContainer span:hover {
+  color: #fff;
+  background-color: #2FAEEB;
+}
+.M-tagLabelsContainer span:hover em,
+.M-tagLabelsSimpleContainer span:hover em {
+  color: #fff;
+}
+.M-tagLabelsContainer em,
+.M-tagLabelsSimpleContainer em {
+  font-weight: normal;
+  font-size: 10px;
+  color: #BFBFBF;
+  margin: 0 0 0 5px;
+}
+.M-tagLabelsContainer .M-tagLabelsloading,
+.M-tagLabelsSimpleContainer .M-tagLabelsloading {
+  min-height: 1.35em;
+}
+.M-tagLabelsContainer .act,
+.M-tagLabelsSimpleContainer .act {
+  color: #FFF;
+  background-color: #2FAEEB;
+}
+.M-tagLabelsContainer .act em,
+.M-tagLabelsSimpleContainer .act em {
+  color: #FFF;
+}
+.M-tagLabelsContainer .theLabelRow,
+.M-tagLabelsSimpleContainer .theLabelRow {
+  font-size: 12px;
+  padding: 8px 20px;
+  min-height: 1.35em;
+  background: #f8f8f8;
+  border-radius: 5px;
+  position: relative;
+}
+.M-tagLabelsloading {
+  background: url(images/loading.gif) 0 2px no-repeat;
+}
+.M-tagLabelsLabel {
+  font-size: 14px;
+  width: 70px;
+  text-align: right;
+  margin-right: 10px;
+  display: inline-block;
+}
+.M-tagLabelsInner {
+  padding: 5px;
+  margin-left: 72px;
+}
+.M-tagLabelsInner span {
+  display: inline-block;
+  padding: 2px 10px;
+  margin: 2px 3px;
+  cursor: pointer;
+  background: #E7E7E7;
+}
+.M-tagLabelsInner span em {
+  display: none;
+}
+.M-tagLabelsInner .act {
+  color: #fff;
+  background: #50B9EB;
+}
+.M-tagLabelsMultiContainer {
+  font-size: 14px;
+  margin: 0 0 15px;
+  padding: 10px 20px;
+  min-height: 1.35em;
+  background: #f8f8f8;
+  border-radius: 5px;
+}
+.M-tagLabelsMultiContainer .theLabelRow {
+  margin: 5px 0;
+}
+.M-tagLabelsMultiContainer .theLabelRow span {
+  cursor: pointer;
+  margin: 0 5px 8px 0;
+  padding: 0 5px;
+  display: inline-block;
+}
+.M-tagLabelsMultiContainer .theLabelRow span:hover {
+  color: #fff;
+  background-color: #2FAEEB;
+}
+.M-tagLabelsMultiContainer .theLabelRow span:hover em {
+  color: #fff;
+}
+.M-tagLabelsMultiContainer .theLabelRow em {
+  font-weight: normal;
+  font-size: 10px;
+  color: #BFBFBF;
+  margin: 0 0 0 5px;
+}
+.M-tagLabelsMultiContainer .M-tagLabelsloading {
+  min-height: 1.35em;
+}
+.M-tagLabelsMultiContainer .act {
+  color: #50B9EB;
+}
+.M-tagLabelsListTypeBox {
+  min-height: 1.35em;
+}
+.M-tagLabels-allowCollapse {
+  position: relative;
+}
+.M-tagLabels-allowCollapse .wraper {
+  min-height: 1.35em;
+  overflow: hidden;
+  margin: -1.35em 2em 0 5.5em;
+}
+.M-tagLabels-allowCollapse .ctrlBnt {
+  right: 12px;
+  top: 12px;
+  display: none;
+  cursor: pointer;
+  position: absolute;
+  color: #1AA1E1;
+}
+.M-tagLabels-noCollapse div {
+  margin: -1.35em 0 0 3.5em;
+  min-height: 1.35em;
+}
+.M-tagLabels-noCollapse .ctrlBnt {
+  display: none;
+  color: #1AA1E1;
 }
