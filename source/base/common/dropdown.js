@@ -28,6 +28,7 @@ define(function(require, exports){
 				'data': null, // 选中的选项
 				'key': '_id', // 选项记录关键字字段名
 				'name': 'Name', // 选项记录显示字段名
+				'reqType': 'ajax',
 				'url': null,  // 列表数据拉取地址, 留空不拉取
 				'param': null, // 拉取数据时请求的参数
 				'auto_load': true, // 初始化时自动拉取数据
@@ -158,7 +159,14 @@ define(function(require, exports){
 				c.param = util.extend(c.param, param);
 			}
 			//todo: 加入加载状态提示
-			pubjs.data.get(c.url, c.param, this);
+			switch(c.reqType){
+				case 'ajax':
+					pubjs.data.get(c.url, c.param, this);
+				break;
+				case 'websocket':
+					pubjs.mc.send(c.url, c.param, this.onData.bind(this));
+				break;
+			}
 		},
 		// 拉取数据回调
 		onData: function(err, data){
@@ -168,15 +176,20 @@ define(function(require, exports){
 				pubjs.error(err.message);
 				return false;
 			}
-			self.setData(self.$origin, data.items);
-			// 数据加载完成
-			self.fire(
-				"dropdownDataLoaded"
-				,{
-					"data":self.$options
-					,"now":self.$options[self.$index]
-				}
-			);
+			if(data && data.items){
+				self.setData(self.$origin, data.items);
+
+				// 数据加载完成
+				self.fire(
+					"dropdownDataLoaded"
+					,{
+						"data":self.$options
+						,"now":self.$options[self.$index]
+					}
+				);
+			}else{
+				pubjs.error(LANG('无下拉框数据'));
+			}
 		},
 		/**
 		 * 显示选中的选项信息
