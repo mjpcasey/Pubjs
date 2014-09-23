@@ -96,7 +96,7 @@ define(function(require, exports, module){
 						// 支持发送多数据 @todo 不太理解？
 						data = [data];
 
-						$.each(data, function(i, val){
+						$.each(data, function(idx, val){
 							// 拼凑dispatchMessage解析结构
 							var item = {
 								mid: mid,

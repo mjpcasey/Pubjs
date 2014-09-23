@@ -1687,7 +1687,6 @@ define(function(require, exports){
 
 					// 更新Cookie
 					STORE.setTime(begin, end);
-					update = true;
 				}
 			}
 		},
