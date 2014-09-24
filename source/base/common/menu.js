@@ -14,24 +14,24 @@ define(function( require, exports ){
 				'width': 160,			// 选项宽度
 				'height': 30,			// 选项高度
 				'scroll_height': 0,		// 有滚动条时整个菜单的高度
-				'space': 5,  			// 弹出菜单与显示框的间距
-				'line_space': 5,  		// 分割线与上下的间距
+				'space': 5,				// 弹出菜单与显示框的间距
+				'line_space': 5,		// 分割线与上下的间距
 				'pageX': 0,				// 自定义菜单横坐标
 				'pageY': 0,				// 自定义菜单纵坐标
 
 				'options': null,		// 自定义选项<数组形式>
-				'option_render': null, 	// 选项渲染函数
-				'url': null,	 		// 选项数据拉取地址
-				'key': 'id',	 		// 选项 关键字 字段名
-				'name': 'name',	 		// 选项 显示文字 字段名
-				'skey': 'subs',	 		// 选项 子项关键字 字段名
-				'sub_dir': 'right', 	// 子菜单的展开方向<只能是right或left>
-				'param': null,  		// 拉取数据时的参数
-				'auto_load': true,  	// 自动拉取数据
-				'search': false,    	// 是否含有搜索框,如果有设置为keyup或者button
-				'callback': null,   	// 选中数据后的回调函数
+				'option_render': null,	// 选项渲染函数
+				'url': null,			// 选项数据拉取地址
+				'key': 'id',			// 选项 关键字 字段名
+				'name': 'name',			// 选项 显示文字 字段名
+				'skey': 'subs',			// 选项 子项关键字 字段名
+				'sub_dir': 'right',		// 子菜单的展开方向<只能是right或left>
+				'param': null,			// 拉取数据时的参数
+				'auto_load': true,		// 自动拉取数据
+				'search': false,		// 是否含有搜索框,如果有设置为keyup或者button
+				'callback': null,		// 选中数据后的回调函数
 				'relate_elm': null,		// 关联元素
-				'z': 1000,				// 菜单zindex
+				'z': 1000				// 菜单zindex
 			});
 
 			this.$subArr = [];			// 存放下一级子菜单
@@ -435,7 +435,6 @@ define(function( require, exports ){
 		 */
 		eventItemMouseEnter: function( evt, elm ) {
 			var self = this;
-			var C = self.getConfig();
 			var sid = $(elm).attr('sub-id');
 			var sub = self.get('subMenu');
 			if( evt.type == 'mouseenter' ) {
@@ -536,8 +535,6 @@ define(function( require, exports ){
 			evt.preventDefault();
 			evt.stopPropagation();
 			var self = this;
-			var C = self.getConfig();
-			var key = C.key, name = C.name;
 			var elma = $(elm).find('a');
 			var fid = {
 				key: elma.attr('data-id'),
@@ -552,7 +549,6 @@ define(function( require, exports ){
 		onMenuSelected: function( ev ) {
 			var self = this;
 			var C = self.getConfig();
-			var key = C.key, name = C.name;
 			// 如果是子模块发的消息
 			if( ev.from != self ) {
 				ev.param.unshift({
