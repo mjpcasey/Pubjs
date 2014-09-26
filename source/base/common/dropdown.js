@@ -158,11 +158,8 @@ define(function(require, exports){
 			return this;
 		},
 		// 加载显示数据
-		load: function(param){
+		load: function(){
 			var c = this.getConfig();
-			if (param){
-				c.param = util.extend(c.param, param);
-			}
 			//todo: 加入加载状态提示
 			switch(c.reqType){
 				case 'ajax':
@@ -172,6 +169,15 @@ define(function(require, exports){
 					pubjs.mc.send(c.url, c.param, this.onData.bind(this));
 				break;
 			}
+		},
+		reload: function(url, param){
+			if(url){
+				this.setConfig('url', url);
+			}
+			if(param){
+				util.extend(this.getConfig('param'), param);
+			}
+			this.load();
 		},
 		// 拉取数据回调
 		onData: function(err, data){
