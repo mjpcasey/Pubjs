@@ -152,6 +152,11 @@ define(function(require, exports){
 				}
 			}
 		},
+		setParam: function(param){
+			var c = this.getConfig();
+			this.setConfig('param', util.extend(c.param, param));
+			return this;
+		},
 		// 加载显示数据
 		load: function(param){
 			var c = this.getConfig();

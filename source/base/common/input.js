@@ -693,6 +693,8 @@ define(function(require, exports){
 			if (item){
 				this.$value = item[self.getConfig('key')];
 			}
+			// 冒泡单选框变化事件
+			this.fire('radioChange', this.$value);
 		},
 		// 设置加载参数
 		setParam: function(param){
