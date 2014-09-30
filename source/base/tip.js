@@ -421,7 +421,6 @@ define(function(require, exports){
 				el.find('input[type="text"]').eq(0).focus();
 			}
 		}
-
 	})
 	exports.tooltip = Tooltip;
 });

@@ -273,23 +273,27 @@
 	}
 
 	&Pager {
+		font-size: 13px;
+
 		.layout-row {
 			margin: 0;
 		}
 
 		.layout-col {
 			padding: 0;
-			display: inline;
+			display: inline-block;
 			width: auto;
 			float: none;
+			height: 26px;
 		}
 
 		.uk-button {
-			min-height: 25px;
-			min-width: 25px;
-			line-height: 25px;
-			padding: 0 5px;
+			min-height: 26px;
+			min-width: 26px;
+			line-height: 26px;
+			padding: 0 6px;
 			margin-left: 5px;
+			height: 26px !important;
 		}
 
 		&Box, &Info, &GotoBox {
@@ -300,13 +304,13 @@
 
 		&Goto {
 			width: 40px;
-			height: 25px;
+			height: 26px !important;
+
 		}
 
 		&Active, &Active:hover, &Active:focus {
-			background: #00A8E6;
+			background: #535b5e;
 			color: #fff;
-			font-weight: bold;
 			cursor: default;
 		}
 	}
@@ -324,6 +328,9 @@
 
 		.uk-button {
 			margin-left: 10px;
+		}
+		&Do {
+			background: 'uk-icon-search'
 		}
 	}
 

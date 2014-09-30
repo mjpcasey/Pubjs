@@ -87,3 +87,6 @@ z[10,10,0,0]	(act)	{btnClose}			btnClose_act.png
 
 # 操作图标
 z[14,14,0,0]			{operateMenu}		operateMenu.png
+
+#新版按钮
+z[50,50,0,0]			{closeDialog}		close_dialog.png

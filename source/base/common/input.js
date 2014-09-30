@@ -125,7 +125,8 @@ define(function(require, exports){
 		init: function(config){
 			config = pubjs.conf(config, {
 				'tag': 'button',
-				'icon': null
+				'icon': null,
+				'width': 100
 			});
 
 			this.Super('init', arguments);

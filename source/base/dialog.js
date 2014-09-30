@@ -29,14 +29,15 @@ define(function(require, exports){
 				// 允许显示的按钮
 				// 默认只有确定与取消两个按钮。
 				// 更多的按钮需要在buttonConfig中添加相应的设置
-				,"buttons":["ok","cancel"]
+				,"buttons":["cancel", "ok"]
 				,"buttonConfig":{
 					// 确定按钮样式
 					"ok": {
 						"type":"button"
 						,"layout":null
 						,"value":LANG("完成")
-						,"class":"uk-button-primary"
+						,"class":"uk-button-confirm"
+						,"width": 100
 						,"attr":{"data-action":"onOk"}
 						,"events":"click"
 					}
@@ -45,7 +46,19 @@ define(function(require, exports){
 						"type":"button"
 						,"layout":null
 						,"value":LANG("取消")
+						,"class":"uk-button-def-border"
+						,"width": 100
 						,"attr":{"data-action":"onCancel"}
+						,"events":"click"
+					}
+					// 其他按钮的样式
+					,"other": {
+						"type":"button"
+						,"layout":null
+						,"value":LANG("其他")
+						,"class":"uk-button-def-border"
+						,"width": 100
+						,"attr":{"data-action":"onOther"}
 						,"events":"click"
 					}
 				}
@@ -425,21 +438,24 @@ define(function(require, exports){
 	});
 	exports.base = Base;
 
-
+	// 请使用pubjs.alert(html, callback, alertType);
 	var Alert = Base.extend({
 		init: function(config, parent){
 			config = pubjs.conf(config, {
-				'width': 400,
+				'width': 330,
 				'data': null,
 				'target': $(BODY_ELEMENT),
-				"buttons": ["ok",'cancel'],
+				"buttons": ['cancel', "ok"],
 				"buttonConfig":{
-					"ok": {"value": LANG("确定"), "class": "uk-button-success"},
-					"cancel": {"class": "uk-button-danger"}
+					"ok": {"value": LANG("确定"), "class": "uk-button-confirm"},
+					"cancel": {"class": "uk-button-def-border"}
 				},
 				"class": 'M-dialogAlert',
 				"showClose": false
 			});
+
+			// 事件时间戳
+			this.$timeStamp = 0;
 
 			this.Super('init', arguments);
 		},
@@ -472,10 +488,10 @@ define(function(require, exports){
 
 			if (data.type == 'confirm'){
 				self.toggleButton('ok,cancel')
-					.setTitle(LANG('确认'));
+					.setTitle(LANG('确认')).bindEvent(true);
 			}else {
 				self.toggleButton('ok')
-					.setTitle(LANG('提示'));
+					.setTitle(LANG('提示')).bindEvent();
 			}
 			self.update();
 			return self;
@@ -503,7 +519,171 @@ define(function(require, exports){
 				self.hide();
 			}
 			return false;
+		},
+		hide: function(){
+			var self = this;
+			self.Super('hide');
+
+			self.bindEvent(true);
+			return self;
+		},
+		bindEvent: function(unbind){
+			var self = this;
+			if(unbind){
+				$(document).unbind('keypress.alert');
+
+				if(self.$mask){
+					self.uiUnbind(self.$mask, 'mouseup');
+				}
+			}else{
+				var data = self.getConfig().data;
+				if(data.type == 'alert'){
+					// 点击回车键隐藏弹框
+					$(document).bind('keypress.alert',function(e){
+						if(e.keyCode == 13){
+							if (!data.next.call(self)){
+								self.hide();
+							}
+						}
+						return false;
+					});
+
+					// 点击空白处隐藏弹框
+					if(self.$mask){
+						// 鼠标点击弹框内
+						self.uiBind(self.el, 'mouseup', function(e){
+							self.$timeStamp = e.timeStamp;
+						});
+						// 鼠标点击蒙板上
+						self.uiBind(self.$mask, 'mouseup', function(e){
+							if(self.$timeStamp != e.timeStamp){
+								// 隐藏
+								if (!data.next.call(self)){
+									self.hide();
+								}
+							}
+						});
+					}
+				}
+			}
 		}
 	});
 	exports.alert = Alert;
+
+	// 请使用pubjs.notify(message, title, type); type: notify,success,error,warn
+	var Notify = view.container.extend({
+		init: function(config, parent){
+			config = pubjs.conf(config, {
+				'class': 'M-dialogNotify',
+				'type': 'notify',
+				'target': pubjs.DEFAULT_POPUP_CONTAINER,
+				'time': 5000,
+				'offset': 0,
+				'data': null,
+				'vertical': 'top' // 垂直位置 top middle
+			});
+
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			var self = this;
+			var el = self.getDOM();
+			var doms = self.$doms = {};
+			doms.title = $('<div class="M-dialogNotifyTitle"/>').appendTo(el);
+			doms.icon = $('<div class="M-dialogNotifyIcon"/>').appendTo(el);
+			doms.message = $('<div class="M-dialogNotifyMessage"/>').appendTo(el);
+
+			this.uiBind(el, 'click', 'onNext');
+
+			return self;
+		},
+		show: function(){
+			var self = this;
+			var el = self.getDOM();
+			var c = self.getConfig();
+
+			// if (self.$tid){
+			// 	clearTimeout(self.$tid);
+			// }
+			el.show();
+
+			var w = el.outerWidth(),
+				h = el.outerHeight(),
+				d = document,
+				b = (d.compatMode === "CSS1Compat"?d.documentElement:d.body),
+				ch = b.clientHeight,
+				cw = b.clientWidth,
+				st = Math.max(d.documentElement.scrollTop,d.body.scrollTop),
+				sl = Math.max(d.documentElement.scrollLeft,d.body.scrollLeft);
+
+			var topMap = {
+				'top': 60,
+				'middle': parseInt(st + (ch - h) / 2, 10)
+			};
+			el.css({
+				'top': topMap[c.vertical],
+				'left': parseInt(sl + (cw - w) / 2, 10),
+				'z-index': maxZIndex+100
+			});
+
+			//self.$tid = self.setTimeout('onNext', self.getConfig().time);
+		},
+		hide: function(){
+			this.getDOM().fadeOut(500);
+			return this;
+		},
+		onNext: function(){
+			var self = this;
+			var data = self.getConfig('data');
+			if (data && !data.next.call(self)){
+				self.hide();
+			}
+			return false;
+		},
+		setData: function(data){
+			var self = this;
+
+			if (self.$tid){
+				clearTimeout(self.$tid);
+			}
+
+			var doms = self.$doms;
+			var el = self.getDOM();
+			var c = self.getConfig();
+			c.data = data;
+			if (util.isString(data.message)){
+				doms.message.text(data.message);
+			}else {
+				doms.message.empty().append(data.message);
+			}
+			if (data.title){
+				if (util.isString(data.title)){
+					doms.title.text(data.title);
+				}else {
+					doms.title.empty().append(data.title);
+				}
+			}
+			doms.title.toggle(!!data.title);
+			var type = self.$type = data.type || self.$type;
+			switch (type){
+				case 'notify':
+					el.removeClass('success error warn').addClass('notify');
+					break;
+				case 'success':
+					el.removeClass('notify error warn').addClass('success');
+					break;
+				case 'error':
+					el.removeClass('notify success warn').addClass('error');
+					break;
+				case 'warn':
+					el.removeClass('notify success error').addClass('warn');
+					break;
+			}
+
+			self.$tid = self.setTimeout('onNext', self.getConfig().time);
+
+			return self;
+		}
+	});
+	exports.notify = Notify;
 });
