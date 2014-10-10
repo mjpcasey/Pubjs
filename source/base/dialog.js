@@ -451,7 +451,8 @@ define(function(require, exports){
 					"cancel": {"class": "uk-button-def-border"}
 				},
 				"class": 'M-dialogAlert',
-				"showClose": false
+				"showClose": false,
+				"drag": false
 			});
 
 			// 事件时间戳

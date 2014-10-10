@@ -45,7 +45,10 @@ define(function(require, exports){
 				appCore.createAsync(
 					'SYSTEM_ALERT',
 					'@base/dialog.alert',
-					{'data': c}
+					{'data': c},
+					function(win){
+						win.setData(c).show();
+					}
 				);
 			}else {
 				win.setData(c).show();
