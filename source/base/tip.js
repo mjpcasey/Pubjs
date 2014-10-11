@@ -206,8 +206,8 @@ define(function(require, exports){
 			var self = this;
 			if (self.$visible){
 				var el = self.getDOM();
-				// 如果超出浏览器底部范围，重新更改位置
-				if(el.height()+self.getPos().top > $(window).height()){
+				// 如果超出浏览器底部范围同时上方有足够的高度展示，将弹层显示在目标点的上面
+				if( (el.height()+self.getPos().top > $(window).height()) && (self.getPos().top > el.height()) ){
 					self.css({
 						left: self.getPos().left,
 						top: self.getPos().top-el.height()
@@ -421,7 +421,6 @@ define(function(require, exports){
 				el.find('input[type="text"]').eq(0).focus();
 			}
 		}
-
 	})
 	exports.tooltip = Tooltip;
 });

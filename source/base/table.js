@@ -1037,6 +1037,7 @@ define(function(require, exports){
 				'loadingText': LANG('数据加载中, 请稍后..'),
 				"functional":null,
 				"disable_func":false,
+				'hasMenu': false, // 是否有操作菜单
 				// {1}:text,{2}:main icon class,{3}:icon class,{4}:functional type,{5}:other attr.
 				"functionalElTpl":'<a title={1} {4} {5}><em class="{2} {3}"></em>{1}</a>',
 				'highlightClassName': "M-tableListRowHighlight",
@@ -1175,6 +1176,11 @@ define(function(require, exports){
 				self.uiProxy(self.table, '.M-tableListClickable', 'click', 'eventClickRow');
 			}
 
+			// 操作菜单事件监听
+			if (cfg.hasMenu){
+				self.uiProxy(self.table, 'td[data-ctype="menu"]', 'click', 'eventClickMenu');
+			}
+
 			// 设置预设数据
 			self.setData(cfg.data);
 		},
@@ -1213,6 +1219,14 @@ define(function(require, exports){
 				// 创建选中状态存储
 				self.$selectedRowId[name] = [];
 			}
+
+			// 操作菜单
+			if(col.type === 'menu'){
+				if (!col.html){
+					col.html = '<div class="M-tableListMenu"/>';
+				}
+			}
+
 			// 扩展默认列属性
 			col = util.extend(
 				{
@@ -1253,6 +1267,7 @@ define(function(require, exports){
 					case 'id':
 					case 'op':
 					case 'select':
+					case 'menu':
 						col.align = 'center';
 					break;
 					case 'index':
@@ -1474,6 +1489,7 @@ define(function(require, exports){
 				if (col.type != 'col'){
 					cell.attr('data-ctype', col.type);
 				}
+
 				self.buildCell(cell, col, env,row);
 			}
 
@@ -2828,6 +2844,11 @@ define(function(require, exports){
 				val = self.findIndex(val,field);
 			}
 			return self.rows[val] || null;
+		},
+		// 操作菜单点击事件
+		eventClickMenu: function(ev, dom){
+			this.fire('clickMenu', dom);
+			return false;
 		}
 	});
 	exports.list = List;

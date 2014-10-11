@@ -44,7 +44,7 @@ define(function(require,exports) {
 				}
 				// 读取模块配置
 				if (!config && module_config){
-					config = util.prop(module_config, name);
+					config = util.clone(util.prop(module_config, name));
 				}
 			}
 			// 修正创建容器对象参数
@@ -456,6 +456,7 @@ define(function(require,exports) {
 		},
 		setLayout: function(layout){
 			var self = this;
+			var c = self.getConfig();
 			self.$el = layout;
 			self.$ready = 'ready';
 			if (self.afterBuild){
@@ -467,6 +468,25 @@ define(function(require,exports) {
 			while (cs.length){
 				param = cs.shift();
 				param.fn.apply(self, param.args);
+			}
+			// 使用mvvm，扫描绑定dom
+			if (pubjs.MVVM ) {
+				if ( c.view_model ) {
+					this.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+						for (var i in c.view_model){
+							if (c.view_model.hasOwnProperty(i)){
+								vm[i] = c.view_model[i];
+							}
+						}
+					});
+					self.$el.attr('ms-controller', self._.uri);
+					//pubjs.MVVM.scan(self.$el[0]);
+				}
+
+				$('body').attr('ms-controller', pubjs.MVVM.grobalVMDefineName ); //是否有更好的地方改body属性？
+				//pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
+
+				pubjs.MVVM.scan(); //上面分开扫描有点问题，先全部扫描
 			}
 		},
 		getLayout: function(){

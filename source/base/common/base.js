@@ -575,7 +575,7 @@ define(function(require, exports){
 					con = doms.jumperBox = self.getContainer('jump');
 					doms.jumper_page = $('<input type="text" />').addClass(cls['goto']).appendTo(con);
 					doms.jumper = $('<button data-type="jump" />')
-						.addClass(cls.page + ' uk-button uk-button-primary')
+						.addClass(cls.page + ' uk-button uk-button-def')
 						.text(cfg.subText.jump)
 						.appendTo(con);
 					self.uiBind(doms.jumper_page, 'keypress', 'eventPageEnter');

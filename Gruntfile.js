@@ -88,25 +88,24 @@ module.exports = function(grunt) {
 		less: {
 			dev: {
 				files:{
-					'resources/css/app_v3.css': 'resources/less/app.less'
+					'source/resources/css/app.css': 'source/resources/less/app.less'
 				}
 			},
 			old: {
 				files:{
-					'resources/css/app_v2.css': 'resources/css/app_v2.less',
-					'resources/css/app.css': 'resources/css/app.less'
+					'source/resources/css/app.css': 'source/resources/css/app.less'
 				}
 			},
 			product:{
 				files:{
-					'release/resources/css/app_v3.css': 'resources/less/app.less'
+					'release/source/resources/css/app.css': 'source/resources/less/app.less'
 				},
 				options:{
 					yuicompress: true
 				}
 			},
 			options: {
-				paths: ['.', 'resources/less']
+				paths: ['.', 'source/resources/less']
 			}
 		},
 		watch: {
@@ -120,14 +119,14 @@ module.exports = function(grunt) {
 			},
 			less: {
 				files: [
-					'resources/less/**/*.less',
-					'resources/less/*/*.less'
+					'source/resources/less/**/*.less',
+					'source/resources/less/*/*.less'
 				],
 				tasks: ['less:dev']
 			},
 			icons: {
 				files: [
-					'resources/icons/list.txt'
+					'source/resources/icons/list.txt'
 				],
 				tasks:['shell:icon']
 			}
@@ -149,7 +148,7 @@ module.exports = function(grunt) {
 					'controller/**/*.js'
 				],
 				dest: function(src){
-					if (src.indexOf('/libs/') != -1){
+					if (src == 'pubjs/externs.js' || src.indexOf('/libs/') != -1){
 						return null;
 					}
 					return 'release/' + src;
@@ -174,16 +173,16 @@ module.exports = function(grunt) {
 						filter: 'isFile'
 					},
 					{src: ['i18n/**', 'tpl/**'], dest: 'release/'},
-					{src: ['resources/**'], dest: 'release/', filter: excludeRES}
+					{src: ['source/resources/**'], dest: 'release/', filter: excludeRES}
 				]
 			}
 		},
 		shell: {
 			icon: {
 				command: '<%= shell.options.cmd %> S:<%= shell.icon.source %> O:<%= shell.icon.output %> CF:<%= shell.icon.style %> CU:0',
-				source: 'resources/icons',
-				output: 'resources/images/icons.png',
-				style: 'resources/less/icons.less'
+				source: 'source/resources/icons',
+				output: 'source/resources/images/icons.png',
+				style: 'source/resources/less/icons.less'
 			},
 			options: {
 				cmd: 'pip.cmd',

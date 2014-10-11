@@ -125,7 +125,8 @@ define(function(require, exports){
 		init: function(config){
 			config = pubjs.conf(config, {
 				'tag': 'button',
-				'icon': null
+				'icon': null,
+				'width': 100
 			});
 
 			this.Super('init', arguments);
@@ -151,6 +152,7 @@ define(function(require, exports){
 	var Text = Base.extend({
 		init: function(config){
 			config = pubjs.conf(config, {
+				'value': '',
 				'type':'text',
 				'placeholder':null
 			});
@@ -594,7 +596,7 @@ define(function(require, exports){
 			// 储存所有item数据
 			self.$data = null;
 			self.$list = null;
-			self.$value = null;
+			self.$value = config.get('value');
 			self.$index = null;
 
 			self.Super('init', arguments);
@@ -692,6 +694,8 @@ define(function(require, exports){
 			if (item){
 				this.$value = item[self.getConfig('key')];
 			}
+			// 冒泡单选框变化事件
+			this.fire('radioChange', this.$value);
 		},
 		// 设置加载参数
 		setParam: function(param){
