@@ -1,23 +1,31 @@
-body {
-	font-family: @varFontBase;
-	font-size: @varFontSize;
-	line-height: @varLineHeight;
-	color: @varColorText;
-	background: @varBackgroundLoading;
-}
-
-ul li{
+ul li {
 	list-style: none;
 }
 
-label {
-	input {
-		margin: -3px 5px 0 10px;
-		vertical-align: -2px;
-	}
+label input {
+	margin: -3px 5px 0 10px;
+	vertical-align: -2px;
 }
 
 //全局内边距和外边距
+.pd30 {padding:30px !important;}
+.pb30 {padding-bottom:30px !important;}
+.pt30 {padding-top:30px !important;}
+.pl30 {padding-left:30px !important;}
+.pr30 {padding-right:30px !important;}
+
+.pd20 {padding:20px !important;}
+.pb20 {padding-bottom:20px !important;}
+.pt20 {padding-top:20px !important;}
+.pl20 {padding-left:20px !important;}
+.pr20 {padding-right:20px !important;}
+
+.pd15 {padding:15px !important;}
+.pb15 {padding-bottom:15px !important;}
+.pt15 {padding-top:15px !important;}
+.pl15 {padding-left:15px !important;}
+.pr15 {padding-right:15px !important;}
+
 .pd10 {padding:10px !important;}
 .pb10 {padding-bottom:10px !important;}
 .pt10 {padding-top:10px !important;}
@@ -29,6 +37,12 @@ label {
 .pt5 {padding-top:5px !important;}
 .pl5 {padding-left:5px !important;}
 .pr5 {padding-right:5px !important;}
+
+//上右下左距离为30px，例如模块间边距
+.ml30 {margin-left:30px !important;}
+.mr30 {margin-right:30px !important;}
+.mb30 {margin-bottom:30px !important;}
+.mt30 {margin-top:30px !important;}
 
 //上右下左距离为20px，例如模块间边距
 .ml20 {margin-left:20px !important;}
@@ -108,30 +122,34 @@ label {
 	overflow: hidden;
 }
 
+.vendor(@property, @value) {
+    -webkit-@{property}: @value;
+     -khtml-@{property}: @value;
+       -moz-@{property}: @value;
+            @{property}: @value;
+}
 
 // 圆角边框
 .borderRadius (@radius: 3px) {
-	border-radius: @radius;
-	-moz-border-radius: @radius;
-	-webkit-border-radius: @radius;
+	.vendor(border-radius, @radius);
 }
 
 // 一般按钮的box-shadow
 .shadowBox () {
-	box-shadow: ~"0 1px 3px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.5)";
-	-moz-box-shadow: ~"0 1px 3px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.5)";
-	-webkit-box-shadow: ~"0 1px 3px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.5)";
+	.vendor(box-shadow, ~"0 1px 3px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.5)");
 }
 
 //input,select,textarea的box-shadow,简称"ist"...
 .shadowInset () {
-	box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
-	-moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
-	-webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+	.vendor(box-shadow, inset 0 1px 3px rgba(0, 0, 0, 0.06));
+}
+
+.borderBox {
+	.vendor(box-sizing, border-box);
 }
 
 // 透明度设置
-.opacity(@opacity) {
+.opacity (@opacity) {
 	opacity: @opacity / 100;
 	filter: ~"alpha(opacity=@{opacity})";
 }
