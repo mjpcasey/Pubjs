@@ -90,3 +90,6 @@ z[14,14,0,0]			{operateMenu}		operateMenu.png
 
 #新版按钮
 z[50,50,0,0]			{closeDialog}		close_dialog.png
+
+# 搜索图标
+z[16,16,0,0]			{iconSearch}		iconSearch.png
