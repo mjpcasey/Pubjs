@@ -418,6 +418,16 @@ define(function(require, exports){
 		// 获取当前滚动位置
 		getScrollPos: function(){
 			return -this.$info.pos;
+		},
+		addClass: function(className){
+			var self = this;
+			self.$bar.addClass(className);
+			return self;
+		},
+		removeClass: function(className){
+			var self = this;
+			self.$bar.removeClass(className);
+			return self;
 		}
 	});
 	exports.scroller = Scroller;
