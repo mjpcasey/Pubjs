@@ -14,6 +14,7 @@
 					{
 						link: '123',
 						html: '项目概述',
+						icon: 'angle-right',    // 图标，对应fortawesome 中的uk-icon-angle-right, 优先显示图标，如无图标有子菜单，显示箭头
 						openNewWindow: false,   // 是否新窗口打开
 						hashMatch: '123'     @type [Array|RegExp|String]     // location.hash如果包含hashMatch,则该项激活
 					},
@@ -25,6 +26,11 @@
 								link: '#sites',
 								html: '实验管理',
 								hashMatch: '#sites'
+								sub: [
+									link: '#main',
+									html: 'xxx',
+									hashMatch: '#main'
+								]
 							},
 							{
 								link: '#2',
@@ -45,7 +51,9 @@
 				c = self.getConfig(),
 				container = self.getContainer();
 			self.addClass('M-accordionMenu');
-			self.setData(c.items);
+			if (util.isArray(c.items)) {
+				self.setData(c.items);
+			}
 			self.uiProxy(container, '.M-accordionMenu-head', 'click.accordionMenu', 'eventMenuToggle')
 				.uiProxy(container, '.no-default-event', 'click', function(evt) {
 					evt.preventDefault();
@@ -95,6 +103,7 @@
 		buildItem: function(item, menuContainer, index, level) {
 			var	itemDom,
 				innerDom,
+				itemIcon,
 				itemHeader,
 				itemHeaderC,
 				self = this,
@@ -128,7 +137,7 @@
 				itemData.hashMatch = item.hashMatch;
 
 				if (itemHasSub) {
-					$('<i class="M-accordionMenu-arrow fr uk-icon-angle-right"></i>').appendTo(itemHeader);
+					itemIcon = 'angle-right M-accordionMenu-arrow';
 					itemData.sub = self.buildItems(itemSub, itemDom, ++level);
 					if (item.open) {
 						self.slideDownItem(itemDom, true);
@@ -136,6 +145,11 @@
 					itemDom.addClass('M-accordionMenu-hassub');
 				} else {
 					itemDom.addClass('M-accordionMenu-nosub');
+				}
+
+				itemIcon = item.icon || itemIcon;
+				if (itemIcon) {
+					$('<i class="M-accordionMenu-icon uk-icon-' + itemIcon + '"></i>').appendTo(itemHeader);
 				}
 			}
 			return itemData;
@@ -214,17 +228,16 @@
 		 */
 		update: function() {
 			var self = this,
-				currentClass = self.getConfig('currentClass');
-			self.find('.' + currentClass).removeClass(currentClass);
+				currentClass = self.getConfig('currentClass'),
+				currentParentClass = currentClass + '-parent';
+			self.find('.' + currentClass).removeClass(currentClass).removeClass(currentParentClass);
 			util.each(self.$menus, function(item, key) {
 				if (item.hasSub) {
 					util.each(item.sub, function(subItem) {
 						if (self.isHashMatch(subItem.hashMatch)) {
-							item.el.addClass(currentClass);
+							item.el.addClass(currentParentClass);
 							subItem.el.addClass(currentClass);
 							self.slideDownItem(item.el, true);
-						}
-						if (location.hash.indexOf(subItem.hashMatch) !== -1) {
 						}
 					});
 				} else if (self.isHashMatch(item.hashMatch)) {
