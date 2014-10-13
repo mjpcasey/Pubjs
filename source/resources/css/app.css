@@ -2371,22 +2371,26 @@ label input {
 .M-accordionMenu {
   font-size: 13px;
   font-family: arial, sans-serif;
-  min-width: 200px;
+  min-width: 180px;
 }
 .M-accordionMenu-ul {
-  padding: 0 0 0 25px;
+  padding: 0 0 0 15px;
   margin: 0;
 }
 .M-accordionMenu-item {
   position: relative;
 }
 .M-accordionMenu-item a:hover {
+  background: #202c33;
+}
+.M-accordionMenu-item a:hover div {
   color: #fff;
 }
-.M-accordionMenu-head-con {
+.M-accordionMenu-head {
+  display: block;
   position: relative;
 }
-.M-accordionMenu-head {
+.M-accordionMenu-head-inner {
   display: block;
   margin-left: -18px;
   padding: 8px 0 8px 10px;
@@ -2407,9 +2411,6 @@ label input {
   white-space: nowrap;
   cursor: pointer;
 }
-.M-accordionMenu-hassub > .M-accordionMenu-head-con:hover {
-  background: #202c33;
-}
 .M-accordionMenu-icon {
   font-size: 18px;
   line-height: 35px;
@@ -2421,7 +2422,7 @@ label input {
 .M-accordionMenu-current a:hover {
   color: #15b374;
 }
-.M-accordionMenu-current-parent > .M-accordionMenu-head-con a {
+.M-accordionMenu-current-parent a {
   font-weight: bold;
   color: #fff;
 }

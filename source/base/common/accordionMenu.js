@@ -105,7 +105,7 @@
 				innerDom,
 				itemIcon,
 				itemHeader,
-				itemHeaderC,
+				itemHeaderI,
 				self = this,
 				itemData = {},
 				c = self.getConfig(),
@@ -117,8 +117,8 @@
 			if (c['menu_html_key'] in item) {
 				itemDom = $('<li class="M-accordionMenu-item"></li>').appendTo(menuContainer);
 				itemDom.attr('data-index', index).attr('data-level', level).addClass('M-accordionMenu-item-level'+level);
-				itemHeaderC = $('<div class="M-accordionMenu-head-con"></div>').appendTo(itemDom);
-				itemHeader = $('<a href="' + (link || '#') + '" class="M-accordionMenu-head"></a>').appendTo(itemHeaderC);
+				itemHeader = $('<a href="' + (link || '#') + '" class="M-accordionMenu-head"></a>').appendTo(itemDom);
+				itemHeaderI = $('<div class="M-accordionMenu-head-inner"></div>').appendTo(itemHeader);
 
 				itemHeader.addClass('M-accordionMenu-head-level'+level);
 				if (item.openNewWindow) {
@@ -128,9 +128,10 @@
 					itemHeader.addClass('no-default-event');
 				}
 
-				innerDom = $('<div class="M-accordionMenu-html"></div>').appendTo(itemHeader).html(html);
+				innerDom = $('<div class="M-accordionMenu-html"></div>').appendTo(itemHeaderI).html(html);
 
 				itemData.el = itemDom;
+				itemData.header = itemHeader;
 				itemData.link = link;
 				itemData.hasSub = itemHasSub;
 				itemData.html = html;
@@ -142,9 +143,9 @@
 					if (item.open) {
 						self.slideDownItem(itemDom, true);
 					}
-					itemDom.addClass('M-accordionMenu-hassub');
+					itemHeader.addClass('M-accordionMenu-hassub');
 				} else {
-					itemDom.addClass('M-accordionMenu-nosub');
+					itemHeader.addClass('M-accordionMenu-nosub');
 				}
 
 				itemIcon = item.icon || itemIcon;
@@ -235,13 +236,13 @@
 				if (item.hasSub) {
 					util.each(item.sub, function(subItem) {
 						if (self.isHashMatch(subItem.hashMatch)) {
-							item.el.addClass(currentParentClass);
+							item.header.addClass(currentParentClass);
 							subItem.el.addClass(currentClass);
 							self.slideDownItem(item.el, true);
 						}
 					});
 				} else if (self.isHashMatch(item.hashMatch)) {
-					item.el.addClass(currentClass);
+					item.header.addClass(currentClass);
 				}
 			});
 		},
