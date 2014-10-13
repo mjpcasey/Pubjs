@@ -153,6 +153,7 @@ define(function(require, exports, module){
 				send: function(data){
 					var cbs = this.$message_cbs;
 					if (cbs){
+						data.rid = data.mid;
 						for (var i=0; i<cbs.length; i++){
 							cbs[i](data);
 						}
@@ -195,6 +196,7 @@ define(function(require, exports, module){
 							// 拼凑dispatchMessage解析结构
 							var item = {
 								mid: mid,
+								rid: mid,
 								data: val
 							}
 							for (var i=0; i<cbs.length; i++){
@@ -347,9 +349,9 @@ define(function(require, exports, module){
 
 		var self = this;
 		// 触发监听的回调
-		var cb = self.$callbacks[message.mid];
+		var cb = self.$callbacks[message.rid];
 		if (cb){
-			delete self.$callbacks[message.mid];
+			delete self.$callbacks[message.rid];
 			cb.callback.call(cb, message.error, message.data);
 		}
 
