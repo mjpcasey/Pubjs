@@ -5,7 +5,7 @@
 define(function(require, exports, module){
 	var $ = require('jquery');
 	var app = null;
-	var host_regx = /^([a-z0-9]+):\/\/([^\/]+)[\/]?(.+)?$/i;
+	var host_regx = /^([a-z0-9]+):\/\/(.+)$/i;
 
 	var util = require('util');
 	var io = require('@libs/socket.io/socket.io.min.js');
@@ -25,18 +25,114 @@ define(function(require, exports, module){
 		"websocket": define_class(
 			function(cfg){
 				cfg['force new connection'] = true;
-				this.$io = io.connect(cfg.url, cfg);
+				var self = this;
+				self.$link_id = '';
+				self.$ready = false;
+				self.$queues = [];
+
+				var socket = io.connect(cfg.url, cfg);
+
+				// 连接成功开始握手
+				socket.on('connect', function(){
+					socket.emit('initLink', self.$link_id);
+				});
+				// 连接错误时修改就绪状态
+				socket.on('error', function(){
+					self.$ready = false;
+				});
+				// 绑定握手成功处理消息
+				socket.on('ackLink', function(){
+					self.onAckLink.apply(self, arguments);
+				});
+				// 绑定设置客户端Cookie信息
+				socket.on('setCookie', self.onSetCookie);
+				self.$io = socket;
 			},
 			{
+				// 服务器握手确认消息
+				onAckLink: function(link_id, error){
+					var self = this;
+					var queues = self.$queues;
+					if (link_id){
+						self.$ready = true;
+						self.$link_id = link_id;
+
+						// 发送缓存中的信息
+						while (queues.length > 0){
+							self.$io.send(JSON.stringify(queues.shift()));
+						}
+					}else {
+						// 连接错误
+						var msg;
+						var result = {
+							'mid': 0,
+							'error': error,
+							'data': null
+						};
+						// 触发暂存中的请求错误
+						while (queues.length > 0){
+							msg = queues.shift();
+							if (msg.req){
+								result.mid = msg.mid;
+								self.$io.$emit('message', result);
+							}
+						}
+					}
+				},
+				// 服务端设置Cookie请求
+				onSetCookie: function(cookie, multiple){
+					var setCookie = function(cookie){
+						var en = encodeURIComponent;
+						var text = en(cookie.name) + '=' + en(cookie.value);
+
+						// expires
+						if (cookie.expires){
+							var date = new Date();
+							date.setTime(cookie.expires);
+							text += '; expires=' + date.toUTCString();
+						}
+						// domain
+						if (cookie.domain) {
+							text += '; domain=' + cookie.domain;
+						}
+						// path
+						if (cookie.path) {
+							text += '; path=' + cookie.path;
+						}
+						// secure
+						if (cookie.secure) {
+							text += '; secure';
+						}
+						// httpOnly
+						if (cookie.HttpOnly) {
+							text += '; HttpOnly';
+						}
+
+						document.cookie = text;
+					}
+
+					if (multiple){
+						for (var i=0; i<cookie.length; i++){
+							setCookie(cookie[i]);
+						}
+					}else {
+						setCookie(cookie);
+					}
+				},
 				isDown: function(){
 					return (!this.$io.socket.connected && !this.$io.socket.connecting);
 				},
 				connect: function(){
+					this.$ready = false;
 					this.$io.socket.reconnect();
 					return this;
 				},
 				send: function(data){
-					this.$io.send(JSON.stringify(data));
+					if (this.$ready){
+						this.$io.send(JSON.stringify(data));
+					}else {
+						this.$queues.push(data);
+					}
 					return this;
 				},
 				on: function(type, callback){
@@ -88,8 +184,7 @@ define(function(require, exports, module){
 				connect: function(){ return this; },
 				send: function(data){
 					// 拼凑静态文件路径
-					var url = this.$base + data.name + '.json';
-
+					var url = this.$base + data.uri + '.json';
 					var mid = data.mid;
 					var cbs = this.$message_cbs;
 					$.getJSON(url, function(data){
@@ -156,10 +251,8 @@ define(function(require, exports, module){
 		list = host_regx.exec(uri)
 		if (list){
 			return {
-				"uri": uri,
 				"host": list[1],
-				"name": list[2],
-				"action": list[3] || null
+				"uri": list[2]
 			};
 		}
 		return false;
@@ -209,16 +302,17 @@ define(function(require, exports, module){
 					self.$callbacks[message.mid] = {
 						"mid": message.mid,
 						"uri": message.uri,
+						"time": (new Date()).getTime(),
 						"callback": message.callback,
 						"param": message.param
 					};
 				}
 				// 发送消息
 				remote.send({
-					"mid": message.mid,
 					"type": message.type,
-					"name": req.name,
-					"action": req.action,
+					"mid": message.mid,
+					"req": (message.callback ? 1 : 0),
+					"uri": req.uri,
 					"data": message.data
 				});
 			}else {
@@ -251,11 +345,6 @@ define(function(require, exports, module){
 			}
 		}
 
-		var uri = host + '://' + message.name;
-		if (message.action){
-			uri += '/' + message.action;
-		}
-
 		var self = this;
 		// 触发监听的回调
 		var cb = self.$callbacks[message.mid];
@@ -265,27 +354,16 @@ define(function(require, exports, module){
 		}
 
 		// 触发绑定uri的消息
-		var maps = self.$uri_maps;
-		var binds = self.$binds;
-		var list, bind, i;
-		for (bind in binds){
-			i = maps[bind];
-			// uri地址匹配, 完全匹配或部分uri匹配
-			if (i == uri || (uri.charAt(i.length) == '/' && uri.indexOf(i) === 0)){
-				list = binds[bind];
-				for (i=0; i<list.length; i++){
-					cb = list[i];
-					if (++cb.count === 0){
-						// 回调计数达到限制, 从绑定记录重删除
-						list.splice(i, 1);
-						i--;
-					}
-					// 回调
-					cb.callback.call(cb, null, message.data);
-				}
-				// 检查是否回调列表为空列表
-				if (list.length === 0){
-					delete binds[bind];
+		if (message.uri){
+			var url = host + '://' + message.uri;
+			var maps = self.$uri_maps;
+			var binds = self.$binds;
+			var list, bind, i;
+			for (bind in binds){
+				i = maps[bind];
+				// uri地址匹配, 完全匹配或部分uri匹配
+				if (i == url || (url.charAt(i.length) == '/' && url.indexOf(i) === 0)){
+					triggerCallback(binds, bind, message.error, message.data);
 				}
 			}
 		}
@@ -297,6 +375,25 @@ define(function(require, exports, module){
 			listener.callback.call(
 				listener, {"code": code, "message": message}, null
 			);
+		}
+	}
+
+	// 触发绑定的事件函数
+	function triggerCallback(binds, uri, error, data){
+		var cb;
+		var events = binds[uri];
+		for (i=0; i<events.length; i++){
+			cb = events[i];
+			if (++cb.count === 0){
+				// 回调计数达到限制, 从绑定记录重删除
+				events.splice(i--, 1);
+			}
+			// 回调
+			cb.callback.call(cb, error, data);
+		}
+		// 检查是否回调列表为空列表
+		if (events.length === 0){
+			delete binds[uri];
 		}
 	}
 
@@ -470,21 +567,7 @@ define(function(require, exports, module){
 			for (i in binds){
 				// uri地址匹配, 完全匹配或部分uri匹配
 				if (i == uri || (uri.charAt(i.length) == '/' && uri.indexOf(i) === 0)){
-					list = binds[i];
-					for (i=0; i<list.length; i++){
-						cb = list[i];
-						if (++cb.count === 0){
-							// 回调计数达到限制, 从绑定记录重删除
-							list.splice(i, 1);
-							i--;
-						}
-						// 回调
-						cb.callback.call(cb, error, data);
-					}
-					// 检查是否回调列表为空列表
-					if (list.length === 0){
-						delete binds[i];
-					}
+					triggerCallback(binds, i, error, data);
 				}
 			}
 			return self;
