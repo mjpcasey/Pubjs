@@ -358,7 +358,7 @@ define(function(require, exports, module){
 			var url = host + '://' + message.uri;
 			var maps = self.$uri_maps;
 			var binds = self.$binds;
-			var list, bind, i;
+			var bind, i;
 			for (bind in binds){
 				i = maps[bind];
 				// uri地址匹配, 完全匹配或部分uri匹配
@@ -382,7 +382,7 @@ define(function(require, exports, module){
 	function triggerCallback(binds, uri, error, data){
 		var cb;
 		var events = binds[uri];
-		for (i=0; i<events.length; i++){
+		for (var i=0; i<events.length; i++){
 			cb = events[i];
 			if (++cb.count === 0){
 				// 回调计数达到限制, 从绑定记录重删除
@@ -563,8 +563,7 @@ define(function(require, exports, module){
 		emit: function(uri, error, data){
 			var self = this;
 			var binds = self.$binds;
-			var list, cb, i;
-			for (i in binds){
+			for (var i in binds){
 				// uri地址匹配, 完全匹配或部分uri匹配
 				if (i == uri || (uri.charAt(i.length) == '/' && uri.indexOf(i) === 0)){
 					triggerCallback(binds, i, error, data);
