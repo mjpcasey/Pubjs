@@ -154,13 +154,25 @@ define(function(require,exports) {
 
 			if (pubjs.MVVM ) {
 				if ( c.view_model ) {
-					this.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+					function definevm(vm) {
 						for (var i in c.view_model){
+							var p = c.view_model[i];
 							if (c.view_model.hasOwnProperty(i)){
-								vm[i] = c.view_model[i];
+								// 对象需要拷贝，否则会污染config
+								if ($.isArray(p)) {
+									vm[i] = $.extend([], p);
+								} else if ($.isPlainObject(p)) {
+									vm[i] = $.extend({}, p);
+								} else {
+									vm[i] = p;
+								}
 							}
 						}
-					});
+					}
+					this.$vm = pubjs.MVVM.define(this._.uri, definevm);
+					this.resetvm = function() {
+						definevm(self.$vm);
+					}
 					self.$el.attr('ms-controller', self._.uri);
 					//pubjs.MVVM.scan(self.$el[0]);
 				}

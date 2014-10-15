@@ -112,6 +112,7 @@ define(function(require, ex){
 	ex.isArray = isArray;
 	ex.isFakeArray = isFakeArray;
 	ex.isObject = isObject;
+	ex.isPlainObject = isPlainObject;
 	ex.typeOfObject = typeOfObject;
 	ex.isNumber = isNumber;
 
