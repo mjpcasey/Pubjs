@@ -152,12 +152,6 @@ define(function(require,exports) {
 				self.appendTo(c.target);
 			}
 
-			// 调用后续构建函数
-			if (!noAfterBuild && util.isFunc(self.afterBuild)){
-				self.afterBuild();
-			}
-
-			// 使用mvvm，扫描绑定dom
 			if (pubjs.MVVM ) {
 				if ( c.view_model ) {
 					this.$vm = pubjs.MVVM.define(this._.uri, function(vm){
@@ -170,7 +164,15 @@ define(function(require,exports) {
 					self.$el.attr('ms-controller', self._.uri);
 					//pubjs.MVVM.scan(self.$el[0]);
 				}
+			}
 
+			// 调用后续构建函数
+			if (!noAfterBuild && util.isFunc(self.afterBuild)){
+				self.afterBuild();
+			}
+
+			// 使用mvvm，扫描绑定dom
+			if (pubjs.MVVM ) {
 				$('body').attr('ms-controller', pubjs.MVVM.grobalVMDefineName ); //是否有更好的地方改body属性？
 				//pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
 
