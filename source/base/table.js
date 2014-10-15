@@ -1179,6 +1179,11 @@ define(function(require, exports){
 			// 操作菜单事件监听
 			if (cfg.hasMenu){
 				self.uiProxy(self.table, 'td[data-ctype="menu"]', 'click', 'eventClickMenu');
+				pubjs.sync();
+				require.async('@base/common/menu', function(menu) {
+					self.$menuFileCache = menu;
+					pubjs.sync(true);
+				});
 			}
 
 			// 设置预设数据
@@ -2845,10 +2850,61 @@ define(function(require, exports){
 			}
 			return self.rows[val] || null;
 		},
+		/**
+		 * operate选项选中消息处理
+		 */
+		onMenuSelected: function(ev) {
+			var index = -1,
+				menu = this.$.menu,
+				data = this.getData(),
+				menuBtn = menu.getConfig('trigger');
+
+			if (menuBtn) {
+				index = +menuBtn.parent().attr('data-index');
+			}
+
+			this.fire('operateMenuSelected', {
+				index: index,
+				data: data[index],
+				op: ev.param[0].key
+			});
+			menu.destroy();
+			return false;
+		},
 		// 操作菜单点击事件
 		eventClickMenu: function(ev, dom){
-			this.fire('clickMenu', dom);
-			return false;
+			var menu, cfg,
+				self = this,
+				$dom = $(dom),
+				data = self.getData(),
+				index = +$dom.parent().attr('data-index');
+
+			self.fire('clickMenu', {
+				index: index,
+				dom: $dom,
+				data: data[index]
+			}, function(ev) {
+
+				menu = self.get('menu');
+				if(!menu) {
+					$dom.addClass('open');
+					cfg = $.extend(
+						{
+							width: 80
+						},
+						ev.returnValue,
+						{
+							trigger: $dom,
+							relate_elm: $dom
+						}
+					);
+					self.create('menu', self.$menuFileCache.base, cfg);
+				} else {
+					$dom.removeClass('open');
+					menu.destroy();
+				}
+			});
+
 		}
 	});
 	exports.list = List;
