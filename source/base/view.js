@@ -59,6 +59,21 @@ define(function(require,exports) {
 		self.createDelay(true, callback || "afterBuildTemplate", param);
 	}
 
+	// 从模块配置中初始化VM
+	function _defineVM(vm, view_model) {
+		util.each(view_model, function(v, k) {
+			// 对象需要拷贝，否则会污染config
+			if ($.isArray(v)) {
+				vm[k] = $.extend([], v);
+			} else if ($.isPlainObject(v)) {
+				vm[k] = $.extend({}, v);
+			} else {
+				vm[k] = v;
+			}
+		});
+		return vm;
+	}
+
 	/**
 	 * 容器视图类
 	 */
@@ -155,24 +170,11 @@ define(function(require,exports) {
 			if (pubjs.MVVM ) {
 				if ( c.view_model ) {
 					function definevm(vm) {
-						for (var i in c.view_model){
-							var p = c.view_model[i];
-							if (c.view_model.hasOwnProperty(i)){
-								// 对象需要拷贝，否则会污染config
-								if ($.isArray(p)) {
-									vm[i] = $.extend([], p);
-								} else if ($.isPlainObject(p)) {
-									vm[i] = $.extend({}, p);
-								} else {
-									vm[i] = p;
-								}
-							}
-						}
+
 					}
-					this.$vm = pubjs.MVVM.define(this._.uri, definevm);
-					this.resetvm = function() {
-						definevm(self.$vm);
-					}
+					this.$vm = pubjs.MVVM.define(this._.uri, function(vm) {
+						_defineVM(vm, c.view_model);
+					});
 					self.$el.attr('ms-controller', self._.uri);
 					//pubjs.MVVM.scan(self.$el[0]);
 				}
@@ -192,6 +194,23 @@ define(function(require,exports) {
 			}
 
 			return self;
+		},
+		// 重置VM
+		vmReset:function() {
+			_defineVM(this.$vm, this.getConfig('view_model'));
+			return this;
+		},
+		// 从对象中复制属性到vm中
+		vmExtend: function(data) {
+			var vm = this.$vm,
+				view_model = this.getConfig('view_model');
+
+			util.each(data, function(v, k) {
+				if ((k in view_model) && !util.isFunc(v)) {
+					vm[k] = v;
+				}
+			});
+			return vm;
 		},
 		uiBind: function(){
 			return this.Super('uiBind', fixArgsDom(arguments, this.$el));
