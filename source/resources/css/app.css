@@ -2381,10 +2381,8 @@ label input {
   position: relative;
 }
 .M-accordionMenu-item a:hover {
-  background: #202c33;
-}
-.M-accordionMenu-item a:hover div {
   color: #fff;
+  background: #202c33;
 }
 .M-accordionMenu-head {
   display: block;
