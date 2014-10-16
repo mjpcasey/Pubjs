@@ -169,9 +169,6 @@ define(function(require,exports) {
 
 			if (pubjs.MVVM ) {
 				if ( c.view_model ) {
-					function definevm(vm) {
-
-					}
 					this.$vm = pubjs.MVVM.define(this._.uri, function(vm) {
 						_defineVM(vm, c.view_model);
 					});
