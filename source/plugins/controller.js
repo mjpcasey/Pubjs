@@ -161,7 +161,7 @@ define(function(require, exports){
 
 				// 模块预处理调用
 				if (mod.beforeAction && app.util.isFunc(mod.beforeAction)){
-					mod.beforeAction(exports, now, app);
+					if (mod.beforeAction(exports, now, app) === false) { return; }
 					if (is_loading_template()){ return;	}
 				}
 
