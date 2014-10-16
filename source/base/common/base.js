@@ -1059,6 +1059,7 @@ define(function(require, exports){
 				'type': 'tab',
 				'reqMethod': 'get',
 				'list': {},
+				'async': false,
 				'active': null
 			});
 			this.$first = null;
@@ -1110,6 +1111,9 @@ define(function(require, exports){
 				if (!first){
 					self.$first = first = name;
 				}
+				if (c.async) {
+					self.switchTab(name, true);
+				}
 			}
 			// 绑定点击事件
 			self.uiProxy(self.head, 'li,button', 'click', 'eventClick');
@@ -1129,7 +1133,7 @@ define(function(require, exports){
 		 * @param  {String} name tab名
 		 * @return {Object}      指定的tab对象。未找到时返回null。
 		 */
-		switchTab: function(name){
+		switchTab: function(name, slient){
 			var self = this;
 			if (name == self.$active || !util.has(self.$tabs, name)){
 				return self;
@@ -1193,7 +1197,9 @@ define(function(require, exports){
 				}
 			}
 
-			self.fire('tabChange', item);
+			if (!slient) {
+				self.fire('tabChange', item);
+			}
 			return self;
 		},
 		eventClick: function(evt, elm){
