@@ -1101,7 +1101,7 @@ define(function(require, exports){
 				if (!first){
 					self.$first = first = name;
 				}
-				if (c.async) {
+				if (!c.async) {
 					self.switchTab(name, true);
 				}
 			}
