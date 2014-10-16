@@ -1125,13 +1125,14 @@ define(function(require, exports){
 
 			// 初始化激活标签
 			if (first){
-				self.switchTab(first);
+				self.switchTab(first, true);
 			}
 		},
 		/**
 		 * 切换至指定的tab
-		 * @param  {String} name tab名
-		 * @return {Object}      指定的tab对象。未找到时返回null。
+		 * @param  {String}  name   tab名
+		 * @param  {Boolean} slient 是否发送消息
+		 * @return {Object}         指定的tab对象。未找到时返回null。
 		 */
 		switchTab: function(name, slient){
 			var self = this;
