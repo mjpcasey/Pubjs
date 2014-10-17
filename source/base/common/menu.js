@@ -350,8 +350,8 @@ define(function( require, exports ){
 		 */
 		getSrcSize: function( elm ) {
 			return {
-				'width': $(elm).width(),
-				'height': $(elm).height()
+				'width': $(elm).outerWidth(),
+				'height': $(elm).outerHeight()
 			}
 		},
 
