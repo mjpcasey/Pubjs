@@ -552,7 +552,10 @@ define(function(require, exports){
 		 * 返回自定义参数
 		 * @return {Object} 参数对象
 		 */
-		getParam: function(){
+		getParam: function(name){
+			if (name) {
+				return this.$customParam && this.$customParam[name];
+			}
 			return this.$customParam;
 		},
 		setParam: function(param, replace){
