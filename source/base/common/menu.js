@@ -568,6 +568,7 @@ define(function( require, exports ){
 		 */
 		eventClickModule: function( evt, elm ) {
 			this.$timeStamp = evt.timeStamp;
+			evt.stopPropagation();
 		},
 
 		/**
