@@ -159,6 +159,7 @@ define(function(require, exports){
 		},
 		// 加载显示数据
 		load: function(){
+			pubjs.sync();
 			var c = this.getConfig();
 			//todo: 加入加载状态提示
 			switch(c.reqType){
@@ -181,6 +182,7 @@ define(function(require, exports){
 		},
 		// 拉取数据回调
 		onData: function(err, data){
+			pubjs.sync(true);
 			//todo: 移除加载状态
 			var self = this;
 			if (err){
