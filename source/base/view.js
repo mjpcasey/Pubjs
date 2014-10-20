@@ -203,11 +203,11 @@ define(function(require,exports) {
 				view_model = this.getConfig('view_model');
 
 			util.each(data, function(v, k) {
-				if ((k in view_model)) {
-					if (util.isObject(v)) {
-						vm[k] = $.extend({}, v);
-					} else if (util.isArray(v)) {
+				if (k in view_model) {
+					if (util.isArray(v)) {
 						vm[k] = $.extend([], v);
+					} else if (util.isObject(v)) {
+						vm[k] = $.extend({}, v);
 					} else {
 						vm[k] = v;
 					}
