@@ -1904,9 +1904,10 @@ label input {
   margin-left: -2px;
   font-size: 12px;
   color: #444;
+  position: relative;
 }
 .M-datePickerNew .date-ctrl {
-  top: 46px;
+  top: 4px;
   cursor: pointer;
   position: absolute;
   padding: 6px;
