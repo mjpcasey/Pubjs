@@ -217,7 +217,11 @@ define(function(require,exports) {
 		},
 		/**
 		 * 获取vm中的数据
-		 * @param  {Array|String|Undefind|Boolean} key [默认不传获取view_model中定义的全部非函数数据, true则获取全部含函数数据，字符串或数字为获取单项，数组为获取多项并返回object]
+		 * @param  {*} key  —— Default|Undefind  默认不传获取view_model中定义的全部非函数数据
+		 *                  —— true              true则获取view_model中定义的全部含函数数据
+		 *                  —— String|Number     字符串或数字为获取单项
+		 *                  —— Array             传入属性名数组，获取指定属性名的属性，返回Object
+		 *                  —— Object            from->to, 获取view_model中属性名为from的值，把该值赋给返回值的to属性
 		 * @return {return} [由传入参数而定]
 		 */
 		vmGet: function(key) {
@@ -232,7 +236,11 @@ define(function(require,exports) {
 				util.each(key, function(k) {
 					data[k] = vm.$model[key];
 				});
-			} else if(key === ud) {
+			} else if (util.isObject(key)) {
+				util.each(key, function(to, from) {
+					data[to] = vm.$model[from];
+				});
+			}else if(key === ud) {
 				util.each(view_model, function(k, v){
 					if (!util.isFunc(v)) {
 						data[k] = vm.$model[k];
