@@ -540,6 +540,7 @@ define(function( require, exports ){
 			var self = this;
 			var elma = $(elm).find('a');
 			var fid = {
+				elm: elm,
 				key: elma.attr('data-id'),
 				name: elma.text()
 			};
