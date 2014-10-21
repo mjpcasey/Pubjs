@@ -1060,6 +1060,11 @@ define(function(require, ex){
 		}
 	}
 
+	// 随机数
+	ex.random = function() {
+		return Math.round(Math.random() * 2147483647);
+	}
+
 	/**
 	 * 框选指定元素的部分文本
 	 * @param  {Node} o [o是当前对象，例如文本域对象]
