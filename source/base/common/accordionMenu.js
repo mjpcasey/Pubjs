@@ -140,9 +140,6 @@
 				if (itemHasSub) {
 					itemIcon = 'angle-right M-accordionMenu-arrow';
 					itemData.sub = self.buildItems(itemSub, itemDom, ++level);
-					if (item.open) {
-						self.slideDownItem(itemDom, true);
-					}
 					itemHeader.addClass('M-accordionMenu-hassub');
 				} else {
 					itemHeader.addClass('M-accordionMenu-nosub');
@@ -151,6 +148,10 @@
 				itemIcon = item.icon || itemIcon;
 				if (itemIcon) {
 					$('<i class="M-accordionMenu-icon uk-icon-' + itemIcon + '"></i>').appendTo(itemHeader);
+				}
+
+				if (item.open) {
+					self.slideDownItem(itemDom, true);
 				}
 			}
 			return itemData;
