@@ -534,6 +534,9 @@ define(function( require, exports ){
 		eventItemSelect: function( evt, elm ) {
 			evt.preventDefault();
 			evt.stopPropagation();
+			elm = $(elm);
+			// 有子菜单的不处理
+			if (elm.hasClass('hasSub')) { return;}
 			var self = this;
 			var elma = $(elm).find('a');
 			var fid = {
@@ -541,6 +544,7 @@ define(function( require, exports ){
 				name: elma.text()
 			};
 			self.fire( 'menuSelected', [fid] );
+
 		},
 
 		/**
