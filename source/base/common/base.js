@@ -1178,6 +1178,9 @@ define(function(require, exports){
 				}else if(c.module){
 					// 合并param值 多维钻取使用到
 					var cfg = {'target': item.body, 'reqMethod': self.getConfig('reqMethod')};
+					if(c.param) {
+						cfg.param = c.param;
+					}
 					if(this.$param){
 						cfg.param = this.$param;
 					}
