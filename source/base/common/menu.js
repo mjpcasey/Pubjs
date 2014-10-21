@@ -539,9 +539,11 @@ define(function( require, exports ){
 			if (elm.hasClass('hasSub')) { return;}
 			var self = this;
 			var elma = $(elm).find('a');
+			var id = elma.attr('data-id');
 			var fid = {
 				elm: elm,
-				key: elma.attr('data-id'),
+				key: id,
+				data: util.find(self.getData(), id, self.getConfig('key')),
 				name: elma.text()
 			};
 			self.fire( 'menuSelected', [fid] );
