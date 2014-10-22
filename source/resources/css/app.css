@@ -2,8 +2,8 @@
  * Background Image CSS auto generate by PHP Image Packager
  * http://blog.win-ing.cn by Katana
  ***/
-/* Image: ../images/icons.png?1011 */
-/* Image: ../images/icons_act.png?1011 */
+/* Image: ../images/icons.png?1022 */
+/* Image: ../images/icons_act.png?1022 */
 ul li {
   list-style: none;
 }
@@ -506,7 +506,7 @@ label input {
   display: block;
 }
 .M-commonDropdown .list .btnSearch {
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -48px -64px;
   width: 20px;
@@ -522,14 +522,14 @@ label input {
   right: 9px;
   cursor: pointer;
   display: none;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -68px 0;
   width: 20px;
   height: 20px;
 }
 .M-commonDropdown .list .btnCancel:hover {
-  background-image: url("../images/icons_act.png?1011");
+  background-image: url("../images/icons_act.png?1022");
   background-repeat: no-repeat;
 }
 .M-commonDropdown .list .dragIcon {
@@ -538,7 +538,7 @@ label input {
   right: 0;
   z-index: 1;
   cursor: pointer;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -68px -20px;
   width: 10px;
@@ -784,7 +784,7 @@ label input {
   cursor: pointer;
   overflow: hidden;
   position: absolute;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: 0 -120px;
   width: 50px;
@@ -1089,7 +1089,7 @@ label input {
   color: white;
 }
 .M-tableTabActive > span {
-  background-image: url("../images/icons_act.png?1011");
+  background-image: url("../images/icons_act.png?1022");
   background-repeat: no-repeat;
 }
 .M-tableAmount {
@@ -1139,14 +1139,14 @@ label input {
   position: absolute;
   top: 0px;
   right: 0px;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -68px -30px;
   width: 15px;
   height: 15px;
 }
 .M-tableAmount li em:hover {
-  background-image: url("../images/icons_act.png?1011");
+  background-image: url("../images/icons_act.png?1022");
   background-repeat: no-repeat;
 }
 .M-tableAmount li p {
@@ -1183,7 +1183,7 @@ label input {
 }
 .M-tableSubGridCtr a {
   display: inline-block;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   width: 16px;
   height: 16px;
@@ -1191,7 +1191,7 @@ label input {
 }
 .M-tableSubGridCtr a.act,
 .M-tableSubGridCtr a:hover {
-  background-image: url("../images/icons_act.png?1011");
+  background-image: url("../images/icons_act.png?1022");
   background-repeat: no-repeat;
 }
 .M-tableList {
@@ -1314,7 +1314,7 @@ label input {
   display: inline-block;
 }
 .M-tableListMenu {
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -104px -106px;
   width: 14px;
@@ -1341,11 +1341,11 @@ label input {
   width: 16px;
   right: 4px;
   top: 2px;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
 }
 .M-tableListSubCtr > div.act {
-  background-image: url("../images/icons_act.png?1011");
+  background-image: url("../images/icons_act.png?1022");
   background-repeat: no-repeat;
 }
 .M-tableListSubOperate .M-tableListFunctional {
@@ -1369,7 +1369,7 @@ label input {
   position: absolute;
   top: -22px;
   left: 50px;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -68px -45px;
   width: 16px;
@@ -1579,7 +1579,7 @@ label input {
 .page_visitRoute {
   cursor: pointer;
   display: inline-block;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -32px -64px;
   width: 16px;
@@ -1591,7 +1591,7 @@ label input {
   vertical-align: middle;
   margin-bottom: -16px;
   margin-left: 10px;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -104px -80px;
   width: 16px;
@@ -2501,7 +2501,7 @@ label input {
   top: 8px;
   left: 0;
   display: inline-block;
-  background-image: url("../images/icons.png?1011");
+  background-image: url("../images/icons.png?1022");
   background-repeat: no-repeat;
   background-position: -50px -120px;
   width: 16px;
@@ -2533,4 +2533,377 @@ li .M-autoComplete-text:hover {
 li .M-autoComplete-matchText,
 li .M-autoComplete-text:hover .M-autoComplete-matchText {
   color: #ffffff;
+}
+.M-HighGrid {
+  color: #444;
+  font-size: 13px;
+  overflow: hidden;
+  min-height: 600px;
+  position: relative;
+  background: #FFFFFF;
+  font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif;
+}
+.M-HighGrid table {
+  border-collapse: separate;
+}
+.M-HighGrid td {
+  overflow: hidden;
+  padding: 10px 12px;
+  white-space: nowrap;
+  line-height: inherit;
+}
+.M-HighGridRefreshAuto {
+  color: #444;
+  padding: 0 5px;
+  font-size: 13px;
+  cursor: pointer;
+  line-height: 30px;
+  margin-right: 1px;
+  display: inline-block;
+  vertical-align: middle;
+  background-color: #eeeeee;
+}
+.M-HighGridRefreshAuto i {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -112px -120px;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+  display: inline-block;
+}
+.M-HighGridRefreshAuto i.act {
+  background-image: url("../images/icons_act.png?1022");
+  background-repeat: no-repeat;
+}
+.M-HighGridRefreshAuto:hover {
+  background-color: #f5f5f5;
+}
+.M-HighGridRefresh button {
+  padding: 0 7px;
+  min-height: 25px;
+  line-height: 25px;
+}
+.M-HighGridRefresh button em {
+  display: block;
+}
+.M-HighGridRefresh .refNormal {
+  height: 30px;
+  padding: 0 9px;
+}
+.M-HighGridRefresh .refNormal em {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -124px 0;
+  width: 12px;
+  height: 12px;
+}
+.M-HighGridRefresh .refing em {
+  background: url("../images/loading.gif") 0 0 no-repeat;
+}
+.M-HighGridHeader {
+  overflow: hidden;
+}
+.M-HighGridHeaderLeft {
+  padding: 2px 0;
+}
+.M-HighGridBatch {
+  height: 30px;
+  padding: 0 10px;
+  cursor: pointer;
+  line-height: 30px;
+  text-align: center;
+  background-color: #eee;
+}
+.M-HighGridBatch span {
+  margin-right: 5px;
+}
+.M-HighGridBatch:hover {
+  background-color: #f5f5f5;
+}
+.M-HighGridExport {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  line-height: 30px;
+  text-align: center;
+  background-color: #eee;
+}
+.M-HighGridExport em {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -124px -12px;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+}
+.M-HighGridExport:hover {
+  background-color: #f5f5f5;
+}
+.M-HighGridSwitch {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  line-height: 30px;
+  text-align: center;
+  background-color: #eee;
+}
+.M-HighGridSwitch em {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -124px -24px;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+}
+.M-HighGridSwitch:hover {
+  background-color: #f5f5f5;
+}
+.M-HighGridList {
+  text-align: right;
+  background: #F8F8F8;
+  border: 1px solid #eaeaea;
+  border-top: solid 2px #535B5E;
+}
+.M-HighGridListCorner {
+  background: #f8f8f8;
+}
+.M-HighGridListCornerTitle {
+  text-align: center;
+}
+.M-HighGridListCornerTitle td {
+  border-bottom: 1px solid #c8cdcc;
+  border-right: 1px solid transparent;
+}
+.M-HighGridListCornerAmount {
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+}
+.M-HighGridListCornerAmount td {
+  border-right: 1px solid #eaeaea;
+  border-bottom: 1px solid #eaeaea;
+}
+.M-HighGridListHeader {
+  overflow: hidden;
+  background: #f8f8f8;
+}
+.M-HighGridListHeader table {
+  min-width: 100%;
+}
+.M-HighGridListHeaderTitle {
+  text-align: center;
+}
+.M-HighGridListHeaderTitle td {
+  border-bottom: 1px solid #c8cdcc;
+  border-right: 1px solid transparent;
+}
+.M-HighGridListHeaderAmount {
+  line-height: 40px;
+}
+.M-HighGridListHeaderAmount td {
+  border: solid #EAEAEA;
+  border-width: 0 1px 1px 0;
+}
+.M-HighGridListSidebar {
+  z-index: 1;
+  overflow: hidden;
+  position: relative;
+}
+.M-HighGridListSidebar tr.even {
+  background: #ffffff;
+}
+.M-HighGridListSidebar td {
+  border: solid #EAEAEA;
+  border-width: 0 1px 1px 0;
+}
+.M-HighGridListSidebar td .M-HighGrid-subgrid {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+}
+.M-HighGridListSidebarMenu {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -66px -120px;
+  width: 14px;
+  height: 14px;
+  margin: 2px 6px;
+  cursor: pointer;
+}
+.M-HighGridListContent {
+  position: relative;
+}
+.M-HighGridListContent table {
+  min-width: 100%;
+}
+.M-HighGridListContent tr.even {
+  background: #ffffff;
+}
+.M-HighGridListContent td {
+  border: solid #EAEAEA;
+  border-width: 0 1px 1px 0;
+}
+.M-HighGridListRowHover {
+  background: #EFFBFE !important;
+}
+.M-HighGridList .sortable:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.M-HighGridList .asc em {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -146px -44px;
+  width: 6px;
+  height: 8px;
+  margin-left: 5px;
+  display: inline-block;
+}
+.M-HighGridList .desc em {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -146px -52px;
+  width: 6px;
+  height: 8px;
+  margin-left: 5px;
+  display: inline-block;
+}
+.M-HighGrid .M-HighGridListLayoutLeft {
+  z-index: 2;
+  overflow: hidden;
+  position: relative;
+}
+.M-HighGrid .M-HighGridListLayoutLeft:before {
+  top: 0;
+  width: 15px;
+  content: " ";
+  height: 100%;
+  right: -15px;
+  position: absolute;
+  box-shadow: 6px 0 19px -14px inset;
+}
+.M-HighGrid .shadow {
+  overflow: visible;
+}
+.M-HighGrid .running {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -80px -120px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.M-HighGrid .pause {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  background-position: -96px -120px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.M-HighGridTab {
+  margin: 0;
+  padding: 0;
+  float: left;
+  background: #F8F8F8;
+  border: 1px solid #d8d8d8;
+  border-bottom: none;
+}
+.M-HighGridTab ul {
+  padding-left: 0px;
+}
+.M-HighGridTabItem {
+  float: left;
+  color: #0D0D0D;
+  cursor: pointer;
+  display: inline;
+  padding: 8px 17px;
+  list-style: none;
+}
+.M-HighGridTabItem i {
+  padding: 0 7px;
+  cursor: pointer;
+  margin-right: -10px;
+}
+.M-HighGridTabActive {
+  color: white;
+  cursor: default;
+  background: #535B5E;
+}
+.M-HighGridTabCustom {
+  z-index: 20;
+  color: #aaa;
+  background: #fff;
+  box-shadow: none;
+  min-width: 350px;
+  border-radius: 0;
+  white-space: nowrap;
+  border: 1px solid #aaa;
+}
+.M-HighGridTabCustom label input {
+  margin-right: 5px;
+}
+.M-HighGridTabCustom td {
+  line-height: 16px;
+  vertical-align: top;
+  white-space: nowrap;
+  padding: 0 15px 10px;
+}
+.M-HighGridTabCustom td strong {
+  display: block;
+  color: #0E0E0E;
+  font-weight: 400;
+  margin-top: 10px;
+  padding: 0 0 8px 0;
+}
+.M-HighGridTabCustom td label {
+  color: #646464;
+  display: block;
+  padding: 3px 0;
+  margin: 0 0 0 14px;
+}
+.M-HighGridSubgrid {
+  z-index: 3;
+  opacity: 0.2;
+  position: absolute;
+  background: rgba(255, 255, 255, 0);
+}
+.M-HighGridSubgridAct {
+  opacity: 1;
+}
+.M-HighGridSubgrid a {
+  background-image: url("../images/icons.png?1022");
+  background-repeat: no-repeat;
+  margin-right: 6px;
+  display: inline-block;
+}
+.M-HighGrid-subgridArrow {
+  background-position: -124px -36px;
+  width: 21px;
+  height: 11px;
+}
+.M-HighGrid-subgrid {
+  background-position: -124px -47px;
+  width: 16px;
+  height: 16px;
+}
+.M-HighGrid-sweety {
+  background-position: -124px -63px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGrid-campaign {
+  background-position: -124px -85px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGridListRowSelected {
+  font-weight: bold;
+}
+.M-HighGridListRowHighlight {
+  background: #FFF4D7 !important;
 }
