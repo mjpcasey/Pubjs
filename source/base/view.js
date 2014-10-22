@@ -74,6 +74,8 @@ define(function(require,exports) {
 		return vm;
 	}
 
+
+
 	/**
 	 * 容器视图类
 	 */
@@ -96,7 +98,8 @@ define(function(require,exports) {
 				// 容器属性对象, 调用jQuery的attr方法直接设置
 				'attr': null,
 				// 容器Style属性对象, 调用jQuery的css方法直接设置
-				'css': null
+				'css': null,
+				'hasSidebar': false
 			});
 			self.$el = null;
 
@@ -387,6 +390,18 @@ define(function(require,exports) {
 				dom.remove();
 			}
 		},
+		// 创建业务模块
+		createBusiness: function(name, uri, param, callback){
+			var config = $.extend({}, {
+				target: this.getDOM()
+			}, param);
+
+			this.createAsync(name, uri, config, function(mod){
+				if(util.isFunc(callback)){
+					callback(mod);
+				}
+			});
+		},
 		/**
 		 * 从模版创建
 		 * @param  {Object} pubConfig 配置
@@ -394,6 +409,138 @@ define(function(require,exports) {
 		buildFromTemplate: _buildFromTemplate
 	});
 	exports.container = Container;
+
+	// 两列布局，附带侧边栏
+	var ContainerWithSidebar = Container.extend({
+		init: function(config, parent){
+			var self = this;
+
+			self.$config = pubjs.conf(config, {
+
+			});
+
+			self.$el = null;
+			self.$sidebar = null;
+			self.$container = null;
+
+			self.$sidebarHide = false; // 右侧工具栏是否隐藏
+
+			self.build();
+		},
+		build: function(){
+			var self = this;
+			var c = self.getConfig();
+
+			var el = self.$el = $('<div></div>').appendTo(c.target);
+
+			// 设置初始属性
+			if (c.attr){
+				el.attr(c.attr);
+			}
+			if (c.css){
+				el.css(c.css);
+			}
+			var cls = c['class'];
+			if (cls){
+				el.addClass(
+					util.isArray(cls) ? cls.join(' ') : cls
+				);
+			}
+			if (c.html){
+				el.html(c.html);
+			}else if (c.text){
+				el.text(c.text);
+			}
+
+			self.$container = $('<div class="G-frameBodyContainer"/>').appendTo(el);
+			self.$sidebar = $([
+				'<div class="G-frameBodySidebar">',
+					'<div class="G-frameBodySidebarFlex">',
+						'<i class="G-frameBodySidebarIcon  uk-icon-angle-double-right"/>',
+					'</div>',
+					'<div class="G-frameBodySidebarWrapper">',
+						'<div class="G-frameBodySidebarContent"/>',
+					'</div>',
+				'</div>'
+			].join('')).appendTo(el);
+
+			self.$sidebarFlex = self.$sidebar.find('.G-frameBodySidebarFlex');
+
+			self.uiBind(document, 'mousemove mouseout','eventToggleFlexBtn');
+			self.uiBind(self.$sidebar, 'click', 'eventToggleSideBar');
+
+			return self;
+		},
+		// 鼠标经过时显示或隐藏侧边栏
+		eventToggleFlexBtn: function(evt, elm){
+			var self = this;
+			var x = evt.pageX;
+			var y = evt.pageY;
+			var w = $(window).width();
+			var headHeight = 50; //@todo 获取platform 的header高度。doms.head.height();
+
+			var toolsFlexWidth = self.$sidebarFlex.width();
+			var toolsWidth = self.$sidebar.width();
+
+			// 显隐右侧flex
+			self.$sidebarFlex.toggleClass('act', (w - x <= toolsFlexWidth && y > headHeight) ? true : false);
+
+			// 是否同时显示工具栏
+			if(self.$sidebarHide){
+				if(w - x <= toolsFlexWidth){
+					self.$sidebar.toggleClass('act', false);
+				}else if(w - x > toolsWidth){
+					self.$sidebar.toggleClass('act', true);
+				}
+			}
+		},
+		// 切换侧边栏
+		eventToggleSideBar: function(evt, elm){
+			var self = this;
+
+			self.$sidebar.toggleClass('act', !self.$sidebarHide);
+			self.$sidebarFlex.toggleClass('act', !self.$sidebarHide);
+			self.$sidebarFlex.find('i').toggleClass('uk-icon-anchor', !self.$sidebarHide);
+			self.$sidebar.find('.G-frameBodySidebarContent').toggleClass('act_right', !self.$sidebarHide);
+
+			// 更新状态
+			self.$sidebarHide = !self.$sidebarHide;
+
+			pubjs.core.cast('toggleSideBar');
+			return false;
+		},
+		// 创建业务模块
+		createBusiness: function(name, uri, param, callback){
+			var config = $.extend({}, {
+				target: this.getContainer(),
+				targetMenu: this.getSidebar()
+			}, param);
+
+			this.createAsync(name, uri, config, function(mod){
+				// todo 要不要绑定作用域
+				if(util.isFunc(callback)){
+					callback(mod);
+				}
+			});
+		},
+		getConfig: function(name){
+			return this.$config.get(name);
+		},
+		setConfig: function(name, value){
+			this.$config.set(name, value);
+			return this;
+		},
+		getContainer: function(){
+			return this.$container;
+		},
+		getDOM: function(){
+			return this.$container;
+		},
+		getSidebar: function(){
+			return this.$sidebar.find('.G-frameBodySidebarContent');
+		}
+	});
+	exports.containerWithSidebar = ContainerWithSidebar;
 
 	// Widget代理公共函数
 	function _uiBindProxy(method, args, Super){
@@ -1032,4 +1179,6 @@ define(function(require,exports) {
 		}
 	});
 	exports.layout = Layout;
+
+
 });
