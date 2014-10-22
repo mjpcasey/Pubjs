@@ -534,13 +534,18 @@ define(function( require, exports ){
 		eventItemSelect: function( evt, elm ) {
 			evt.preventDefault();
 			evt.stopPropagation();
+			elm = $(elm);
+			// 有子菜单的不处理
+			if (elm.hasClass('hasSub')) { return;}
 			var self = this;
 			var elma = $(elm).find('a');
 			var fid = {
+				elm: elm,
 				key: elma.attr('data-id'),
 				name: elma.text()
 			};
 			self.fire( 'menuSelected', [fid] );
+
 		},
 
 		/**
@@ -568,6 +573,7 @@ define(function( require, exports ){
 		 */
 		eventClickModule: function( evt, elm ) {
 			this.$timeStamp = evt.timeStamp;
+			evt.stopPropagation();
 		},
 
 		/**

@@ -1059,4 +1059,49 @@ define(function(require, ex){
 			return false;
 		}
 	}
+
+	/**
+	 * 框选指定元素的部分文本
+	 * @param  {Node} o [o是当前对象，例如文本域对象]
+	 * @param  {Int}  a [a是起始位置]
+	 * @param  {Int}  b [b是终点位置]
+	 */
+	ex.textSelect = function(o, a, b) {
+		var l = o.value.length;
+		a = parseInt(a, 10), b = parseInt(b, 10);
+		if (l) {
+			//如果非数值，则表示从起始位置选择到结束位置
+			if (!a) {
+				a = 0;
+			}
+			if (!b) {
+				b = l;
+			}
+			//如果值超过长度，则就是当前对象值的长度
+			if (a > l) {
+				a = l;
+			}
+			if (b > l) {
+				b = l;
+			}
+			//如果为负值，则与长度值相加
+			if (a < 0) {
+				a = l + a;
+			}
+			if (b < 0) {
+				b = l + b;
+			}
+			if (o.createTextRange) { //IE浏览器
+				var range = o.createTextRange();
+				range.moveStart("character", -l);
+				range.moveEnd("character", -l);
+				range.moveStart("character", a);
+				range.moveEnd("character", b);
+				range.select();
+			} else {
+				o.setSelectionRange(a, b);
+				o.focus();
+			}
+		}
+	}
 });
