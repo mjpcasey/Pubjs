@@ -197,19 +197,30 @@ define(function(require,exports) {
 			_defineVM(this.$vm, this.getConfig('view_model'));
 			return this;
 		},
-		// 从对象中复制属性到vm中
-		vmExtend: function(data) {
+		/**
+		 * 从数据对象中复制属性到vm中
+		 * @param  {Object} data [数据对象]
+		 * @param  {Object|Array} maps [当为数组时，指定需要复制的字段，当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
+		 */
+		vmExtend: function(data, maps) {
 			var vm = this.$vm,
 				view_model = this.getConfig('view_model');
 
 			util.each(data, function(v, k) {
-				if (k in view_model) {
+				var key;
+				if (util.isArray(maps) && util.index(maps, k) !== null) {
+					key = k;
+				}
+				if (util.isPlainObject(maps) && (k in maps)) {
+					key = maps[k];
+				}
+				if (key && (key in view_model)) {
 					if (util.isArray(v)) {
-						vm[k] = $.extend([], v);
+						vm[key] = $.extend([], v);
 					} else if (util.isObject(v)) {
-						vm[k] = $.extend({}, v);
+						vm[key] = $.extend({}, v);
 					} else {
-						vm[k] = v;
+						vm[key] = v;
 					}
 				}
 			});
@@ -531,8 +542,27 @@ define(function(require,exports) {
 			var c = self.getConfig();
 			self.$el = layout;
 			self.$ready = 'ready';
+
+			if (pubjs.MVVM ) {
+				if ( c.view_model ) {
+					this.$vm = pubjs.MVVM.define(this._.uri, function(vm) {
+						_defineVM(vm, c.view_model);
+					});
+					self.$el.attr('ms-controller', self._.uri);
+					//pubjs.MVVM.scan(self.$el[0]);
+				}
+			}
+
 			if (self.afterBuild){
 				self.afterBuild(layout);
+			}
+
+			// 使用mvvm，扫描绑定dom
+			if (pubjs.MVVM ) {
+				$('body').attr('ms-controller', pubjs.MVVM.grobalVMDefineName ); //是否有更好的地方改body属性？
+				//pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
+
+				pubjs.MVVM.scan(); //上面分开扫描有点问题，先全部扫描
 			}
 
 			// 调用被延迟的UI调用函数
@@ -541,25 +571,76 @@ define(function(require,exports) {
 				param = cs.shift();
 				param.fn.apply(self, param.args);
 			}
-			// 使用mvvm，扫描绑定dom
-			if (pubjs.MVVM ) {
-				if ( c.view_model ) {
-					this.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-						for (var i in c.view_model){
-							if (c.view_model.hasOwnProperty(i)){
-								vm[i] = c.view_model[i];
-							}
-						}
-					});
-					self.$el.attr('ms-controller', self._.uri);
-					//pubjs.MVVM.scan(self.$el[0]);
+		},
+		// 重置VM
+		vmReset:function() {
+			_defineVM(this.$vm, this.getConfig('view_model'));
+			return this;
+		},
+		/**
+		 * 从数据对象中复制属性到vm中
+		 * @param  {Object} data [数据对象]
+		 * @param  {Object|Array} maps [当为数组时，指定需要复制的字段，当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
+		 */
+		vmExtend: function(data, maps) {
+			var vm = this.$vm,
+				view_model = this.getConfig('view_model');
+
+			util.each(data, function(v, k) {
+				var key;
+				if (util.isArray(maps) && util.index(maps, k) !== null) {
+					key = k;
 				}
+				if (util.isPlainObject(maps) && (k in maps)) {
+					key = maps[k];
+				}
+				if (key && (key in view_model)) {
+					if (util.isArray(v)) {
+						vm[key] = $.extend([], v);
+					} else if (util.isObject(v)) {
+						vm[key] = $.extend({}, v);
+					} else {
+						vm[key] = v;
+					}
+				}
+			});
+			return vm;
+		},
+		/**
+		 * 获取vm中的数据
+		 * @param  {*} key  —— Default|Undefind  默认不传获取view_model中定义的全部非函数数据
+		 *                  —— true              true则获取view_model中定义的全部含函数数据
+		 *                  —— String|Number     字符串或数字为获取单项
+		 *                  —— Array             传入属性名数组，获取指定属性名的属性，返回Object
+		 *                  —— Object            from->to, 获取view_model中属性名为from的值，把该值赋给返回值的to属性
+		 * @return {return} [由传入参数而定]
+		 */
+		vmGet: function(key) {
+			var ud,
+				data = {},
+				vm = this.$vm,
+				view_model = this.getConfig('view_model');
 
-				$('body').attr('ms-controller', pubjs.MVVM.grobalVMDefineName ); //是否有更好的地方改body属性？
-				//pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
-
-				pubjs.MVVM.scan(); //上面分开扫描有点问题，先全部扫描
+			if (util.isString(key) || util.isNumber(key)) {
+				return vm.$model[key];
+			} else if (util.isArray(key)) {
+				util.each(key, function(k) {
+					data[k] = vm.$model[key];
+				});
+			} else if (util.isObject(key)) {
+				util.each(key, function(to, from) {
+					data[to] = vm.$model[from];
+				});
+			}else if(key === ud) {
+				util.each(view_model, function(k, v){
+					if (!util.isFunc(v)) {
+						data[k] = vm.$model[k];
+					}
+				});
+			} else if (key === true) {
+				return vm.$model;
 			}
+			return data;
 		},
 		getLayout: function(){
 			return this.$el;
