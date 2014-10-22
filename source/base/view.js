@@ -200,7 +200,7 @@ define(function(require,exports) {
 		/**
 		 * 从数据对象中复制属性到vm中
 		 * @param  {Object} data [数据对象]
-		 * @param  {Object|Array} maps [当为数组时，指定需要复制的字段，当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
+		 * @param  {Object|Array} maps [不传则复制data中相同的字段到vm中;当为数组时，指定需要复制的字段;当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
 		 */
 		vmExtend: function(data, maps) {
 			var vm = this.$vm,
@@ -208,7 +208,7 @@ define(function(require,exports) {
 
 			util.each(data, function(v, k) {
 				var key;
-				if (util.isArray(maps) && util.index(maps, k) !== null) {
+				if (util.isArray(maps) && util.index(maps, k) !== null || !maps) {
 					key = k;
 				}
 				if (util.isPlainObject(maps) && (k in maps)) {
@@ -580,7 +580,7 @@ define(function(require,exports) {
 		/**
 		 * 从数据对象中复制属性到vm中
 		 * @param  {Object} data [数据对象]
-		 * @param  {Object|Array} maps [当为数组时，指定需要复制的字段，当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
+		 * @param  {Object|Array|Undefined} maps [不传则复制data中相同的字段到vm中;当为数组时，指定需要复制的字段;当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
 		 */
 		vmExtend: function(data, maps) {
 			var vm = this.$vm,
@@ -588,7 +588,7 @@ define(function(require,exports) {
 
 			util.each(data, function(v, k) {
 				var key;
-				if (util.isArray(maps) && util.index(maps, k) !== null) {
+				if (util.isArray(maps) && util.index(maps, k) !== null || !maps) {
 					key = k;
 				}
 				if (util.isPlainObject(maps) && (k in maps)) {
