@@ -215,10 +215,8 @@ define(function(require,exports) {
 					key = maps[k];
 				}
 				if (key && (key in view_model)) {
-					if (util.isArray(v)) {
-						vm[key] = $.extend([], v);
-					} else if (util.isObject(v)) {
-						vm[key] = $.extend({}, v);
+					if (util.isObject(v)) {
+						$.extend(vm[key], v);
 					} else {
 						vm[key] = v;
 					}
