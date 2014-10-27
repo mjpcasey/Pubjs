@@ -2417,7 +2417,9 @@ label input {
   right: 100%;
 }
 .M-accordionMenu-current,
-.M-accordionMenu-current:hover {
+.M-accordionMenu-current:hover,
+.M-accordionMenu-current a,
+.M-accordionMenu-current a:hover {
   color: #15b374;
 }
 .M-accordionMenu-current-parent {
