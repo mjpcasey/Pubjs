@@ -59,21 +59,6 @@ define(function(require,exports) {
 		self.createDelay(true, callback || "afterBuildTemplate", param);
 	}
 
-	// 从模块配置中初始化VM
-	function _defineVM(vm, view_model) {
-		util.each(view_model, function(v, k) {
-			// 对象需要拷贝，否则会污染config
-			if ($.isArray(v)) {
-				vm[k] = $.extend([], v);
-			} else if ($.isPlainObject(v)) {
-				vm[k] = $.extend({}, v);
-			} else {
-				vm[k] = v;
-			}
-		});
-		return vm;
-	}
-
 	/**
 	 * 容器视图类
 	 */
@@ -96,7 +81,9 @@ define(function(require,exports) {
 				// 容器属性对象, 调用jQuery的attr方法直接设置
 				'attr': null,
 				// 容器Style属性对象, 调用jQuery的css方法直接设置
-				'css': null
+				'css': null,
+				// 模板路径
+				'tplFile': ''
 			});
 			self.$el = null;
 
@@ -155,110 +142,52 @@ define(function(require,exports) {
 					util.isArray(cls) ? cls.join(' ') : cls
 				);
 			}
-			if (c.html){
-				el.html(c.html);
-			}else if (c.text){
-				el.text(c.text);
-			}
+
 			// 保存元素
 			self.$el = el;
-			// 插入元素到目标容器
-			if (!c.el && el && c.tag !== 'body' && c.target){
-				self.appendTo(c.target);
-			}
-
-			if (pubjs.MVVM ) {
-				if ( c.view_model ) {
-					this.$vm = pubjs.MVVM.define(this._.uri, function(vm) {
-						_defineVM(vm, c.view_model);
-					});
-					self.$el.attr('ms-controller', self._.uri);
-					//pubjs.MVVM.scan(self.$el[0]);
-				}
-			}
-
-			// 调用后续构建函数
-			if (!noAfterBuild && util.isFunc(self.afterBuild)){
-				self.afterBuild();
-			}
-
-			// 使用mvvm，扫描绑定dom
-			if (pubjs.MVVM ) {
-				$('body').attr('ms-controller', pubjs.MVVM.grobalVMDefineName ); //是否有更好的地方改body属性？
-				//pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
-
-				pubjs.MVVM.scan(); //上面分开扫描有点问题，先全部扫描
-			}
-
-			return self;
-		},
-		// 重置VM
-		vmReset:function() {
-			_defineVM(this.$vm, this.getConfig('view_model'));
-			return this;
-		},
-		/**
-		 * 从数据对象中复制属性到vm中
-		 * @param  {Object} data [数据对象]
-		 * @param  {Object|Array} maps [不传则复制data中相同的字段到vm中;当为数组时，指定需要复制的字段;当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
-		 */
-		vmExtend: function(data, maps) {
-			var vm = this.$vm,
-				view_model = this.getConfig('view_model');
-
-			util.each(data, function(v, k) {
-				var key;
-				if (util.isArray(maps) && util.index(maps, k) !== null || !maps) {
-					key = k;
-				}
-				if (util.isPlainObject(maps) && (k in maps)) {
-					key = maps[k];
-				}
-				if (key && (key in view_model)) {
-					if (util.isObject(v)) {
-						$.extend(vm[key], v);
-					} else {
-						vm[key] = v;
-					}
-				}
+			// 给vm添加命名空间
+			el.attr('ms-controller', this._.uri);
+			// 定义vm
+			self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+				util.extend(vm, c.view_model);
 			});
-			return vm;
-		},
-		/**
-		 * 获取vm中的数据
-		 * @param  {*} key  —— Default|Undefind  默认不传获取view_model中定义的全部非函数数据
-		 *                  —— true              true则获取view_model中定义的全部含函数数据
-		 *                  —— String|Number     字符串或数字为获取单项
-		 *                  —— Array             传入属性名数组，获取指定属性名的属性，返回Object
-		 *                  —— Object            from->to, 获取view_model中属性名为from的值，把该值赋给返回值的to属性
-		 * @return {return} [由传入参数而定]
-		 */
-		vmGet: function(key) {
-			var ud,
-				data = {},
-				vm = this.$vm,
-				view_model = this.getConfig('view_model');
+			self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
 
-			if (util.isString(key) || util.isNumber(key)) {
-				return vm.$model[key];
-			} else if (util.isArray(key)) {
-				util.each(key, function(k) {
-					data[k] = vm.$model[key];
-				});
-			} else if (util.isObject(key)) {
-				util.each(key, function(to, from) {
-					data[to] = vm.$model[from];
-				});
-			}else if(key === ud) {
-				util.each(view_model, function(k, v){
-					if (!util.isFunc(v)) {
-						data[k] = vm.$model[k];
-					}
-				});
-			} else if (key === true) {
-				return vm.$model;
+			function _build() {
+				// 插入元素到目标容器
+				if (!c.el && el && c.tag !== 'body' && c.target){
+					self.appendTo(c.target);
+				}
+				// 调用后续构建函数
+				if (!noAfterBuild && util.isFunc(self.afterBuild)){
+					self.afterBuild();
+				}
+				pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
 			}
-			return data;
+
+			// 加载模板
+			if (c.tplFile) {
+				pubjs.sync();
+				pubjs.data.loadFile(c.tplFile, function(err, tpl) {
+					if (err) {
+						pubjs.log('load template [[' + c.tplFile + ']] error');
+					} else {
+						el.append(tpl);
+					}
+					pubjs.sync(true);
+					_build();
+				});
+				return self;
+			}
+
+			if (c.html){
+				el.html(c.html);
+			} else if (c.text){
+				el.text(c.text);
+			}
+
+			_build();
+			return self;
 		},
 		uiBind: function(){
 			return this.Super('uiBind', fixArgsDom(arguments, this.$el));
@@ -536,109 +465,53 @@ define(function(require,exports) {
 			}
 		},
 		setLayout: function(layout){
-			var self = this;
-			var c = self.getConfig();
+			var el,
+				self = this,
+				c = this.getConfig();
+
 			self.$el = layout;
-			self.$ready = 'ready';
+			el = self.getContainer();
 
-			if (pubjs.MVVM ) {
-				if ( c.view_model ) {
-					this.$vm = pubjs.MVVM.define(this._.uri, function(vm) {
-						_defineVM(vm, c.view_model);
-					});
-					self.$el.attr('ms-controller', self._.uri);
-					//pubjs.MVVM.scan(self.$el[0]);
-				}
-			}
-
-			if (self.afterBuild){
-				self.afterBuild(layout);
-			}
-
-			// 使用mvvm，扫描绑定dom
-			if (pubjs.MVVM ) {
-				$('body').attr('ms-controller', pubjs.MVVM.grobalVMDefineName ); //是否有更好的地方改body属性？
-				//pubjs.MVVM.scan(self.$el[0], pubjs.GrobalVM);
-
-				pubjs.MVVM.scan(); //上面分开扫描有点问题，先全部扫描
-			}
-
-			// 调用被延迟的UI调用函数
-			var param, cs = self.$uiCalls;
-			while (cs.length){
-				param = cs.shift();
-				param.fn.apply(self, param.args);
-			}
-		},
-		// 重置VM
-		vmReset:function() {
-			_defineVM(this.$vm, this.getConfig('view_model'));
-			return this;
-		},
-		/**
-		 * 从数据对象中复制属性到vm中
-		 * @param  {Object} data [数据对象]
-		 * @param  {Object|Array|Undefined} maps [不传则复制data中相同的字段到vm中;当为数组时，指定需要复制的字段;当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
-		 */
-		vmExtend: function(data, maps) {
-			var vm = this.$vm,
-				view_model = this.getConfig('view_model');
-
-			util.each(data, function(v, k) {
-				var key;
-				if (util.isArray(maps) && util.index(maps, k) !== null || !maps) {
-					key = k;
-				}
-				if (util.isPlainObject(maps) && (k in maps)) {
-					key = maps[k];
-				}
-				if (key && (key in view_model)) {
-					if (util.isArray(v)) {
-						vm[key] = $.extend([], v);
-					} else if (util.isObject(v)) {
-						vm[key] = $.extend({}, v);
-					} else {
-						vm[key] = v;
-					}
-				}
+			// 给vm添加命名空间
+			el.attr('ms-controller', this._.uri);
+			// 定义vm
+			self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+				util.extend(vm, c.view_model);
 			});
-			return vm;
-		},
-		/**
-		 * 获取vm中的数据
-		 * @param  {*} key  —— Default|Undefind  默认不传获取view_model中定义的全部非函数数据
-		 *                  —— true              true则获取view_model中定义的全部含函数数据
-		 *                  —— String|Number     字符串或数字为获取单项
-		 *                  —— Array             传入属性名数组，获取指定属性名的属性，返回Object
-		 *                  —— Object            from->to, 获取view_model中属性名为from的值，把该值赋给返回值的to属性
-		 * @return {return} [由传入参数而定]
-		 */
-		vmGet: function(key) {
-			var ud,
-				data = {},
-				vm = this.$vm,
-				view_model = this.getConfig('view_model');
+			self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
 
-			if (util.isString(key) || util.isNumber(key)) {
-				return vm.$model[key];
-			} else if (util.isArray(key)) {
-				util.each(key, function(k) {
-					data[k] = vm.$model[key];
-				});
-			} else if (util.isObject(key)) {
-				util.each(key, function(to, from) {
-					data[to] = vm.$model[from];
-				});
-			}else if(key === ud) {
-				util.each(view_model, function(k, v){
-					if (!util.isFunc(v)) {
-						data[k] = vm.$model[k];
-					}
-				});
-			} else if (key === true) {
-				return vm.$model;
+			function _build() {
+				self.$ready = 'ready';
+
+				if (self.afterBuild){
+					self.afterBuild(layout);
+				}
+				pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+
+				// 调用被延迟的UI调用函数
+				var param, cs = self.$uiCalls;
+				while (cs.length){
+					param = cs.shift();
+					param.fn.apply(self, param.args);
+				}
 			}
-			return data;
+
+			// 加载模板
+			if (c.tplFile) {
+				pubjs.sync();
+				pubjs.data.loadFile(c.tplFile, function(err, tpl) {
+					if (err) {
+						pubjs.log('load template [[' + c.tplFile + ']] error');
+					} else {
+						el.append(tpl);
+					}
+					pubjs.sync(true);
+					_build();
+				});
+			} else {
+				_build();
+			}
+
 		},
 		getLayout: function(){
 			return this.$el;
@@ -1153,4 +1026,5 @@ define(function(require,exports) {
 		}
 	});
 	exports.layout = Layout;
+
 });
