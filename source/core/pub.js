@@ -834,6 +834,27 @@ define(function(require, exports, module){
 				}
 				return count;
 			}
+		},
+		/**
+		 * 加载静态文件
+		 * @param  {String}   url      请求文件url
+		 * @param  {Function} callback 回调函数
+		 * @param  {Object}   context  回调函数的运行域
+		 * @return {Undefined}
+		 */
+		loadFile: function(url, callback, context) {
+			url = this.resolve(url);
+			context = context || window;
+			$.ajax({
+				url: url,
+				dataType: 'text',
+				success: function(fileContent) {
+					callback.call(context, false, fileContent);
+				},
+				error: function(xhr, textStatus, err) {
+					callback.call(context, err);
+				}
+			});
 		}
 	};
 
