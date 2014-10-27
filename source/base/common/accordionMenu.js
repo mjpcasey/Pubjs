@@ -243,7 +243,7 @@
 						}
 					});
 				} else if (self.isHashMatch(item.hashMatch)) {
-					item.header.addClass(currentClass);
+					item.el.addClass(currentClass);
 				}
 			});
 		},
