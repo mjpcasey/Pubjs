@@ -24,6 +24,7 @@ define(function(require, exports){
 				'url': null,			// 远程数据地址
 				'param': null,			// 远程数据请求参数
 				"reqMethod":"get",		// 数据获取方式
+				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
 				'auto_load': true,		// 自动加载数据
 				'eventDataLoad': false, // 是否冒泡数据已加载完成事件
 
@@ -614,7 +615,6 @@ define(function(require, exports){
 				content.css('min-width', 0);
 				header.css('width', wrap.width() - conLeftWidth- 2);
 				content.css('width', wrap.width() - conLeftWidth - 2);
-				console.log(wrap.width() - conLeftWidth)
 				content.css('min-height', 'inherit'); // 清除上一次由滚动条生成的min-height
 
 				// 清零右侧宽度
@@ -757,7 +757,14 @@ define(function(require, exports){
 
 			this.showLoading();
 
-			this.$reqID = pubjs.data[c.reqMethod](c.url, param, this, 'onData');
+			switch(c.reqType){
+				case 'ajax':
+					this.$reqID = pubjs.data[cfg.reqMethod](c.url, param, this, 'onData');
+				break;
+				case 'websocket':
+					pubjs.mc.send(c.url, param, this.onData.bind(this));
+				break;
+			}
 
 			return this;
 		},
@@ -1029,7 +1036,7 @@ define(function(require, exports){
 
 			// 再同步宽度 @todo
 
-			return false;
+			// return false;
 		},
 		// 主菜单状态变动响应事件
 		onMenuToggle: function(ev){

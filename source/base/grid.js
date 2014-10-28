@@ -23,7 +23,7 @@ define(function(require, exports){
 				"functional": null,		// 操作功能按钮
 				"static_date": null,	// 静态查询日期参数
 
-				"reqType": "ajax",		// 	默认通信方式使用ajax，可选websocket
+				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
 				"reqMethod":"get",		// 数据获取方式
 				'amount_data': null,	// 静态总计数据
 				'data': null,			// 静态数据

@@ -56,6 +56,8 @@ define(function(require, exports){
 				,"dataType":1
 				// 数据节点
 				,"database":null
+				// 默认通信方式使用ajax，可选websocket
+				,"reqType": "ajax"
 				// 显示文字
 				,"txts":{
 					"title":LANG("分组：")
@@ -346,11 +348,20 @@ define(function(require, exports){
 			var tagBox = this.tagLabelsContainer.tagsBox;
 			tagBox.addClass("M-tagLabelsloading");
 			this.removeAllTags();
-			pubjs.data.get(
-				this.database
-				,$.extend({}, c.param, this.sysParam)
-				,this
-			);
+
+			switch(c.reqType){
+				case 'ajax':
+					pubjs.data.get(
+						this.database
+						,$.extend({}, c.param, this.sysParam)
+						,this
+					);
+				break;
+				case 'websocket':
+					pubjs.mc.send(this.database, $.extend({}, c.param, this.sysParam), this.onData.bind(this));
+				break;
+			}
+
 		}
 		/**
 		 * 销毁函数

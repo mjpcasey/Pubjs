@@ -2279,7 +2279,7 @@ label input {
   position: relative;
 }
 .M-tagLabelsloading {
-  background: url(images/loading.gif) 0 2px no-repeat;
+  background: url(../images/loading.gif) 0 2px no-repeat;
 }
 .M-tagLabelsLabel {
   font-size: 14px;
