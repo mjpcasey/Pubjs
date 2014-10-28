@@ -74,8 +74,6 @@ define(function(require,exports) {
 		return vm;
 	}
 
-
-
 	/**
 	 * 容器视图类
 	 */
@@ -430,11 +428,18 @@ define(function(require,exports) {
 				target: this.getDOM()
 			}, param);
 
-			this.createAsync(name, uri, config, function(mod){
+			var mod = this.get(name);
+			if(!mod){
+				this.createAsync(name, uri, config, function(mod){
+					if(util.isFunc(callback)){
+						callback(mod);
+					}
+				});
+			}else{
 				if(util.isFunc(callback)){
 					callback(mod);
 				}
-			});
+			}
 		},
 		/**
 		 * 从模版创建
@@ -501,7 +506,10 @@ define(function(require,exports) {
 			self.$sidebarFlex = self.$sidebar.find('.G-frameBodySidebarFlex');
 
 			self.uiBind(document, 'mousemove mouseout','eventToggleFlexBtn');
-			self.uiBind(self.$sidebar, 'click', 'eventToggleSideBar');
+			self.uiBind(self.$sidebarFlex, 'click', 'eventToggleSideBar');
+
+			// self.$sidebar.height($(window).height()-50);
+			self.$container.width(self.$container.width()-200);
 
 			return self;
 		},
@@ -537,11 +545,21 @@ define(function(require,exports) {
 			self.$sidebarFlex.find('i').toggleClass('uk-icon-anchor', !self.$sidebarHide);
 			self.$sidebar.find('.G-frameBodySidebarContent').toggleClass('act_right', !self.$sidebarHide);
 
+
 			// 更新状态
 			self.$sidebarHide = !self.$sidebarHide;
 
-			pubjs.core.cast('toggleSideBar');
+			this.updateWidth();
+			this.cast('toolsToggle');
 			return false;
+		},
+		// 更新宽度
+		updateWidth: function(){
+			var sidebar = 200 *2;	// 左右侧栏宽度
+			var padding = 20*2;		// 内边距
+			var w = $(window).width()-sidebar-padding;
+			w = this.$sidebarHide ? w+200: w;
+			this.$container.width(w);
 		},
 		// 创建业务模块
 		createBusiness: function(name, uri, param, callback){
@@ -550,18 +568,47 @@ define(function(require,exports) {
 				targetMenu: this.getSidebar()
 			}, param);
 
-			this.createAsync(name, uri, config, function(mod){
-				// todo 要不要绑定作用域
+			var mod = this.get(name);
+			if(!mod){
+				this.createAsync(name, uri, config, function(mod){
+					// todo 要不要绑定作用域
+					if(util.isFunc(callback)){
+						callback(mod);
+					}
+				});
+			}else{
 				if(util.isFunc(callback)){
 					callback(mod);
 				}
-			});
+			}
 		},
 		getConfig: function(name){
 			return this.$config.get(name);
 		},
 		setConfig: function(name, value){
 			this.$config.set(name, value);
+			return this;
+		},
+		append: function(){
+			var el = this.$el;
+			if (el){
+				el.append.apply(el, arguments);
+			}
+			return this;
+		},
+		/**
+		 * 把当前容器插入到指定的容器中
+		 * @param  {Object} target 容器实例或者jQuery对象实例
+		 * @return {Object}        Container实例
+		 */
+		appendTo: function(target){
+			if (target){
+				if (util.isString(target)){
+					this.$el.appendTo(target);
+				}else {
+					this.$el.appendTo(target.jquery ? target : target.getDOM());
+				}
+			}
 			return this;
 		},
 		getContainer: function(){
@@ -572,7 +619,11 @@ define(function(require,exports) {
 		},
 		getSidebar: function(){
 			return this.$sidebar.find('.G-frameBodySidebarContent');
-		}
+		},
+		onSYSResize: function(ev){
+			this.updateWidth();
+		},
+		buildFromTemplate: _buildFromTemplate
 	});
 	exports.containerWithSidebar = ContainerWithSidebar;
 
@@ -766,7 +817,6 @@ define(function(require,exports) {
 		buildFromTemplate: _buildFromTemplate
 	});
 	exports.widget = Widget;
-
 
 	// 矩阵布局
 	var LayoutGrid = Container.extend({
