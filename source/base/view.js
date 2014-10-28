@@ -174,8 +174,8 @@ define(function(require,exports) {
 					} else {
 						el.append(tpl);
 					}
-					pubjs.sync(true);
 					_build();
+					pubjs.sync(true);
 				});
 				return self;
 			}
@@ -505,8 +505,8 @@ define(function(require,exports) {
 					} else {
 						el.append(tpl);
 					}
-					pubjs.sync(true);
 					_build();
+					pubjs.sync(true);
 				});
 			} else {
 				_build();
