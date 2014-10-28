@@ -457,7 +457,7 @@ define(function(require, exports, module){
 				return false;
 			}
 			this.busy = 1;
-			var pend = sender.childs(); // 广播不再触发自身, 从子模块开始
+			var pend = sender.childs().slice(); // 广播不再触发自身, 从子模块开始
 			var target;
 			var evt = this.createEvent(sender, type, param);
 
