@@ -145,13 +145,18 @@ define(function(require,exports) {
 
 			// 保存元素
 			self.$el = el;
-			// 给vm添加命名空间
-			el.attr('ms-controller', this._.uri);
-			// 定义vm
-			self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-				util.extend(vm, c.view_model);
-			});
-			self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm is not require');
+				}
+				// 给vm添加命名空间
+				el.attr('ms-controller', this._.uri);
+				// 定义vm
+				self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.extend(vm, c.view_model);
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+			}
 
 			function _build() {
 				// 插入元素到目标容器
@@ -162,7 +167,9 @@ define(function(require,exports) {
 				if (!noAfterBuild && util.isFunc(self.afterBuild)){
 					self.afterBuild();
 				}
-				pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				if (c.view_model) {
+					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				}
 			}
 
 			// 加载模板
@@ -472,13 +479,18 @@ define(function(require,exports) {
 			self.$el = layout;
 			el = self.getContainer();
 
-			// 给vm添加命名空间
-			el.attr('ms-controller', this._.uri);
-			// 定义vm
-			self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-				util.extend(vm, c.view_model);
-			});
-			self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm must require');
+				}
+				// 给vm添加命名空间
+				el.attr('ms-controller', this._.uri);
+				// 定义vm
+				self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.extend(vm, c.view_model);
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+			}
 
 			function _build() {
 				self.$ready = 'ready';
@@ -486,7 +498,9 @@ define(function(require,exports) {
 				if (self.afterBuild){
 					self.afterBuild(layout);
 				}
-				pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				if (c.view_model) {
+					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				}
 
 				// 调用被延迟的UI调用函数
 				var param, cs = self.$uiCalls;
