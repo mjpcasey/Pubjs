@@ -54,7 +54,7 @@ define(function(require, exports){
 							}
 							if (key && (key in view_model)) {
 								if (util.isObject(v)) {
-									util.extend(true, vm[key], v);
+									vm[key] = util.extend(true, vm[key], v);
 								} else {
 									vm[key] = v;
 								}
@@ -63,10 +63,22 @@ define(function(require, exports){
 						return vm;
 					},
 					/**
+					 * 设置VM顶级属性的值
+					 */
+					setItem: function(key, value) {
+						vm[key] = value;
+						return value;
+					},
+					/**
+					 * 通过属性链获取VM中单个字段的值
+					 */
+					getItem: function(prop_name) {
+						return util.prop(vm.$model, key);
+					},
+					/**
 					 * 获取vm中的数据
 					 * @param  {*} key  —— Default|Undefind  默认不传获取view_model中定义的全部非函数数据
 					 *                  —— true              true则获取view_model中定义的全部含函数数据
-					 *                  —— String|Number     字符串或数字为获取单项
 					 *                  —— Array             传入属性名数组，获取指定属性名的属性，返回Object
 					 *                  —— Object            from->to, 获取view_model中属性名为from的值，把该值赋给返回值的to属性
 					 * @return {return} [由传入参数而定]
@@ -75,9 +87,7 @@ define(function(require, exports){
 						var ud,
 							data = {};
 
-						if (util.isString(key) || util.isNumber(key)) {
-							return util.prop(vm.$model, key);
-						} else if (util.isArray(key)) {
+						if (util.isArray(key)) {
 							util.each(key, function(k) {
 								data[k] = vm.$model[k];
 							});
