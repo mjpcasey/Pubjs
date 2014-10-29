@@ -9,6 +9,12 @@ define(function(require,exports) {
 	 */
 	exports.jquery = $;
 
+	// 替换语言标记
+	var lang_pattern = /\{\% (.+?) \%\}/g;
+	function lang_replace(full, text){
+		return LANG(text);
+	}
+
 	function fixArgsDom(args, el){
 		args = argToArray.call(args);
 		if (util.isString(args[0])){
@@ -153,9 +159,21 @@ define(function(require,exports) {
 				el.attr('ms-controller', this._.uri);
 				// 定义vm
 				self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-					util.extend(vm, c.view_model);
+					for (var vm_field in c.view_model) {
+						if (c.view_model.hasOwnProperty(vm_field)) {
+							var vm_value = c.view_model[vm_field];
+
+							if (util.isFunc(vm_value)) {
+								vm[vm_field] = function() {
+									vm_value.apply(self, arguments);
+								}
+							} else {
+								vm[vm_field] = vm_value;
+							}
+						}
+					}
 				});
-				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model, self);
 			}
 
 			function _build() {
@@ -179,7 +197,7 @@ define(function(require,exports) {
 					if (err) {
 						pubjs.log('load template [[' + c.tplFile + ']] error');
 					} else {
-						el.append(tpl);
+						el.append(tpl.replace(lang_pattern, lang_replace));
 					}
 					_build();
 					pubjs.sync(true);
@@ -363,6 +381,10 @@ define(function(require,exports) {
 				el.remove();
 			}
 			this.$doms = this.$el = null;
+
+			this.vm.destroy();
+			this.vm = null;
+			return this;
 		},
 		/**
 		 * 删除doms元素循环回调函数
@@ -487,7 +509,19 @@ define(function(require,exports) {
 				el.attr('ms-controller', this._.uri);
 				// 定义vm
 				self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-					util.extend(vm, c.view_model);
+					for (var vm_field in c.view_model) {
+						if (c.view_model.hasOwnProperty(vm_field)) {
+							var vm_value = c.view_model[vm_field];
+
+							if (util.isFunc(vm_value)) {
+								vm[vm_field] = function() {
+									vm_value.apply(self, arguments);
+								}
+							} else {
+								vm[vm_field] = vm_value;
+							}
+						}
+					}
 				});
 				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
 			}
@@ -517,7 +551,7 @@ define(function(require,exports) {
 					if (err) {
 						pubjs.log('load template [[' + c.tplFile + ']] error');
 					} else {
-						el.append(tpl);
+						el.append(tpl.replace(lang_pattern, lang_replace));
 					}
 					_build();
 					pubjs.sync(true);
@@ -585,6 +619,12 @@ define(function(require,exports) {
 		},
 		hide: function(){
 			return _uiFunction.call(this, 'hide', arguments);
+		},
+		destroy: function() {
+			this.Super('destroy', arguments);
+			this.vm.destroy();
+			this.vm = null;
+			return this;
 		},
 		/**
 		 * 从模版创建
