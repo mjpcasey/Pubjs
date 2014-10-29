@@ -95,6 +95,7 @@ define(function(require, exports, module){
 		return Class;
 	}
 	exports.noop = noop;
+	exports.Class = noop;
 
 	// 系统日志函数
 	var con = window.console || {};
