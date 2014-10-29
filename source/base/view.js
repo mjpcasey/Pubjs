@@ -375,6 +375,12 @@ define(function(require,exports) {
 		destroy:function(){
 			util.each(this.$doms, this.cbRemoveDoms);
 			var el = this.$el;
+
+			if (this.vm) {
+				this.vm.destroy();
+				this.vm = null;
+			}
+
 			this.Super("destroy");
 			if(el){
 				el.find("*").unbind();
@@ -382,8 +388,6 @@ define(function(require,exports) {
 			}
 			this.$doms = this.$el = null;
 
-			this.vm.destroy();
-			this.vm = null;
 			return this;
 		},
 		/**
@@ -621,9 +625,12 @@ define(function(require,exports) {
 			return _uiFunction.call(this, 'hide', arguments);
 		},
 		destroy: function() {
+			if (this.vm) {
+				this.vm.destroy();
+				this.vm = null;
+			}
+
 			this.Super('destroy', arguments);
-			this.vm.destroy();
-			this.vm = null;
 			return this;
 		},
 		/**
