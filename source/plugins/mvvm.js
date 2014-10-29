@@ -15,15 +15,16 @@ define(function(require, exports){
 
 	function defineVMCtrl() {
 		VMCtrl = pubjs.Class.extend({
-			CONSTRUCTOR: function(vm ,view_model) {
-				this.vm = vm;
+			CONSTRUCTOR: function(vm ,view_model, module) {
+				this.$ = vm;
 				this.view_model = view_model;
+				this.module = module;
 			},
 			/**
 			 * 重设vm
 			 */
 			reset: function() {
-				var vm = this.vm;
+				var vm = this.$;
 				util.each(this.view_model, function(v, k) {
 					// 对象需要拷贝，否则会污染config
 					if (util.isArray(v)) {
@@ -42,7 +43,8 @@ define(function(require, exports){
 			 * @param  {Object|Array} maps [不传则复制data中相同的字段到vm中;当为数组时，指定需要复制的字段;当为对象时，把data中字段名为key的值赋值给vm中的对应value字段]
 			 */
 			setData: function(data, maps) {
-				var vm = this.vm;
+				var vm = this.$,
+					view_model = this.view_model;
 				util.each(data, function(v, k) {
 					var key;
 					if (util.isArray(maps) && util.index(maps, k) !== null || !maps) {
@@ -51,7 +53,7 @@ define(function(require, exports){
 					if (util.isPlainObject(maps) && (k in maps)) {
 						key = maps[k];
 					}
-					if (key && (key in this.view_model)) {
+					if (key && (key in view_model)) {
 						if (util.isObject(v)) {
 							vm[key] = util.extend(true, vm[key], v);
 						} else {
@@ -65,14 +67,14 @@ define(function(require, exports){
 			 * 设置VM顶级属性的值
 			 */
 			setItem: function(key, value) {
-				this.vm[key] = value;
+				this.$[key] = value;
 				return value;
 			},
 			/**
 			 * 通过属性链获取VM中单个字段的值
 			 */
 			getItem: function(uri) {
-				return util.prop(this.vm.$model, uri);
+				return util.prop(this.$.$model, uri);
 			},
 			/**
 			 * 获取vm中的数据
@@ -85,7 +87,7 @@ define(function(require, exports){
 			getData: function(key) {
 				var ud,
 					data = {},
-					vm = this.vm;
+					vm = this.$;
 
 				if (util.isArray(key)) {
 					util.each(key, function(k) {
@@ -110,11 +112,11 @@ define(function(require, exports){
 			 * 监听VM中的字段
 			 * @param  {String}          uri     要监听的字段属性链
 			 * @param  {Function|String} func    回调方法
-			 * @param  {Object}          context 回调作用域（一般为module）
+			 * @param  {Object}          context 回调作用域（默认为当前module）
 			 */
 			watch: function(uri, func, context) {
 				var name,
-					parent = vm,
+					parent = this.$,
 					ns = (''+uri).split('/');
 
 				while (ns.length){
@@ -128,7 +130,7 @@ define(function(require, exports){
 					}
 				}
 
-				context = context || window;
+				context = context || this.module;
 
 				if (util.isString(func)) {
 					func = context[func];
@@ -143,8 +145,9 @@ define(function(require, exports){
 				}
 			},
 			destroy: function() {
-				this.vm = null;
+				this.$ = null;
 				this.view_model = null;
+				this.module = null;
 				// TODO: 销毁当前模块的vm
 			}
 		});
