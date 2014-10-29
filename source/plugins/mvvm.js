@@ -76,10 +76,10 @@ define(function(require, exports){
 							data = {};
 
 						if (util.isString(key) || util.isNumber(key)) {
-							return vm.$model[key];
+							return util.prop(vm.$model, key);
 						} else if (util.isArray(key)) {
 							util.each(key, function(k) {
-								data[k] = vm.$model[key];
+								data[k] = vm.$model[k];
 							});
 						} else if (util.isObject(key)) {
 							util.each(key, function(to, from) {
@@ -95,6 +95,11 @@ define(function(require, exports){
 							return vm.$model;
 						}
 						return data;
+					},
+					destroy: function() {
+						vm = null;
+						view_model = null;
+						// TODO: 销毁当前模块的vm
 					}
 				}
 				return ex;
