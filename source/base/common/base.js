@@ -1398,11 +1398,11 @@ define(function(require, exports){
 	var Tips = view.container.extend({
 		init: function(config){
 			config = pubjs.conf(config, {
-				'tips':'',
+				'data':'',
 				'width': '',
 				'height': '',
 				'tag': 'span',
-				'class':'M-commonTip'
+				'class':'M-commonTips'
 			});
 			this.Super('init', arguments);
 		},
@@ -1419,7 +1419,7 @@ define(function(require, exports){
 					width: c.width,
 					height: c.height
 				}, function(mod){
-					mod.getContainer().text(c.tips);
+					mod.getContainer().text(c.data);
 				});
 			}else{
 				if(ev.type == 'mouseenter'){

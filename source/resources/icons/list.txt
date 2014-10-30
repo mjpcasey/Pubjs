@@ -42,6 +42,7 @@ z[10,10,0,0]		{drag} 				drag.png
 # 小问号
 z[15,15,62,22]				{questionMark} 		icon.png		# 问号图标
 z[15,15,62,22]		(act)	{questionMark} 		icons_act.png	# 问号图标
+z[16,16,0,0]				{formQuestionMark}			formQuestionMark.png  # 灰色问号
 
 # 表格展开箭头
 z[16,10,0,80]				{middleArrow}		icon.png		# 中型白色 向下箭头
