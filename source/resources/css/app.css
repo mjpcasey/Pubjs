@@ -2119,15 +2119,6 @@ label input {
   height: 16px;
   vertical-align: middle;
 }
-.M-MenuOptions .option .icon-icon1 {
-  background: url(../images/menu/icon1.png) no-repeat center center;
-}
-.M-MenuOptions .option .icon-icon2 {
-  background: url(../images/menu/icon2.png) no-repeat center center;
-}
-.M-MenuOptions .option .icon-icon3 {
-  background: url(../images/menu/icon3.png) no-repeat center center;
-}
 .M-MenuOptions .option a {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -2427,7 +2418,9 @@ label input {
   right: 100%;
 }
 .M-accordionMenu-current,
-.M-accordionMenu-current:hover {
+.M-accordionMenu-current:hover,
+.M-accordionMenu-current a,
+.M-accordionMenu-current a:hover {
   color: #15b374;
 }
 .M-accordionMenu-current-parent {

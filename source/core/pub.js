@@ -95,6 +95,7 @@ define(function(require, exports, module){
 		return Class;
 	}
 	exports.noop = noop;
+	exports.Class = noop;
 
 	// 系统日志函数
 	var con = window.console || {};
@@ -834,10 +835,67 @@ define(function(require, exports, module){
 				}
 				return count;
 			}
+		},
+		/**
+		 * 加载静态文件
+		 * @param  {String}   url      请求文件url
+		 * @param  {Mix}      param    请求参数
+		 * @param  {Function} callback 回调函数
+		 * @param  {Object}   context  回调函数的运行域
+		 * @return {Undefined}
+		 */
+		loadFile: function(url, param, callback, context) {
+			url = this.resolve(url);
+			if (util.isFunc(param)) {
+				callback = param;
+				context = callback;
+				param = {};
+			}
+			context = context || window;
+			$.ajax({
+				url: url,
+				data: param,
+				type: 'GET',
+				dataType: 'text',
+				success: function(res) {
+					callback.call(context, false, res);
+				},
+				error: function(xhr, textStatus, err) {
+					callback.call(context, err);
+				}
+			});
+		},
+		/**
+		 * jsonp请求
+		 * @param  {String}   url      请求文件url
+		 * @param  {Mix}      param    请求参数
+		 * @param  {Function} callback 回调函数
+		 * @param  {Object}   context  回调函数的运行域
+		 * @return {Undefined}
+		 */
+		jsonp: function(url, param, callback, context) {
+			url = this.resolve(url);
+			if (util.isFunc(param)) {
+				callback = param;
+				context = callback;
+				param = {};
+			}
+			context = context || window;
+			$.ajax({
+				url: url,
+				data: param,
+				type: 'GET',
+				dataType: 'jsonp',
+				jsonp: "callback",
+				success: function(res) {
+					callback.call(context, false, res);
+				},
+				error: function(xhr, textStatus, err) {
+					callback.call(context, err);
+				}
+			});
 		}
 	};
-
-
 
 
 	var SyncCount = 0;
