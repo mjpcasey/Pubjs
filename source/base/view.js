@@ -160,22 +160,21 @@ define(function(require,exports) {
 				// 给vm添加命名空间
 				el.attr('ms-controller', this._.uri);
 				// 定义vm
-				self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-					for (var vm_field in c.view_model) {
-						if (c.view_model.hasOwnProperty(vm_field)) {
-							var vm_value = c.view_model[vm_field];
-
-							if (util.isFunc(vm_value)) {
-								vm[vm_field] = function() {
-									vm_value.apply(self, arguments);
-								}
-							} else {
-								vm[vm_field] = vm_value;
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
 							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
 						}
-					}
+					});
 				});
-				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model, self);
+				self.vm = pubjs.MVVM.buildVMCtrl($vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描
+				el.attr('ms-skip', 1);
 			}
 
 			function _build() {
@@ -711,22 +710,21 @@ define(function(require,exports) {
 				// 给vm添加命名空间
 				el.attr('ms-controller', this._.uri);
 				// 定义vm
-				self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-					for (var vm_field in c.view_model) {
-						if (c.view_model.hasOwnProperty(vm_field)) {
-							var vm_value = c.view_model[vm_field];
-
-							if (util.isFunc(vm_value)) {
-								vm[vm_field] = function() {
-									vm_value.apply(self, arguments);
-								}
-							} else {
-								vm[vm_field] = vm_value;
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
 							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
 						}
-					}
+					});
 				});
-				self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+				self.vm = pubjs.MVVM.buildVMCtrl($vm, c.view_model);
+			} else {
+				// 非MVVM模块禁止扫描你
+				el.attr('ms-skip', 1);
 			}
 
 			function _build() {

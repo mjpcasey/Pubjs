@@ -4,23 +4,26 @@ define(function( require, exports ){
 	var util  = require('util');
 	var view  = require('@base/view');
 
+	// 下拉菜单面板
 	var Menu = view.container.extend({
 		init: function( config ) {
 			config = pubjs.conf( config, {
 				'target': pubjs.DEFAULT_POPUP_CONTAINER,
 				'trigger': null,		// 模块创建触发源
 				'algin': 'left-bottom',	// 对齐方式
-
-				'width': 160,			// 选项宽度
+				// 'width': 0,		        // 选项宽度(暂无默认宽度)
 				'height': 30,			// 选项高度
-				'scroll_height': 0,		// 有滚动条时整个菜单的高度
-				'space': 5,				// 弹出菜单与显示框的间距
-				'line_space': 5,		// 分割线与上下的间距
+				'scroll_height': 0,		// 有滚动条时整个菜单的<自定义>高度
+				'offsetTop': 0,			// 顶部偏移量(用于调整位置)
+				'offsetLeft': 0,		// 左侧偏移量
+				'space': 5,				// 弹出菜单与触发元素的间距
+				'line_space': 5,		// 分割线与选项的间距
 				'pageX': 0,				// 自定义菜单横坐标
 				'pageY': 0,				// 自定义菜单纵坐标
-
 				'options': null,		// 自定义选项<数组形式>
 				'option_render': null,	// 选项渲染函数
+				'multi': false,			// 是否支持多选(checkbox)
+				'auto_destroy': false,	// <单选>情况下,选项点击后销毁模块
 				'url': null,			// 选项数据拉取地址
 				'key': 'id',			// 选项 关键字 字段名
 				'name': 'name',			// 选项 显示文字 字段名
@@ -31,10 +34,12 @@ define(function( require, exports ){
 				'search': false,		// 是否含有搜索框,如果有设置为keyup或者button
 				'callback': null,		// 选中数据后的回调函数
 				'relate_elm': null,		// 关联元素
+				'data_set': null,		// 设置菜单展开后的选中数据
+				'auto_send': false,		// 拉取数据后自动发消息
 				'z': 1000				// 菜单zindex
 			});
-
 			this.$subArr = [];			// 存放下一级子菜单
+			this.$subMenuSelected = {};	// 存放子菜单的选中数据
 			this.$count = 0;			// 含有子菜单的选项计数(sub-id属性)
 			this.$data = {};			// 选项数据缓存
 			this.$fmod = {};			// 父选项信息缓存
@@ -56,7 +61,7 @@ define(function( require, exports ){
 		},
 
 		/**
-		 * [setData 设置数据]
+		 * [setData 设置整个菜单的选项数据]
 		 * @param {[type]} options [数据选项<数组>]
 		 */
 		setData: function( options ) {
@@ -67,11 +72,59 @@ define(function( require, exports ){
 		},
 
 		/**
-		 * [getData 获取选中的数据]
-		 * @param  {[type]} opt []
+		 * [getData 整个菜单的选项数据]
+		 * @param {[type]} options [数据选项<数组>]
 		 */
-		getData: function( opt ) {
+		getData: function() {
 			return this.$data;
+		},
+
+		/**
+		 * [getValue 返回菜单选中的数据]
+		 */
+		getValue: function() {
+			var options = this.$doms.options.find('.option');
+			var ret = [], data = [];
+			for( var i = 0, len = options.length; i < len; i++ ) {
+				var checkBox = options.eq(i).find('.M-MenuCheckBox');
+				var elma = options.eq(i).find('a');
+				if( checkBox.hasClass('M-MenuChecked') ) {
+					data.push({
+						'id': elma.attr('data-id'),
+						'text': elma.text()
+					});
+				}
+			}
+			return data;
+		},
+
+		/**
+		 * [setValue 设置菜单展开后的选中数据]
+		 * @param {[Array]} sets [数据选项<数组>]
+		 */
+		setValue: function( sets ) {
+			var self = this;
+			var C = self.getConfig('multi');
+			var options = this.$doms.options;
+			if( !util.isArray( sets ) || sets.length === 0 || !sets[0] ) {
+				return;
+			}
+			util.each( sets, function( item, idx ) {
+				// 多选情况下的设置
+				if( C.multi ) {
+					options
+					.find('a[data-id='+ item.id +']')
+					.find('.M-MenuCheckBox')
+					.addClass('M-MenuChecked');
+				}
+				// 单选情况下的设置
+				else {
+					options
+					.find('a[data-id='+ item.id +']')
+					.parent('.option')
+					.addClass('act');
+				}
+			});
 		},
 
 		/**
@@ -79,9 +132,11 @@ define(function( require, exports ){
 		 * @param  {[type]} param [参数]
 		 */
 		load: function( param ) {
+			pubjs.sync();
+			pubjs.loading.show();
 			var C = this.getConfig();
 			if( param ) {
-				C.param = util.merge( C.param, param );
+				C.param = $.merge( C.param, param );
 			}
 			pubjs.data.get( C.url, C.param, this );
 		},
@@ -92,15 +147,17 @@ define(function( require, exports ){
 		 * @param  {[type]} data  [返回数据]
 		 */
 		onData: function( error, data ) {
+			pubjs.sync(true);
+			pubjs.loading.hide();
 			var self = this;
 			if( error ) {
 				pubjs.error( error.message );
 				return;
 			}
 			self.setData( data.items );
-			self.fire( 'menuDataLoaded', {
-				'data': self.$data
-			});
+			if( C.auto_send ) {
+				self.fire( 'menuDataLoaded', {'data': self.$data});
+			}
 		},
 
 		/**
@@ -137,6 +194,11 @@ define(function( require, exports ){
 			if( C.search == 'keyup' || C.search == 'button' ) {
 				self.addSearch( C.search );
 			}
+
+			// 如果有多选需求
+			if( C.multi ) {
+				self.addConfirm();
+			}
 		},
 
 		/**
@@ -154,7 +216,7 @@ define(function( require, exports ){
 				li.removeClass('option').addClass('option-line').css('margin', C.line_space + 'px 0');
 				self.$lineSum++;
 			}
-			// 正常选项, TODO：选项添加Icon的形式
+			// 正常选项
 			else {
 				anchor = $('<a href="#" data-id="'+ item[C.key] +'"/>');
 				if( util.isFunc( C.option_render ) ) {
@@ -163,13 +225,17 @@ define(function( require, exports ){
 				else {
 					lyt = item[C.name];
 				}
+				// 如果为多选则加上选择按钮
+				if( C.multi ) {
+					lyt = '<i class="M-MenuCheckBox"></i>' + lyt;
+				}
 				anchor.html( lyt );
 				anchor.appendTo( li );
 				// 含有子项，添加箭头
 				if( item[C.skey] ) {
 					li.addClass('hasSub')
 					.attr( 'sub-id', self.$count++ )
-					.append('<b class="more"/>');
+					.append('<b class="M-MenuOptionsMore"/>');
 					// 缓存子菜单
 					self.$subArr.push( item[C.skey] );
 				}
@@ -187,24 +253,234 @@ define(function( require, exports ){
 			var C = self.getConfig();
 			var uh = C.height + 'px';
 			// 设置菜单面板宽度
-			self.$el.width( C.width );
+			if( C.width ) {
+				self.$el.width( C.width );
+				self.$menuWidth = C.width;
+			}
+			else {
+				self.$menuWidth = self.$doms.options.width();
+			}
 			// 设置选项高度
 			self.$el.find('.option').css({
 				'height': uh,
 				'line-height': uh
 			});
+			// 如果需要设置选中数据
+			if( util.isArray( C.data_set ) && C.data_set.length !== 0 ) {
+				self.setValue( C.data_set );
+			}
 			// 选项li的鼠标移入事件
 			self.uiBind( self.$el.find('.option'), 'mouseenter', self.eventItemMouseEnter, self );
 			// 选项点击事件
-			self.uiBind( self.$el.find('.option'), 'click', self.eventItemSelect, self );
+			if( C.multi ) {
+				self.uiBind( self.$el.find('.option'), 'click', self.eventMultiItemSelect, self );
+			}
+			else {
+				self.uiBind( self.$el.find('.option'), 'click', self.eventItemSelect, self );
+			}
 			// 点击模块内部不消失
 			self.uiBind( self.$el, 'mouseup', self.eventClickModule, self );
 			// 点击空白处移除模块
 			self.uiBind( $('body'), 'mouseup', self.eventClickBlank, self );
+			// 点击关联元素不消失
 			if( C.relate_elm ) {
 				self.uiBind( C.relate_elm, 'mouseup', self.eventClickModule, self );
 			}
 			return self;
+		},
+
+		/**
+		 * [getSrcPosition 获取触发元素的位置]
+		 * @param  {[type]} elm   [触发元素]
+		 * @return {[Object]}     [包含left和top属性]
+		 */
+		getSrcPosition: function( elm ) {
+			return $(elm).offset();
+		},
+
+		/**
+		 * [getSrcSize 获取触发元素的宽高]
+		 * @param  {[type]} elm   [触发元素]
+		 * @return {[Object]}     [包含width和height]
+		 */
+		getSrcSize: function( elm ) {
+			return {
+				'width': $(elm).outerWidth(),
+				'height': $(elm).outerHeight()
+			}
+		},
+
+		/**
+		 * [setMenuPosition 设置一级菜单的弹出位置]
+		 * @param  {[type]} elm   [触发元素]
+		 */
+		setMenuPosition: function( elm ) {
+			var self = this;
+			var C = self.getConfig();
+			var mLeft, mTop;
+			// 触发元素的位置和尺寸
+			var pos = self.getSrcPosition( elm );
+			var size = self.getSrcSize( elm );
+			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
+			// 保留高度
+			var remain = 0;
+			// 菜单总高度
+			var menuHeight = self.$itemSum * C.height + self.$lineSum * ( C.line_space * 2 + 1 ) + 2;
+			var al = C.algin.split('-');
+			var lb = ( al[0] === 'left' && al[1] === 'bottom' );
+			var rb = ( al[0] === 'right' && al[1] === 'bottom' );
+			var lt = ( al[0] === 'left' && al[1] === 'top' );
+			var rt = ( al[0] === 'right' && al[1] === 'top' );
+			// 自定义位置
+			if( C.pageX || C.pageY ) {
+				mLeft = C.pageX;
+				mTop = C.pageY;
+			}
+			else {
+				// 左下
+				if( lb ) {
+					mLeft = pos.left;
+					mTop = pos.top + size.height + C.space;
+					remain = ih - mTop;
+				}
+				// 右下
+				if( rb ) {
+					mLeft = pos.left - self.$menuWidth + size.width;
+					mTop = pos.top + size.height + C.space;
+					remain = ih - mTop;
+				}
+				// 左上
+				if( lt ) {
+					mLeft = pos.left;
+					mTop = pos.top - C.space - menuHeight;
+					remain = pos.top;
+				}
+				// 右上
+				if( rt ) {
+					mLeft = pos.left - ( self.$menuWidth - size.width );
+					mTop = pos.top - C.space - menuHeight;
+					remain = pos.top;
+				}
+			}
+			// 菜单定位
+			self.$el.css({'left': mLeft + C.offsetLeft - 1, 'top': mTop + C.offsetTop});
+
+			// 高度超出可视区使用滚动条
+			if( menuHeight > remain && remain !== 0 ) {
+				if( C.scroll_height ) {
+					remain = C.scroll_height;
+				}
+				self.$el.css( 'height', remain );
+				// 定位在上方的要重新设置top值
+				if( lt || rt ) {
+					self.$el.css( 'top', pos.top - C.space - remain );
+				}
+				self.createAsync('scroll', '@base/common/base.scroller', {
+					'target': self.$el,
+					'content': self.$doms.options,
+					'dir': 'V'
+				});
+			}
+		},
+
+		/**
+		 * [eventItemMouseEnter 选项li的鼠标移入/出事件]
+		 * @param  {[type]} evt [事件]
+		 * @param  {[type]} elm [元素]
+		 */
+		eventItemMouseEnter: function( evt, elm ) {
+			var self = this;
+			var sid = $(elm).attr('sub-id');
+			var sub = self.get('subMenu');
+			if( evt.type == 'mouseenter' ) {
+				// 子菜单注销
+				if( sub && ( !sid || sid != self.$sid ) ) {
+					$(elm).siblings('li').removeClass('act');
+					sub.destroy();
+				}
+				if( sid ) {
+					var elma = $(elm).find('a');
+					self.$fmod = {
+						fid: elma.attr('data-id'),
+						txt: elma.text()
+					};
+					$(elm).addClass('act');
+					self.createSubMenu( elm );
+					// 标记当前展开的子模块
+					self.$sid = sid;
+				}
+			}
+		},
+
+		/**
+		 * [createSubMenu 创建子菜单]
+		 * @param  {[type]} elm [父级Item]
+		 */
+		createSubMenu: function( elm ) {
+			var self = this;
+			var C = self.getConfig();
+			var sid = +$(elm).attr('sub-id');
+			var sub = self.get('subMenu');
+			if( !sub ) {
+				self.create('subMenu', Menu, {
+					'trigger': elm,
+					'width': C.width,
+					'height': C.height,
+					'space': C.space,
+					'multi': C.multi,
+					'auto_destroy': C.auto_destroy,
+					'line_space': C.line_space,
+					'key': C.key,
+					'name': C.name,
+					'skey': C.skey,
+					'options': self.$subArr[sid],
+					'option_render': C.option_render,
+					'search': C.search,
+					'sub_dir': C.sub_dir,
+					'z': ++C.z
+				});
+			}
+		},
+
+		/**
+		 * [setSubMenuPosition 设置子菜单的具体弹出位置]
+		 * @param  {[type]} elm [父级菜单]
+		 */
+		setSubMenuPosition: function( elm ) {
+			var self = this;
+			var C = self.getConfig();
+			var pos = self.getSrcPosition( elm );
+			var size = self.getSrcSize( elm );
+			var mLeft = 0, mTop = 0;
+			// 菜单总高度
+			var subHeight = self.$itemSum * C.height + self.$lineSum * ( C.line_space * 2 + 1 ) + 2;
+			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
+			var iw = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientWidth;
+			var remain = 0;
+			// 确定子菜单的展开方向
+			if( iw - pos.left - size.width - C.space < self.$menuWidth || C.sub_dir === 'left' ) {
+				self.setConfig('sub_dir', 'left');
+				mLeft = pos.left - self.$menuWidth + C.space;
+				mTop = pos.top;
+			}
+			else {
+				self.setConfig('sub_dir', 'right');
+				mLeft = pos.left + size.width + C.space;
+				mTop = pos.top;
+			}
+			// 定位
+			self.$el.css({'left': mLeft, 'top': mTop});
+			// 超出高度滚动处理
+			remain = ih - mTop;
+			if( subHeight > remain && remain !== 0 ) {
+				self.$el.css( 'height', remain );
+				self.createAsync('scroll', '@base/common/base.scroller', {
+					'target': self.$el,
+					'content': self.$doms.options,
+					'dir': 'V'
+				});
+			}
+			return this;
 		},
 
 		/**
@@ -335,195 +611,67 @@ define(function( require, exports ){
 		},
 
 		/**
-		 * [getSrcPosition 获取触发元素的位置]
-		 * @param  {[type]} elm   [触发元素]
-		 * @return {[Object]}     [包含left和top属性]
+		 * [addConfirm 菜单多选的情况下添加确认按钮]
 		 */
-		getSrcPosition: function( elm ) {
-			return $(elm).offset();
-		},
-
-		/**
-		 * [getSrcSize 获取触发元素的宽高]
-		 * @param  {[type]} elm   [触发元素]
-		 * @return {[Object]}     [包含width和height]
-		 */
-		getSrcSize: function( elm ) {
-			return {
-				'width': $(elm).outerWidth(),
-				'height': $(elm).outerHeight()
-			}
-		},
-
-		/**
-		 * [setMenuPosition 设置一级菜单的弹出位置]
-		 * @param  {[type]} elm   [触发元素]
-		 */
-		setMenuPosition: function( elm ) {
+		addConfirm: function() {
 			var self = this;
-			var C = self.getConfig();
-			var mLeft, mTop;
-			// 触发元素的位置和尺寸
-			var pos = self.getSrcPosition( elm );
-			var size = self.getSrcSize( elm );
-			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
-			// 保留高度
-			var remain = 0;
-			// 菜单总高度
-			var menuHeight = self.$itemSum * C.height + self.$lineSum * ( C.line_space * 2 + 1 ) + 2;
-			var al = C.algin.split('-');
-			var lb = ( al[0] === 'left' && al[1] === 'bottom' );
-			var rb = ( al[0] === 'right' && al[1] === 'bottom' );
-			var lt = ( al[0] === 'left' && al[1] === 'top' );
-			var rt = ( al[0] === 'right' && al[1] === 'top' );
-			// 自定义位置
-			if( C.pageX || C.pageY ) {
-				mLeft = C.pageX;
-				mTop = C.pageY;
-			}
-			else {
-				// 左下
-				if( lb ) {
-					mLeft = pos.left;
-					mTop = pos.top + size.height + C.space;
-					remain = ih - mTop;
-				}
-				// 右下
-				if( rb ) {
-					mLeft = pos.left - C.width + size.width;
-					mTop = pos.top + size.height + C.space;
-					remain = ih - mTop;
-				}
-				// 左上
-				if( lt ) {
-					mLeft = pos.left;
-					mTop = pos.top - C.space - menuHeight;
-					remain = pos.top;
-				}
-				// 右上
-				if( rt ) {
-					mLeft = pos.left - ( C.width - size.width );
-					mTop = pos.top - C.space - menuHeight;
-					remain = pos.top;
-				}
-			}
-			// 菜单定位
-			self.$el.css({'left': mLeft, 'top': mTop});
-
-			// 高度超出可视区使用滚动条
-			if( menuHeight > remain && remain !== 0 ) {
-				if( C.scroll_height ) {
-					remain = C.scroll_height;
-				}
-				self.$el.css( 'height', remain );
-				// 定位在上方的要重新设置top值
-				if( lt || rt ) {
-					self.$el.css( 'top', pos.top - C.space - remain );
-				}
-				self.createAsync('scroll', '@base/common/base.scroller', {
-					'target': self.$el,
-					'content': self.$doms.options,
-					'dir': 'V'
-				});
-			}
+			var cbox = $('<div class="M-MenuConfirm"/>');
+			var btnConfirm = $('<input type="button" class="M-MenuConfirmButton" value="'+ LANG('确定') +'"/>').appendTo( cbox );
+			self.uiBind( btnConfirm, 'click', self.eventClickConfirm, self );
+			var btnAll = $('<input type="button" class="M-MenuConfirmAll" value="'+ LANG('全选') +'"/>').appendTo( cbox );
+			var btnShift = $('<input type="button" class="M-MenuConfirmShift" value="'+ LANG('反选') +'"/>').appendTo( cbox );
+			cbox.insertBefore( self.$doms.options );
+			self.uiBind( btnAll, 'click', self.eventClickConfirmAll, self );
+			self.uiBind( btnShift, 'click', self.eventClickConfirmShift, self );
 		},
 
 		/**
-		 * [eventItemMouseEnter 选项li的鼠标移入/出事件]
-		 * @param  {[type]} evt [事件]
-		 * @param  {[type]} elm [元素]
+		 * [eventClickConfirmAll 多选情况下,点击全选按钮]
 		 */
-		eventItemMouseEnter: function( evt, elm ) {
+		eventClickConfirmAll: function() {
+			this.$doms.options.find('.M-MenuCheckBox').addClass('M-MenuChecked');
+		},
+
+		/**
+		 * [eventClickConfirmShift 多选情况下,点击反选按钮]
+		 */
+		eventClickConfirmShift: function( evt, elm ) {
 			var self = this;
-			var sid = $(elm).attr('sub-id');
-			var sub = self.get('subMenu');
-			if( evt.type == 'mouseenter' ) {
-				// 子菜单注销
-				if( sub && ( !sid || sid != self.$sid ) ) {
-					$(elm).siblings('li').removeClass('act');
-					sub.destroy();
+			var options = this.$doms.options.find('.option');
+			for( var i = 0, len = options.length; i < len; i++ ) {
+				var checkBox = options.eq(i).find('.M-MenuCheckBox');
+				if( checkBox.hasClass('M-MenuChecked') ) {
+					checkBox.removeClass('M-MenuChecked');
 				}
-				if( sid ) {
-					var elma = $(elm).find('a');
-					self.$fmod = {
-						fid: elma.attr('data-id'),
-						txt: elma.text()
-					};
-					$(elm).addClass('act');
-					self.createSubMenu( elm );
-					// 标记当前展开的子模块
-					self.$sid = sid;
+				else {
+					checkBox.addClass('M-MenuChecked');
 				}
 			}
 		},
 
 		/**
-		 * [createSubMenu 创建子菜单]
-		 * @param  {[type]} elm [父级Item]
+		 * [eventClickConfirm 多选情况下,点击确定按钮]
+		 * @param  {[type]} evt [事件类]
+		 * @param  {[type]} elm [事件源]
 		 */
-		createSubMenu: function( elm ) {
-			var self = this;
-			var C = self.getConfig();
-			var idx = +$(elm).attr('sub-id');
-			var sub = self.get('subMenu');
-			if( !sub ) {
-				self.create('subMenu', Menu, {
-					'trigger': elm,
-					'width': C.width,
-					'height': C.height,
-					'space': C.space,
-					'line_space': C.line_space,
-					'key': C.key,
-					'name': C.name,
-					'skey': C.skey,
-					'options': self.$subArr[idx],
-					'option_render': C.option_render,
-					'search': C.search,
-					'sub_dir': C.sub_dir,
-					'z': ++C.z
-				});
-			}
+		eventClickConfirm: function() {
+			this.fire( 'multiMenuSelected', this.getValue() );
+			this.destroy();
 		},
 
 		/**
-		 * [setSubMenuPosition 设置子菜单的具体弹出位置]
-		 * @param  {[type]} elm [父级菜单]
+		 * [eventMultiItemSelect 多选状态下,点击事件]
+		 * @param  {[type]} evt [事件类]
+		 * @param  {[type]} elm [事件源]
 		 */
-		setSubMenuPosition: function( elm ) {
+		eventMultiItemSelect: function( evt, elm ) {
+			evt.preventDefault();
+			evt.stopPropagation();
 			var self = this;
-			var C = self.getConfig();
-			var pos = self.getSrcPosition( elm );
-			var size = self.getSrcSize( elm );
-			var mLeft = 0, mTop = 0;
-			// 菜单总高度
-			var subHeight = self.$itemSum * C.height + self.$lineSum * ( C.line_space * 2 + 1 ) + 2;
-			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
-			var iw = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientWidth;
-			var remain = 0;
-			// 确定子菜单的展开方向
-			if( iw - pos.left - size.width - C.space < C.width || C.sub_dir === 'left' ) {
-				self.setConfig('sub_dir', 'left');
-				mLeft = pos.left - C.width + C.space;
-				mTop = pos.top;
-			}
-			else {
-				self.setConfig('sub_dir', 'right');
-				mLeft = pos.left + size.width + C.space;
-				mTop = pos.top;
-			}
-			// 定位
-			self.$el.css({'left': mLeft, 'top': mTop});
-			// 超出高度滚动处理
-			remain = ih - mTop;
-			if( subHeight > remain && remain !== 0 ) {
-				self.$el.css( 'height', remain );
-				self.createAsync('scroll', '@base/common/base.scroller', {
-					'target': self.$el,
-					'content': self.$doms.options,
-					'dir': 'V'
-				});
-			}
-			return this;
+			var elma = $(elm).find('a');
+			var elmi = $(elm).find('i');
+			var hasSub = $(elm).hasClass('hasSub');
+			$(elmi).toggleClass('M-MenuChecked');
 		},
 
 		/**
@@ -547,22 +695,39 @@ define(function( require, exports ){
 				name: elma.text()
 			};
 			self.fire( 'menuSelected', [fid] );
-
 		},
 
 		/**
-		 * [onItemSelected 发消息]
+		 * [onItemSelected fire 选项选中数据]
 		 */
 		onMenuSelected: function( ev ) {
 			var self = this;
 			var C = self.getConfig();
-			// 如果是子模块发的消息
+			// 接收子模块发的消息
 			if( ev.from != self ) {
 				ev.param.unshift({
 					key: self.$fmod.fid,
 					name: self.$fmod.txt
 				});
 			}
+			// 如果配置有回调函数
+			if( C.callback && util.isFunc( C.callback ) ) {
+				C.callback.call( self, ev.param );
+			}
+			// 如果设置了自动销毁模块
+			if( C.auto_destroy ) {
+				setTimeout(function(){
+					self.destroy();
+				});
+			}
+		},
+
+		/**
+		 * [onMultiMenuSelected fire 一级菜单的选中数据(多选)]
+		 */
+		onMultiMenuSelected: function( ev ) {
+			var self = this;
+			var C = self.getConfig();
 			// 如果配置有回调函数
 			if( C.callback && util.isFunc( C.callback ) ) {
 				C.callback.call( self, ev.param );
@@ -574,8 +739,8 @@ define(function( require, exports ){
 		 * @param  {[type]} evt [事件源]
 		 */
 		eventClickModule: function( evt, elm ) {
-			this.$timeStamp = evt.timeStamp;
 			evt.stopPropagation();
+			this.$timeStamp = evt.timeStamp;
 		},
 
 		/**
@@ -598,4 +763,45 @@ define(function( require, exports ){
 		}
 	});
 	exports.base = Menu;
+
+	// 下拉菜单按钮
+	var DropButton = view.container.extend({
+		init: function( config ){
+			config = pubjs.conf( config, {
+				'height': 30,
+				'name': '', // 显示值
+				'id': 0 // 字段值
+			});
+			this.Super( 'init', arguments );
+		},
+		afterBuild: function() {
+			var self = this;
+			var C = self.getConfig();
+			self.$el = self.getDOM();
+			self.$el.addClass('M-MenuDrop');
+			$([
+				'<span class="M-MenuDropDom"/>',
+				'<i class="M-MenuDropIcon"/>'
+			].join('')).appendTo( self.$el );
+			self.$doms = $('.M-MenuDropDom');
+			// 设置默认值
+			self.$doms.attr( 'id', C.id ).text( C.name );
+			self.$el.css({
+				'height': C.height,
+				'line-height': C.height + 'px'
+			});
+		},
+		setValue: function( val ) {
+			this.$doms
+			.attr('id', val.id)
+			.text( val.name );
+		},
+		getValue: function() {
+			return {
+				'id': this.$doms.id,
+				'name': this.$doms.name
+			}
+		}
+	});
+	exports.button = DropButton;
 });
