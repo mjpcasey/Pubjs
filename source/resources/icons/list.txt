@@ -42,6 +42,7 @@ z[10,10,0,0]		{drag} 				drag.png
 # 小问号
 z[15,15,62,22]				{questionMark} 		icon.png		# 问号图标
 z[15,15,62,22]		(act)	{questionMark} 		icons_act.png	# 问号图标
+z[16,16,0,0]				{formQuestionMark}			formQuestionMark.png  # 灰色问号
 
 # 表格展开箭头
 z[16,10,0,80]				{middleArrow}		icon.png		# 中型白色 向下箭头
@@ -93,3 +94,29 @@ z[50,50,0,0]			{closeDialog}		close_dialog.png
 
 # 搜索图标
 z[16,16,0,0]			{iconSearch}		iconSearch.png
+
+
+# -------------- highGrid
+z[14,14,0,0]			{highGridOperation}		highGridOperation.png		# 表格操作按钮
+z[16,16,0,0]			{running}				running.png					# 启用状态
+z[16,16,0,0]			{pause}					pause.png					# 停用状态
+
+z[12,12,0,0]			{refreshAuto}			refreshAuto.png				# 自动刷新按钮
+z[12,12,0,0]	(act)	{refreshAuto}			refreshAuto_act.png			# 自动刷新按钮 -勾选后
+z[12,12,0,0]			{refreshManual}			refreshManual.png			# 手动刷新按钮
+z[12,12,0,0]			{download}				download.png				# 表格下载
+z[12,12,0,0]			{addToSubgrid}			addToSubgrid.png			# 附加到子表格
+
+z[21,11,0,0]			{subgridArrow}			subgridArrow.png
+z[16,16,0,0]			{subgrid}				subgrid.png
+z[22,22,0,0]			{sweety}				sweety.png
+z[22,22,0,0]			{campaign}				campaign.png
+z[22,22,0,0]			{period}				period.png
+z[22,22,0,0]			{client}				client.png
+z[22,22,0,0]			{product}				product.png
+z[22,22,0,0]			{frequency}				frequency.png
+z[22,22,0,0]			{whisky}				whisky.png
+z[22,22,0,0]			{geo}					geo.png
+
+z[6,8,0,0]				{arrowUp}				arrowUp.png
+z[6,8,0,0]				{arrowDown}				arrowDown.png
