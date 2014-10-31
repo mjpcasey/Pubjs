@@ -72,9 +72,17 @@ define(function( require, exports ){
 		},
 
 		/**
-		 * [getData 返回菜单选中的数据]
+		 * [getData 整个菜单的选项数据]
+		 * @param {[type]} options [数据选项<数组>]
 		 */
 		getData: function() {
+			return this.$data;
+		},
+
+		/**
+		 * [getValue 返回菜单选中的数据]
+		 */
+		getValue: function() {
 			var options = this.$doms.options.find('.option');
 			var ret = [], data = [];
 			for( var i = 0, len = options.length; i < len; i++ ) {
@@ -647,7 +655,7 @@ define(function( require, exports ){
 		 * @param  {[type]} elm [事件源]
 		 */
 		eventClickConfirm: function() {
-			this.fire( 'multiMenuSelected', this.getData() );
+			this.fire( 'multiMenuSelected', this.getValue() );
 			this.destroy();
 		},
 
@@ -674,10 +682,16 @@ define(function( require, exports ){
 		eventItemSelect: function( evt, elm ) {
 			evt.preventDefault();
 			evt.stopPropagation();
+			elm = $(elm);
+			// 有子菜单的不处理
+			if (elm.hasClass('hasSub')) { return;}
 			var self = this;
 			var elma = $(elm).find('a');
+			var id = elma.attr('data-id');
 			var fid = {
-				key: elma.attr('data-id'),
+				elm: elm,
+				key: id,
+				data: util.find(self.getData(), id, self.getConfig('key')),
 				name: elma.text()
 			};
 			self.fire( 'menuSelected', [fid] );
