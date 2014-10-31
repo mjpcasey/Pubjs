@@ -168,7 +168,7 @@ define(function(require,exports) {
 									vm_value.apply(self, arguments);
 								}
 							} else {
-								vm[vm_field] = vm_value;
+								vm[vm_field] = util.clone(vm_value);
 							}
 						}
 					}
@@ -525,7 +525,7 @@ define(function(require,exports) {
 									vm_value.apply(self, arguments);
 								}
 							} else {
-								vm[vm_field] = vm_value;
+								vm[vm_field] = util.clone(vm_value);
 							}
 						}
 					}
