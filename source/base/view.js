@@ -174,6 +174,9 @@ define(function(require,exports) {
 					}
 				});
 				self.vm = pubjs.MVVM.buildVMCtrl($vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描
+				el.attr('ms-skip', 1);
 			}
 
 			function _build() {
@@ -528,6 +531,9 @@ define(function(require,exports) {
 					}
 				});
 				self.vm = pubjs.MVVM.buildVMCtrl($vm, c.view_model);
+			} else {
+				// 非MVVM模块禁止扫描你
+				el.attr('ms-skip', 1);
 			}
 
 			function _build() {
