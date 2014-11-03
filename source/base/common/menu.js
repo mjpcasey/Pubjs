@@ -84,7 +84,7 @@ define(function( require, exports ){
 		 */
 		getValue: function() {
 			var options = this.$doms.options.find('.option');
-			var ret = [], data = [];
+			var data = [];
 			for( var i = 0, len = options.length; i < len; i++ ) {
 				var checkBox = options.eq(i).find('.M-MenuCheckBox');
 				var elma = options.eq(i).find('a');
@@ -150,6 +150,7 @@ define(function( require, exports ){
 			pubjs.sync(true);
 			pubjs.loading.hide();
 			var self = this;
+			var C = self.getConfig();
 			if( error ) {
 				pubjs.error( error.message );
 				return;
@@ -636,7 +637,6 @@ define(function( require, exports ){
 		 * [eventClickConfirmShift 多选情况下,点击反选按钮]
 		 */
 		eventClickConfirmShift: function( evt, elm ) {
-			var self = this;
 			var options = this.$doms.options.find('.option');
 			for( var i = 0, len = options.length; i < len; i++ ) {
 				var checkBox = options.eq(i).find('.M-MenuCheckBox');
@@ -667,10 +667,9 @@ define(function( require, exports ){
 		eventMultiItemSelect: function( evt, elm ) {
 			evt.preventDefault();
 			evt.stopPropagation();
-			var self = this;
-			var elma = $(elm).find('a');
+			// var elma = $(elm).find('a');
 			var elmi = $(elm).find('i');
-			var hasSub = $(elm).hasClass('hasSub');
+			// var hasSub = $(elm).hasClass('hasSub');
 			$(elmi).toggleClass('M-MenuChecked');
 		},
 
