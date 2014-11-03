@@ -755,15 +755,6 @@ label input {
 .M-commonRadio label span {
   vertical-align: middle;
 }
-.M-commonTips {
-  display: inline-block;
-  vertical-align: middle;
-  background-image: url("../images/icons.png?1029");
-  background-repeat: no-repeat;
-  background-position: -68px -45px;
-  width: 16px;
-  height: 16px;
-}
 .M-dialog {
   position: absolute;
   top: 120px;
@@ -1018,6 +1009,15 @@ label input {
 .M-tooltip .M-tipArrow.right {
   left: auto !important;
   right: 20px !important;
+}
+.M-tipDesc {
+  display: inline-block;
+  vertical-align: middle;
+  background-image: url("../images/icons.png?1029");
+  background-repeat: no-repeat;
+  background-position: -68px -45px;
+  width: 16px;
+  height: 16px;
 }
 .M-tableCustomColumn {
   border-radius: 0;

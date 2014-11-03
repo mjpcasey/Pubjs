@@ -423,4 +423,42 @@ define(function(require, exports){
 		}
 	})
 	exports.tooltip = Tooltip;
+
+	// 说明弹框
+	// @样式 问号图标 + 弹出层
+	var Description = view.container.extend({
+		init: function(config){
+			config = pubjs.conf(config, {
+				'data':'',
+				'width': '',
+				'height': '',
+				'tag': 'span',
+				'class':'M-tipDesc'
+			});
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			this.uiBind(this.getDOM(), 'mouseenter mouseleave', 'eventToggleTip');
+		},
+		eventToggleTip: function(ev){
+			var c = this.getConfig();
+
+			var mod = this.get('tip');
+			if(!mod){
+				mod = this.create('tip', Base, {
+					anchor: this.getDOM(),
+					width: c.width,
+					height: c.height
+				});
+				mod.getContainer().text(c.data);
+			}else{
+				if(ev.type == 'mouseenter'){
+					mod.show();
+				}else{
+					mod.hide();
+				}
+			}
+		}
+	});
+	exports.desc = Description;
 });
