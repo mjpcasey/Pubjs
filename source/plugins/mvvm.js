@@ -98,7 +98,7 @@ define(function(require, exports){
 						data[to] = vm.$model[from];
 					});
 				} else if (key === ud) {
-					util.each(this.view_model, function(k, v){
+					util.each(this.view_model, function(v, k){
 						if (!util.isFunc(v)) {
 							data[k] = vm.$model[k];
 						}
