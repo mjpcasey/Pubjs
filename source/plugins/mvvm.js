@@ -160,8 +160,8 @@ define(function(require, exports){
 			scan : function(elem, vmodel) {
 				return avalon.scan(elem, vmodel);
 			},
-			buildVMCtrl: function(vm, view_model) {
-				return new VMCtrl(vm, view_model);
+			buildVMCtrl: function(vm, view_model, moduel) {
+				return new VMCtrl(vm, view_model, moduel);
 			},
 			globalVMDefineName : "global_view_model"
 		};
