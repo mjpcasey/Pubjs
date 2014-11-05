@@ -1395,40 +1395,40 @@ define(function(require, exports){
 
 	// 说明弹框
 	// @样式 问号图标 + 弹出层
-	var Tips = view.container.extend({
-		init: function(config){
-			config = pubjs.conf(config, {
-				'data':'',
-				'width': '',
-				'height': '',
-				'tag': 'span',
-				'class':'M-commonTips'
-			});
-			this.Super('init', arguments);
-		},
-		afterBuild: function(){
-			this.uiBind(this.getDOM(), 'mouseenter mouseleave', 'eventToggleTip');
-		},
-		eventToggleTip: function(ev){
-			var c = this.getConfig();
+	// var Tips = view.container.extend({
+	// 	init: function(config){
+	// 		config = pubjs.conf(config, {
+	// 			'data':'',
+	// 			'width': '',
+	// 			'height': '',
+	// 			'tag': 'span',
+	// 			'class':'M-commonTips'
+	// 		});
+	// 		this.Super('init', arguments);
+	// 	},
+	// 	afterBuild: function(){
+	// 		this.uiBind(this.getDOM(), 'mouseenter mouseleave', 'eventToggleTip');
+	// 	},
+	// 	eventToggleTip: function(ev){
+	// 		var c = this.getConfig();
 
-			var mod = this.get('tip');
-			if(!mod){
-				this.createAsync('tip', '@base/tip.base', {
-					anchor: this.getDOM(),
-					width: c.width,
-					height: c.height
-				}, function(mod){
-					mod.getContainer().text(c.data);
-				});
-			}else{
-				if(ev.type == 'mouseenter'){
-					mod.show();
-				}else{
-					mod.hide();
-				}
-			}
-		}
-	});
-	exports.tips = Tips;
+	// 		var mod = this.get('tip');
+	// 		if(!mod){
+	// 			this.createAsync('tip', '@base/tip.base', {
+	// 				anchor: this.getDOM(),
+	// 				width: c.width,
+	// 				height: c.height
+	// 			}, function(mod){
+	// 				mod.getContainer().text(c.data);
+	// 			});
+	// 		}else{
+	// 			if(ev.type == 'mouseenter'){
+	// 				mod.show();
+	// 			}else{
+	// 				mod.hide();
+	// 			}
+	// 		}
+	// 	}
+	// });
+	// exports.tips = Tips;
 });

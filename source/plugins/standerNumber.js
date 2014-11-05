@@ -224,8 +224,8 @@ define(function(require, exports, module){
 
 	// 插件初始化方法
 	exports.plugin_init = function(pubjs, next){
-		pubjs.standarNumber 			= getStandar;
-		pubjs.standarNumberWithoutUnit 	= getStandarWithoutUnit;
+		pubjs.standarNumber = getStandar;
+		pubjs.standarNumberWithoutUnit = getStandarWithoutUnit;
 		next();
 	}
 });

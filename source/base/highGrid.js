@@ -759,7 +759,7 @@ define(function(require, exports){
 
 			switch(c.reqType){
 				case 'ajax':
-					this.$reqID = pubjs.data[cfg.reqMethod](c.url, param, this, 'onData');
+					this.$reqID = pubjs.data[c.reqMethod](c.url, param, this, 'onData');
 				break;
 				case 'websocket':
 					pubjs.mc.send(c.url, param, this.onData.bind(this));
@@ -1360,7 +1360,7 @@ define(function(require, exports){
 					'default_metrics': c.default_metrics,
 					'position':{
 						'mode': 'bottom, right',
-						'element': $(ev.target).parents('.M-HighGridTab'),
+						'element': $(ev.target).parents('.M-HighGridTab')
 						// 'left': this._getElementLeft(elm[0]), // 右角对齐
 						// 'top': this._getElementTop(elm[0])
 					}

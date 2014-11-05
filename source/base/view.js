@@ -88,6 +88,7 @@ define(function(require,exports) {
 				'attr': null,
 				// 容器Style属性对象, 调用jQuery的css方法直接设置
 				'css': null,
+
 				'hasSidebar': false,
 				// 模板路径
 				'tplFile': ''
@@ -1282,5 +1283,4 @@ define(function(require,exports) {
 		}
 	});
 	exports.layout = Layout;
-
 });
