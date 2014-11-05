@@ -322,7 +322,8 @@ define(function( require, exports ){
 			// 触发元素的位置和尺寸
 			var pos = self.getSrcPosition( elm );
 			var size = self.getSrcSize( elm );
-			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
+			//var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
+			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].offsetWidth;
 			// 保留高度
 			var remain = 0;
 			// 菜单总高度
