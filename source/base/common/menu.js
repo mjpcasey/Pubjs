@@ -779,6 +779,7 @@ define(function( require, exports ){
 			var C = self.getConfig();
 			self.$el = self.getDOM();
 			self.$el.addClass('M-MenuDrop');
+			this.jq(self.$el,'click','eventMenuClick');
 			$([
 				'<span class="M-MenuDropDom"/>',
 				'<i class="M-MenuDropIcon"/>'
@@ -790,6 +791,9 @@ define(function( require, exports ){
 				'height': C.height,
 				'line-height': C.height + 'px'
 			});
+		},
+		eventMenuClick: function(){
+			this.fire('dropMenuClick',{doms: this.$el});
 		},
 		setValue: function( val ) {
 			this.$doms
