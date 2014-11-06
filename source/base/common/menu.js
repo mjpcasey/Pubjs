@@ -791,18 +791,18 @@ define(function( require, exports ){
 				'<span class="M-MenuDropDom"/>',
 				'<i class="M-MenuDropIcon"/>'
 			].join('')).appendTo( self.$el );
-			self.$doms = $('.M-MenuDropDom');
+			self.$doms = self.$el.find('.M-MenuDropDom');
 			// 设置默认值
 			self.$doms.attr( 'id', C.id ).text( C.name );
 			self.$el.css({
 				'height': C.height,
 				'line-height': C.height + 'px'
 			});
-			self.uiBind( self.$el, 'click', self.eventMenuClick );
+			self.uiBind( self.$el, 'click', self.eventButtonClick );
 		},
-		eventMenuClick: function() {
-			this.fire('dropMenuClick', {
-				'doms': this.$el
+		eventButtonClick: function() {
+			this.fire('dropButtonClick', {
+				'dom': this.$el
 			});
 			return false;
 		},
