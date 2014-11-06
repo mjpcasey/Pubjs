@@ -36,6 +36,7 @@ define(function( require, exports ){
 				'relate_elm': null,		// 关联元素
 				'data_set': null,		// 设置菜单展开后的选中数据
 				'auto_send': false,		// 拉取数据后自动发消息
+				'reqType': 'ajax',		// 默认通信方式使用ajax，可选websocket
 				'z': 1000				// 菜单zindex
 			});
 			this.$subArr = [];			// 存放下一级子菜单
@@ -133,12 +134,20 @@ define(function( require, exports ){
 		 */
 		load: function( param ) {
 			pubjs.sync();
-			pubjs.loading.show();
 			var C = this.getConfig();
 			if( param ) {
 				C.param = $.merge( C.param, param );
 			}
-			pubjs.data.get( C.url, C.param, this );
+			if( C.reqType === 'ajax' ) {
+				pubjs.data.get( C.url, C.param, this );
+			}
+			else if( C.reqType === 'websocket' ) {
+				pubjs.mc.send(
+					C.url,
+					$.extend({}, C.param ),
+					this.onData.bind( this )
+				);
+			}
 		},
 
 		/**
@@ -148,7 +157,6 @@ define(function( require, exports ){
 		 */
 		onData: function( error, data ) {
 			pubjs.sync(true);
-			pubjs.loading.hide();
 			var self = this;
 			var C = self.getConfig();
 			if( error ) {
@@ -322,7 +330,8 @@ define(function( require, exports ){
 			// 触发元素的位置和尺寸
 			var pos = self.getSrcPosition( elm );
 			var size = self.getSrcSize( elm );
-			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
+			//var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
+			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].offsetWidth;
 			// 保留高度
 			var remain = 0;
 			// 菜单总高度
@@ -769,7 +778,7 @@ define(function( require, exports ){
 			config = pubjs.conf( config, {
 				'height': 30,
 				'name': '', // 显示值
-				'id': 0 // 字段值
+				'id': null // 字段值
 			});
 			this.Super( 'init', arguments );
 		},
@@ -782,13 +791,20 @@ define(function( require, exports ){
 				'<span class="M-MenuDropDom"/>',
 				'<i class="M-MenuDropIcon"/>'
 			].join('')).appendTo( self.$el );
-			self.$doms = $('.M-MenuDropDom');
+			self.$doms = self.$el.find('.M-MenuDropDom');
 			// 设置默认值
 			self.$doms.attr( 'id', C.id ).text( C.name );
 			self.$el.css({
 				'height': C.height,
 				'line-height': C.height + 'px'
 			});
+			self.uiBind( self.$el, 'click', self.eventButtonClick );
+		},
+		eventButtonClick: function() {
+			this.fire('dropButtonClick', {
+				'dom': this.$el
+			});
+			return false;
 		},
 		setValue: function( val ) {
 			this.$doms
@@ -797,8 +813,8 @@ define(function( require, exports ){
 		},
 		getValue: function() {
 			return {
-				'id': this.$doms.id,
-				'name': this.$doms.name
+				'id': this.$doms.attr('id'),
+				'name': this.$doms.text()
 			}
 		}
 	});
