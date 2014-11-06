@@ -138,6 +138,14 @@ define(function(require, exports){
 				}
 			);
 
+			if(c.tips){
+				this.createAsync('tips', '@base/tip.desc', {
+					'target': el,
+					'data': c.tips,
+					'class':'M-tipDesc ml10'
+				});
+			}
+
 			// 标签显示外部容器
 			this.tagLabelsContainer = this.create(
 				"tagLabelsContainer"

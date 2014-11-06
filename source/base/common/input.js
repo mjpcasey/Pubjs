@@ -649,7 +649,7 @@ define(function(require, exports){
 			con.empty();
 
 			util.each(items, function(item, index){
-				var label = $('<label/>').text(item[c.name]).appendTo(con);
+				var label = $('<label title="'+item[c.name]+'"/>').text(item[c.name]).appendTo(con);
 				var input = $('<input type="'+type+'"/>').prependTo(label);
 				input.attr('name', name).attr('value', index);
 			});

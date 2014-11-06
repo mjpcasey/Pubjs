@@ -2287,17 +2287,8 @@ label input {
   min-width: 300px;
   padding: 3px;
 }
-.M-tagLabels input {
-  margin: 0 0 10px;
-}
 .M-tagLabels p {
   margin: 0 0 5px;
-}
-.M-tagLabels .tips {
-  position: absolute;
-  top: 29px;
-  left: 294px;
-  color: #aaa;
 }
 .M-tagLabels .spLabelTitle {
   font-weight: bold;
@@ -2380,6 +2371,7 @@ label input {
 .M-tagLabelsInner {
   padding: 5px;
   margin-left: 72px;
+  margin-top: 10px;
 }
 .M-tagLabelsInner span {
   display: inline-block;
