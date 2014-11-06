@@ -2889,9 +2889,7 @@ define(function(require, exports){
 				if(!menu) {
 					$dom.addClass('open');
 					cfg = $.extend(
-						{
-							width: 80
-						},
+						{},
 						ev.returnValue,
 						{
 							trigger: $dom,
