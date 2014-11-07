@@ -1480,6 +1480,7 @@ define(function(require, exports){
 
 			// 设置弹框勾选值
 			this.setValue();
+			this.update();
 
 			// this.fire('panelBuildSuccess');
 		},
@@ -1725,7 +1726,7 @@ define(function(require, exports){
 			this.uiBind(this.getDOM(), 'click', 'eventButtonClick');
 		},
 		eventButtonClick: function(ev, dom){
-			if(!this.get('mod')){
+			if(!this.get('menu')){
 				var id = this.getDOM().parents('tr').attr('data-id');
 				this.fire('operateMenuShow', id, 'afterFire');
 				// return false;
@@ -1735,7 +1736,7 @@ define(function(require, exports){
 			return false;
 		},
 		hide: function(){
-			this.$.mod.destroy();
+			this.$.menu.destroy();
 		},
 		afterFire: function(evt){
 			var data = evt.returnValue;
@@ -1744,11 +1745,9 @@ define(function(require, exports){
 
 			// 创建下拉弹框
 			this.create('menu', menu.base, {
-				width: 120,
 				trigger: el,
 				options: data,
-				relate_elm: el,
-				algin: 'left-bottom'
+				relate_elm: el
 			});
 		},
 		// 响应菜单选中事件
