@@ -1756,6 +1756,7 @@ define(function(require, exports){
 			var id = this.getDOM().parents('tr').attr('data-id');
 			var value = this.getConfig('grid').getData(id);
 			this.fire('operateMenuSelect', [op, value]);
+			this.hide();
 			return false;
 		}
 	});
