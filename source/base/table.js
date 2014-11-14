@@ -1228,7 +1228,7 @@ define(function(require, exports){
 			// 操作菜单
 			if(col.type === 'menu'){
 				if (!col.html){
-					col.html = '<div class="M-tableListMenu"/>';
+					col.html = '<a class="M-tableListMenu"><em/></a>';
 				}
 			}
 
@@ -2889,7 +2889,11 @@ define(function(require, exports){
 				if(!menu) {
 					$dom.addClass('open');
 					cfg = $.extend(
-						{},
+						{
+							width: 120,
+							offsetTop: -10,
+							offsetLeft: 10
+						},
 						ev.returnValue,
 						{
 							trigger: $dom,

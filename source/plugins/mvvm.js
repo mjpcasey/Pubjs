@@ -11,7 +11,7 @@ define(function(require, exports){
 		MVVM = null,
 		util = require('util'),
 		globalVMConf = require('globalVMConf'),
-		avalon = require('../libs/avalon/avalon.min.js');
+		avalon = require('@libs/avalon/avalon.min.js');
 
 	function defineVMCtrl() {
 		VMCtrl = pubjs.Class.extend({

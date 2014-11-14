@@ -31,6 +31,8 @@ z[16,16,0,0]		{visitRoute}		visitRoute.png
 
 # 搜索放大镜
 z[20,20,4,0]		{searchButton}		icons_row.png
+z[30,30,-5,-5]		{searchBtnGo}		searchBtnGo.png       #搜索放大镜
+z[30,30,-5,-5]		{searchBtnDel}		searchBtnDel.png      #搜索删除
 
 # 删除小圆形按钮
 z[20,20,0,-2]				{funDel}	del.png
@@ -87,13 +89,16 @@ z[10,10,0,0]			{btnClose}			btnClose.png
 z[10,10,0,0]	(act)	{btnClose}			btnClose_act.png
 
 # 操作图标
-z[14,14,0,0]			{operateMenu}		operateMenu.png
+z[20,20,0,0]			{operateMenu}		operateMenu.png
 
 #新版按钮
 z[50,50,0,0]			{closeDialog}		close_dialog.png
 
 # 搜索图标
 z[16,16,0,0]			{iconSearch}		iconSearch.png
+
+# 日期
+z[20,20,-2,-2]			{iconDate}		    date.png
 
 
 # -------------- highGrid

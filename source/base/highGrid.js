@@ -21,6 +21,7 @@ define(function(require, exports){
 				'cols': [],				// 列定义
 
 				'data': null,			// 静态数据
+				'key': '_id',
 				'url': null,			// 远程数据地址
 				'param': null,			// 远程数据请求参数
 				"reqMethod":"get",		// 数据获取方式
@@ -337,7 +338,8 @@ define(function(require, exports){
 		},
 		buildTableSidebar: function(){
 			var datas = this.$data && this.$data.items || null;
-			var cols = this.getConfig().cols;
+			var c = this.getConfig();
+			var cols = c.cols;
 
 			var dom = $('<table cellspacing="0" cellpadding="0"/>');
 
@@ -352,7 +354,7 @@ define(function(require, exports){
 					data = datas[i];
 
 					tr = this.buildTr({
-						'dataId': data.id,
+						'dataId': data[c.key],
 						'class': (i%2!==0) ? 'M-HighGridListSidebarName' : 'M-HighGridListSidebarName even'
 					});
 
@@ -425,7 +427,8 @@ define(function(require, exports){
 		},
 		buildTableContent: function(){
 			var data =  this.$data && this.$data.items || null;
-			var cols = this.getConfig().metrics;
+			var c = this.getConfig();
+			var cols = c.metrics;
 
 			var html = $('<table  cellspacing="0" cellpadding="0"/>');
 			if(data){
@@ -434,7 +437,7 @@ define(function(require, exports){
 				for (var i = 0; i < data.length; i++) {
 
 					tr = this.buildTr({
-						'dataId': data[i].id,
+						'dataId': data[i][c.key],
 						'class': (i===0 )? 'M-HighGridListContentFirstTr even': ((i%2 === 0)?'even':'')
 					});
 
@@ -655,8 +658,9 @@ define(function(require, exports){
 			this.setStyles();
 		},
 		getData: function(id){
+			var c = this.getConfig();
 			if(id){
-				return util.find(this.$data.items, id, 'id')
+				return util.find(this.$data.items, id, c.key)
 			}
 			return this.$data;
 		},
@@ -753,6 +757,22 @@ define(function(require, exports){
 				mod.$doms.button.prop('disabled', true).addClass('refing');
 			}
 
+
+			// 若有分页模块，发送分页初始值参数
+			if(c.hasPager){
+				if(!this.get('pager')){
+					var pager = util.extend({
+						page:1,
+						size:20
+					}, c.pager);
+
+					this.setParam({
+						page: pager.page,
+						limit: pager.size
+					});
+				}
+			}
+
 			var param = this.getParam();
 
 			this.showLoading();
@@ -814,7 +834,7 @@ define(function(require, exports){
 		setParam: function(param, replace){
 			var cParam = this.getConfig('param');
 			cParam = replace ? param :util.extend(cParam, param);
-			this.setConfig('param', cParam)
+			this.setConfig('param', cParam);
 			return cParam;
 		},
 		getParam: function(){
@@ -890,14 +910,21 @@ define(function(require, exports){
 		},
 		// 更新选中值
 		updateSelectedValue: function(add, value){
+			var c = this.getConfig();
+
+
+			// var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
+			// @优化todo , 'id'变成可配置项
+			var obj = {}
+			obj[c.key] = value;
 			var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
 
 			for (var i = 0; i < data.length; i++) {
-				var index = util.index(this.$selects, data[i].id);
+				var index = util.index(this.$selects, data[i][c.key]);
 				// 增加
 				if(add){
 					if(index == null){
-						this.$selects.push(data[i].id);
+						this.$selects.push(data[i][c.key]);
 					}
 				}else{
 				// 清除
@@ -1283,7 +1310,7 @@ define(function(require, exports){
 						};
 						cols = data[name].cols
 						for (var i = 0; i < cols.length; i++) {
-							if(util.find(filter, cols[i])){
+							if(util.find(filter, cols[i], 'name')){
 								obj[name].cols.push(cols[i]);
 							}
 						}
@@ -1453,6 +1480,7 @@ define(function(require, exports){
 
 			// 设置弹框勾选值
 			this.setValue();
+			this.update();
 
 			// this.fire('panelBuildSuccess');
 		},
@@ -1698,7 +1726,7 @@ define(function(require, exports){
 			this.uiBind(this.getDOM(), 'click', 'eventButtonClick');
 		},
 		eventButtonClick: function(ev, dom){
-			if(!this.get('mod')){
+			if(!this.get('menu')){
 				var id = this.getDOM().parents('tr').attr('data-id');
 				this.fire('operateMenuShow', id, 'afterFire');
 				// return false;
@@ -1708,7 +1736,7 @@ define(function(require, exports){
 			return false;
 		},
 		hide: function(){
-			this.$.mod.destroy();
+			this.$.menu.destroy();
 		},
 		afterFire: function(evt){
 			var data = evt.returnValue;
@@ -1717,11 +1745,9 @@ define(function(require, exports){
 
 			// 创建下拉弹框
 			this.create('menu', menu.base, {
-				width: 120,
 				trigger: el,
 				options: data,
-				relate_elm: el,
-				algin: 'left-bottom'
+				relate_elm: el
 			});
 		},
 		// 响应菜单选中事件
@@ -1730,6 +1756,7 @@ define(function(require, exports){
 			var id = this.getDOM().parents('tr').attr('data-id');
 			var value = this.getConfig('grid').getData(id);
 			this.fire('operateMenuSelect', [op, value]);
+			this.hide();
 			return false;
 		}
 	});
