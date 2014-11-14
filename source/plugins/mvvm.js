@@ -15,7 +15,8 @@ define(function(require, exports){
 
 	function defineVMCtrl() {
 		VMCtrl = pubjs.Class.extend({
-			CONSTRUCTOR: function(vm ,view_model, module) {
+			CONSTRUCTOR: function(id, vm ,view_model, module) {
+				this.id = id;
 				this.$ = vm;
 				this.view_model = view_model;
 				this.module = module;
@@ -148,7 +149,9 @@ define(function(require, exports){
 				this.$ = null;
 				this.view_model = null;
 				this.module = null;
-				// TODO: 销毁当前模块的vm
+				try {
+					delete avalon.vmodels[this.id];
+				} catch (e) {}
 			}
 		});
 	}
@@ -160,8 +163,8 @@ define(function(require, exports){
 			scan : function(elem, vmodel) {
 				return avalon.scan(elem, vmodel);
 			},
-			buildVMCtrl: function(vm, view_model, moduel) {
-				return new VMCtrl(vm, view_model, moduel);
+			buildVMCtrl: function(id, vm, view_model, moduel) {
+				return new VMCtrl(id, vm, view_model, moduel);
 			},
 			globalVMDefineName : "global_view_model"
 		};
