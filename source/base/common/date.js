@@ -1742,7 +1742,7 @@ define(function(require, exports){
 			// 建立DOM对象
 			var date = $('<input type="text" class="M-dateResultInput M-dateSingle" />').prop('readonly', c.readonly);
 			self.append(date);
-			var icon = $('<i class="M-dateResultIcon uk-icon-calendar"/>').appendTo(self.getDOM());
+			var icon = $('<i class="M-dateResultIcon"/>').appendTo(self.getDOM());
 
 			if (c.disabled){
 				date.prop('disabled', true);
@@ -1960,7 +1960,7 @@ define(function(require, exports){
 			// 建立DOM对象
 			var date = $('<input type="text" class="M-dateResultInput M-dateRange btn" />').prop('readonly', true);
 			date.mousedown(util.blockEvent);
-			var icon = $('<i class="M-dateResultIcon uk-icon-calendar"/>').appendTo(self.getDOM());
+			var icon = $('<i class="M-dateResultIcon"/>').appendTo(self.getDOM());
 			if (c.width){
 				date.width(c.width)
 			}

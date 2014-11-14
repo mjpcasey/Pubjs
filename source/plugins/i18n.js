@@ -63,6 +63,7 @@ define(function(require, exports){
 			ajaxId = pubjs.data.get('/i18n/'+lang+'/translate.json', onLoad);
 		}
 	}
+	exports.load = load;
 	function onLoad(err, data){
 		ajaxId = 0;
 		if (!err){

@@ -789,9 +789,115 @@ define(function(require, exports){
 				'inputClass': 'M-commonSearchInput',
 				'searchTip': LANG('请输入搜索内容'),
 				'searchText': '',
+				'width': 200,
+				'buttonClass': 'uk-button M-commonSearchDo',
+				'buttonText': LANG(''),
+				'undoClass': 'M-commonSearchUndo',
+				'undoText': LANG('')
+			});
+
+			this.$data = '';
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			var self = this;
+			var cfg = self.getConfig();
+			var doms = self.$doms = {};
+
+			// 创建输入框
+			var elm = doms.input = $('<input type="text" />').attr({
+				'class': cfg.inputClass,
+				'placeholder': cfg.searchTip,
+				'value': cfg.searchText
+			});
+			if(cfg.width){
+				elm.width(cfg.width);
+			}
+			self.append(elm);
+			self.uiBind(elm, 'keypress', 'eventKeyPress');
+
+			// 创建搜索按钮
+			elm = doms.button = $('<input type="button" />').attr({
+				'class': cfg.buttonClass
+				,'value': cfg.buttonText
+			});
+			self.append(elm);
+			self.uiBind(elm, 'click', 'eventButtonClick');
+
+			// 创建取消按钮
+			elm = doms.undo = $('<span />').attr({
+				'class': cfg.undoClass
+				//,'value': cfg.undoText
+			});
+			self.append(elm);
+			self.uiBind(elm, 'click', 'eventUndoClick');
+		},
+		/**
+		 * 输入框监控回车的输入自动搜索
+		 * @param  {Object} evt jquery
+		 * @return {None}       无返回
+		 */
+		eventKeyPress: function(evt){
+			if (evt.keyCode == 13){
+				this.$doms.button.click();
+			}
+		},
+		/**
+		 * 搜索按钮点击回调函数
+		 * @param  {Object} evt jquery
+		 * @return {Bool}       返回FALSE, 禁止DOM事件冒泡
+		 */
+		eventButtonClick: function(evt){
+			var self = this;
+			var doms = self.$doms;
+			var text = doms.input.val();
+			if (text != self.$data){
+				self.$data = text;
+				self.fire('search', text);
+			}
+			doms.input.toggleClass('pr30');
+			doms.undo.toggle(text.length > 0);
+		},
+		/**
+		 * 取消按钮点击回调函数
+		 * @param  {Object} evt jquery
+		 * @return {Bool}       返回FALSE, 禁止DOM事件冒泡
+		 */
+		eventUndoClick: function(evt){
+			this.reset();
+		},
+		/**
+		 * 复位查询参数
+		 * @return {None} 无返回
+		 */
+		reset: function(){
+			var self = this;
+			var doms = self.$doms;
+			doms.input.val('').toggleClass('pr30', false);
+			doms.undo.hide();
+			if (self.$data){
+				self.$data = '';
+				self.fire('search', '');
+			}
+		}
+	});
+	exports.search = Search;
+
+	/**
+	 * 搜索列表框(旧)
+	 * @param {Object} config 自定义配置信息
+	 * @param {Module} parent 父模块实例
+	 */
+	var SearchOld = view.container.extend({
+		init: function(config){
+			config = pubjs.conf(config, {
+				'class':'M-commonSearchOld uk-form',
+				'inputClass': 'M-commonSearchOldInput',
+				'searchTip': LANG('请输入搜索内容'),
+				'searchText': '',
 				'buttonClass': 'uk-button uk-button-primary',
 				'buttonText': LANG('搜索'),
-				'undoClass': 'uk-button M-commonSearchUndo',
+				'undoClass': 'uk-button M-commonSearchOldUndo',
 				'undoText': LANG('取消')
 			});
 
@@ -876,7 +982,7 @@ define(function(require, exports){
 			}
 		}
 	});
-	exports.search = Search;
+	exports.searchOld = SearchOld;
 
 
 	/**

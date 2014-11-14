@@ -2,8 +2,8 @@
  * Background Image CSS auto generate by PHP Image Packager
  * http://blog.win-ing.cn by Katana
  ***/
-/* Image: ../images/icons.png?1029 */
-/* Image: ../images/icons_act.png?1029 */
+/* Image: ../images/icons.png?1113 */
+/* Image: ../images/icons_act.png?1113 */
 ul li {
   list-style: none;
 }
@@ -86,6 +86,9 @@ label input {
 .pr5 {
   padding-right: 5px !important;
 }
+.mg30 {
+  margin: 30px !important;
+}
 .ml30 {
   margin-left: 30px !important;
 }
@@ -97,6 +100,9 @@ label input {
 }
 .mt30 {
   margin-top: 30px !important;
+}
+.mg20 {
+  margin: 20px !important;
 }
 .ml20 {
   margin-left: 20px !important;
@@ -110,6 +116,9 @@ label input {
 .mt20 {
   margin-top: 20px !important;
 }
+.mg15 {
+  margin: 15px !important;
+}
 .ml15 {
   margin-left: 15px !important;
 }
@@ -122,6 +131,9 @@ label input {
 .mt15 {
   margin-top: 15px !important;
 }
+.mg10 {
+  margin: 10px !important;
+}
 .ml10 {
   margin-left: 10px !important;
 }
@@ -133,6 +145,9 @@ label input {
 }
 .mt10 {
   margin-top: 10px !important;
+}
+.mg5 {
+  margin: 5px !important;
 }
 .ml5 {
   margin-left: 5px !important;
@@ -506,7 +521,7 @@ label input {
   display: block;
 }
 .M-commonDropdown .list .btnSearch {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
   background-position: -48px -64px;
   width: 20px;
@@ -522,14 +537,14 @@ label input {
   right: 9px;
   cursor: pointer;
   display: none;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -68px 0;
+  background-position: -68px -60px;
   width: 20px;
   height: 20px;
 }
 .M-commonDropdown .list .btnCancel:hover {
-  background-image: url("../images/icons_act.png?1029");
+  background-image: url("../images/icons_act.png?1113");
   background-repeat: no-repeat;
 }
 .M-commonDropdown .list .dragIcon {
@@ -538,9 +553,9 @@ label input {
   right: 0;
   z-index: 1;
   cursor: pointer;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -68px -20px;
+  background-position: -68px -80px;
   width: 10px;
   height: 10px;
   cursor: se-resize;
@@ -718,19 +733,55 @@ label input {
   color: #fff;
   cursor: default;
 }
+.M-commonSearch {
+  position: relative;
+}
 .M-commonSearchInput {
   width: 300px;
   min-height: 30px;
   vertical-align: middle;
   padding: 0 5px;
 }
-.M-commonSearchUndo {
-  display: none;
-}
-.M-commonSearch .uk-button {
-  margin-left: 10px;
+.M-commonSearch .pr30 {
+  padding-right: 30px;
 }
 .M-commonSearchDo {
+  background-image: url("../images/icons.png?1113");
+  background-repeat: no-repeat;
+  background-position: -68px 0;
+  width: 30px;
+  height: 30px;
+}
+.M-commonSearchUndo {
+  cursor: pointer;
+  display: block;
+  position: absolute;
+  right: 35px;
+  display: none;
+  background-image: url("../images/icons.png?1113");
+  background-repeat: no-repeat;
+  background-position: -68px -30px;
+  width: 30px;
+  height: 30px;
+}
+.M-commonSearch .uk-button {
+  margin-left: 5px;
+  width: 30px;
+  height: 30px;
+}
+.M-commonSearchOldInput {
+  width: 300px;
+  min-height: 30px;
+  vertical-align: middle;
+  padding: 0 5px;
+}
+.M-commonSearchOldUndo {
+  display: none;
+}
+.M-commonSearchOld .uk-button {
+  margin-left: 10px;
+}
+.M-commonSearchOldDo {
   background: 'uk-icon-search';
 }
 .M-commonLoading {
@@ -784,9 +835,9 @@ label input {
   cursor: pointer;
   overflow: hidden;
   position: absolute;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -24px -112px;
+  background-position: -78px -122px;
   width: 50px;
   height: 50px;
 }
@@ -1013,9 +1064,9 @@ label input {
 .M-tipDesc {
   display: inline-block;
   vertical-align: middle;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -68px -45px;
+  background-position: -98px 0;
   width: 16px;
   height: 16px;
 }
@@ -1098,7 +1149,7 @@ label input {
   color: white;
 }
 .M-tableTabActive > span {
-  background-image: url("../images/icons_act.png?1029");
+  background-image: url("../images/icons_act.png?1113");
   background-repeat: no-repeat;
 }
 .M-tableAmount {
@@ -1148,14 +1199,14 @@ label input {
   position: absolute;
   top: 0px;
   right: 0px;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -68px -30px;
+  background-position: -68px -90px;
   width: 15px;
   height: 15px;
 }
 .M-tableAmount li em:hover {
-  background-image: url("../images/icons_act.png?1029");
+  background-image: url("../images/icons_act.png?1113");
   background-repeat: no-repeat;
 }
 .M-tableAmount li p {
@@ -1192,7 +1243,7 @@ label input {
 }
 .M-tableSubGridCtr a {
   display: inline-block;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
   width: 16px;
   height: 16px;
@@ -1200,12 +1251,12 @@ label input {
 }
 .M-tableSubGridCtr a.act,
 .M-tableSubGridCtr a:hover {
-  background-image: url("../images/icons_act.png?1029");
+  background-image: url("../images/icons_act.png?1113");
   background-repeat: no-repeat;
 }
 .M-tableList {
   overflow: hidden;
-  border: 1px solid #C8CCCD;
+  border: 1px solid #C8CDCC;
   background: #fff;
   clear: both;
   font-size: 13px;
@@ -1220,20 +1271,18 @@ label input {
   min-width: 100%;
 }
 .M-tableList thead tr {
-  background: #EFEFEF;
-  background: -webkit-gradient(linear, 0% 0, 0% 100%, from(#f7f7f7), to(#efefef));
-  background: -moz-linear-gradient(top, #f7f7f7, #efefef 100%);
+  background: #f8f8f8;
 }
 .M-tableList thead th {
   cursor: default;
   padding: 8px 0;
   border: none;
-  line-height: 15px;
+  line-height: 24px;
   font-size: 12px;
   font-weight: normal;
   color: #333;
   white-space: nowrap;
-  border-bottom: 1px solid #C8CCCD;
+  border-bottom: 1px solid #C8CDCC;
   text-align: center;
 }
 .M-tableList thead th span {
@@ -1270,10 +1319,10 @@ label input {
   border: none;
   text-align: right;
   white-space: nowrap;
-  border: solid #EAEAEA;
+  border: solid #EBEBEB;
   border-width: 0 1px 1px 0;
   line-height: 23px;
-  padding: 5px;
+  padding: 8px;
 }
 .M-tableList tbody td img {
   max-width: initial;
@@ -1323,13 +1372,20 @@ label input {
   display: inline-block;
 }
 .M-tableListMenu {
-  background-image: url("../images/icons.png?1029");
+  padding: 4px;
+}
+.M-tableListMenu em {
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -10px -112px;
-  width: 14px;
-  height: 14px;
+  background-position: -58px -122px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   display: inline-block;
+  vertical-align: -5px;
+}
+.M-tableListMenu:hover {
+  background: #ebebeb;
 }
 .M-tableList .functionalHover .M-tableListFunctional,
 .M-tableList .functionalHover .M-tableListOtherFunc {
@@ -1350,11 +1406,11 @@ label input {
   width: 16px;
   right: 4px;
   top: 2px;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
 }
 .M-tableListSubCtr > div.act {
-  background-image: url("../images/icons_act.png?1029");
+  background-image: url("../images/icons_act.png?1113");
   background-repeat: no-repeat;
 }
 .M-tableListSubOperate .M-tableListFunctional {
@@ -1378,9 +1434,9 @@ label input {
   position: absolute;
   top: -22px;
   left: 50px;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -68px -61px;
+  background-position: -98px -16px;
   width: 16px;
   height: 10px;
 }
@@ -1588,7 +1644,7 @@ label input {
 .page_visitRoute {
   cursor: pointer;
   display: inline-block;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
   background-position: -32px -64px;
   width: 16px;
@@ -1600,94 +1656,94 @@ label input {
   vertical-align: middle;
   margin-bottom: -16px;
   margin-left: 10px;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -104px -96px;
+  background-position: -32px -122px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-utm_pages {
-  background-position: -68px -87px;
+  background-position: -98px -42px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-gutm_pages {
-  background-position: -68px -87px;
+  background-position: -98px -42px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-cutm_pages {
-  background-position: -68px -87px;
+  background-position: -98px -42px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-day_compare {
-  background-position: -104px -80px;
+  background-position: -16px -122px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-page {
-  background-position: -68px -87px;
+  background-position: -98px -42px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-page_landing {
-  background-position: -88px 0;
+  background-position: -98px -58px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-loyalty {
-  background-position: -88px -16px;
+  background-position: -98px -74px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-keyWord {
-  background-position: -88px -32px;
+  background-position: -98px -90px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-se {
-  background-position: -88px -48px;
+  background-position: 0 -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-referer {
-  background-position: -88px -64px;
+  background-position: -16px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-referer_url {
-  background-position: -88px -80px;
+  background-position: -32px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-page_url {
-  background-position: -88px -96px;
+  background-position: -48px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-city {
-  background-position: -104px 0;
+  background-position: -64px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-customs {
-  background-position: -104px -16px;
+  background-position: -80px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-utm_spot {
-  background-position: -104px -32px;
+  background-position: -96px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-geo {
-  background-position: -104px -48px;
+  background-position: -112px -106px;
   width: 16px;
   height: 16px;
 }
 .M-subGrid-client {
-  background-position: -104px -64px;
+  background-position: 0 -122px;
   width: 16px;
   height: 16px;
 }
@@ -2041,6 +2097,11 @@ label input {
   right: 5px;
   top: 5px;
   color: #444;
+  background-image: url("../images/icons.png?1113");
+  background-repeat: no-repeat;
+  background-position: -128px -16px;
+  width: 20px;
+  height: 20px;
 }
 .M-tabBody {
   background: white;
@@ -2278,7 +2339,6 @@ label input {
   padding: 10px 0;
   min-height: 1.35em;
   background: #F8F8F8;
-  border-radius: 5px;
 }
 .M-tagLabelsWrapper .M-tagLabelsSimpleContainer {
   margin: 0px;
@@ -2592,9 +2652,9 @@ label input {
   top: 8px;
   left: 0;
   display: inline-block;
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -74px -112px;
+  background-position: -128px 0;
   width: 16px;
   height: 16px;
 }
@@ -2655,16 +2715,16 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   background-color: #eeeeee;
 }
 .M-HighGridRefreshAuto i {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -120px -16px;
+  background-position: -128px -82px;
   width: 12px;
   height: 12px;
   margin-right: 5px;
   display: inline-block;
 }
 .M-HighGridRefreshAuto i.act {
-  background-image: url("../images/icons_act.png?1029");
+  background-image: url("../images/icons_act.png?1113");
   background-repeat: no-repeat;
 }
 .M-HighGridRefreshAuto:hover {
@@ -2683,9 +2743,9 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   padding: 0 9px;
 }
 .M-HighGridRefresh .refNormal em {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -120px -28px;
+  background-position: -128px -94px;
   width: 12px;
   height: 12px;
 }
@@ -2721,9 +2781,9 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   background-color: #eee;
 }
 .M-HighGridExport em {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -120px -40px;
+  background-position: -128px -106px;
   width: 12px;
   height: 12px;
   display: inline-block;
@@ -2740,9 +2800,9 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   background-color: #eee;
 }
 .M-HighGridSwitch em {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -120px -52px;
+  background-position: -128px -118px;
   width: 12px;
   height: 12px;
   display: inline-block;
@@ -2810,15 +2870,15 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   border-width: 0 1px 1px 0;
 }
 .M-HighGridListSidebar td .M-HighGrid-subgrid {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
   display: inline-block;
   vertical-align: middle;
 }
 .M-HighGridListSidebarMenu {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -90px -112px;
+  background-position: -128px -36px;
   width: 14px;
   height: 14px;
   margin: 2px 6px;
@@ -2844,18 +2904,18 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   background-color: rgba(255, 255, 255, 0.5);
 }
 .M-HighGridList .asc em {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -142px -66px;
+  background-position: -150px -132px;
   width: 6px;
   height: 8px;
   margin-left: 5px;
   display: inline-block;
 }
 .M-HighGridList .desc em {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -142px -74px;
+  background-position: -150px -140px;
   width: 6px;
   height: 8px;
   margin-left: 5px;
@@ -2879,18 +2939,18 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   overflow: visible;
 }
 .M-HighGrid .running {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -104px -112px;
+  background-position: -128px -50px;
   width: 16px;
   height: 16px;
   display: inline-block;
   vertical-align: middle;
 }
 .M-HighGrid .pause {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
-  background-position: -120px 0;
+  background-position: -128px -66px;
   width: 16px;
   height: 16px;
   display: inline-block;
@@ -2967,28 +3027,28 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   opacity: 1;
 }
 .M-HighGridSubgrid a {
-  background-image: url("../images/icons.png?1029");
+  background-image: url("../images/icons.png?1113");
   background-repeat: no-repeat;
   margin-right: 6px;
   display: inline-block;
 }
 .M-HighGrid-subgridArrow {
-  background-position: -120px -64px;
+  background-position: -128px -130px;
   width: 21px;
   height: 11px;
 }
 .M-HighGrid-subgrid {
-  background-position: -120px -75px;
+  background-position: -128px -141px;
   width: 16px;
   height: 16px;
 }
 .M-HighGrid-sweety {
-  background-position: -120px -91px;
+  background-position: -128px -157px;
   width: 22px;
   height: 22px;
 }
 .M-HighGrid-campaign {
-  background-position: -120px -113px;
+  background-position: -150px 0;
   width: 22px;
   height: 22px;
 }
