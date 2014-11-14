@@ -98,7 +98,7 @@ define(function(require, exports){
 						data[to] = vm.$model[from];
 					});
 				} else if (key === ud) {
-					util.each(this.view_model, function(k, v){
+					util.each(this.view_model, function(v, k){
 						if (!util.isFunc(v)) {
 							data[k] = vm.$model[k];
 						}
@@ -160,8 +160,8 @@ define(function(require, exports){
 			scan : function(elem, vmodel) {
 				return avalon.scan(elem, vmodel);
 			},
-			buildVMCtrl: function(vm, view_model) {
-				return new VMCtrl(vm, view_model);
+			buildVMCtrl: function(vm, view_model, moduel) {
+				return new VMCtrl(vm, view_model, moduel);
 			},
 			globalVMDefineName : "global_view_model"
 		};
