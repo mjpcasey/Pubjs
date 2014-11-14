@@ -200,7 +200,7 @@
 
 	&List {
 		overflow: hidden;
-		border: 1px solid #C8CCCD;
+		border: 1px solid #C8CDCC;
 		background: #fff;
 		clear: both;
 		font-size: 13px;
@@ -218,20 +218,20 @@
 		// 列表头样式
 		thead {
 			tr {
-				background: #EFEFEF;
-				background: -webkit-gradient(linear,0% 0,0% 100%,from(#F7F7F7),to(#EFEFEF));
-				background: -moz-linear-gradient(top,#F7F7F7,#EFEFEF 100%);
+				background: #f8f8f8;
+				// background: -webkit-gradient(linear,0% 0,0% 100%,from(#F7F7F7),to(#EFEFEF));
+				// background: -moz-linear-gradient(top,#F7F7F7,#EFEFEF 100%);
 			}
 			th {
 				cursor: default;
 				padding: 8px 0;
 				border: none;
-				line-height: 15px;
+				line-height: 24px;
 				font-size: 12px;
 				font-weight: normal;
 				color: #333;
 				white-space: nowrap;
-				border-bottom: 1px solid #C8CCCD;
+				border-bottom: 1px solid #C8CDCC;
 				text-align: center;
 
 				span {
@@ -279,10 +279,10 @@
 				border: none;
 				text-align:right;
 				white-space: nowrap;
-				border: solid #EAEAEA;
+				border: solid #EBEBEB;
 				border-width: 0 1px 1px 0;
 				line-height: 23px;
-				padding: 5px;
+				padding: 8px;
 
 				// 修正图片占位错误
 				img {
@@ -348,10 +348,18 @@
 
 		// 操作菜单
 		&Menu{
-			.icon;
-			.icon-operateMenu;
-			cursor: pointer;
-			display: inline-block;
+			padding: 4px;
+			em {
+				.icon;
+				.icon-operateMenu;
+				cursor: pointer;
+				display: inline-block;
+				vertical-align: -5px;
+			}
+
+			&:hover {
+				background: #ebebeb;
+			}
 		}
 
 		.functionalHover {

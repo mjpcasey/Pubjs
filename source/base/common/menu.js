@@ -534,6 +534,18 @@ define(function( require, exports ){
 		eventSearch: function( evt, input ) {
 			var self = this;
 			var val = input === undefined ? '' : $(input).val().trim();
+			self.searching( val );
+			// var C = self.getConfig();
+			// var opts = C.options;
+			// var res = val === '' ? opts : self.filterOptions( val, opts );
+			// // 先清空选项 再创建
+			// self.$doms.options.empty();
+			// util.each( res, self.buildItems, self );
+			// self.renderItems();
+		},
+
+		searching: function( val ) {
+			var self = this;
 			var C = self.getConfig();
 			var opts = C.options;
 			var res = val === '' ? opts : self.filterOptions( val, opts );
@@ -550,6 +562,7 @@ define(function( require, exports ){
 		filterOptions: function( val, opts ) {
 			var ret = [];
 			var C = this.getConfig();
+			opts = opts || C.options;
 			var leng = opts.length;
 			var isline = true;
 			for( var i = 0; i < leng; i++ ) {
