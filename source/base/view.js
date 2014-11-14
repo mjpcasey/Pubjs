@@ -542,6 +542,11 @@ define(function(require,exports) {
 		},
 		// 创建业务模块
 		createBusiness: function(name, uri, param, callback){
+			if(util.isFunc(param)){
+				callback = param;
+				param = null;
+			}
+
 			var config = $.extend({}, {
 				target: this.getContainer(),
 				targetMenu: this.getSidebar()
@@ -601,8 +606,7 @@ define(function(require,exports) {
 		},
 		onSYSResize: function(ev){
 			this.updateWidth();
-		},
-		buildFromTemplate: _buildFromTemplate
+		}
 	});
 	exports.containerWithSidebar = ContainerWithSidebar;
 
