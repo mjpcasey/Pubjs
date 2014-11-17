@@ -171,7 +171,7 @@ define(function(require,exports) {
 						}
 					});
 				});
-				self.vm = pubjs.MVVM.buildVMCtrl($vm, c.view_model, self);
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
 			} else {
 				// 非MVVM模块禁止扫描
 				el.attr('ms-skip', 1);
@@ -542,6 +542,11 @@ define(function(require,exports) {
 		},
 		// 创建业务模块
 		createBusiness: function(name, uri, param, callback){
+			if(util.isFunc(param)){
+				callback = param;
+				param = null;
+			}
+
 			var config = $.extend({}, {
 				target: this.getContainer(),
 				targetMenu: this.getSidebar()
@@ -601,8 +606,7 @@ define(function(require,exports) {
 		},
 		onSYSResize: function(ev){
 			this.updateWidth();
-		},
-		buildFromTemplate: _buildFromTemplate
+		}
 	});
 	exports.containerWithSidebar = ContainerWithSidebar;
 
@@ -721,7 +725,7 @@ define(function(require,exports) {
 						}
 					});
 				});
-				self.vm = pubjs.MVVM.buildVMCtrl($vm, c.view_model, self);
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
 			} else {
 				// 非MVVM模块禁止扫描你
 				el.attr('ms-skip', 1);
