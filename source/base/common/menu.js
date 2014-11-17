@@ -790,6 +790,8 @@ define(function( require, exports ){
 		init: function( config ){
 			config = pubjs.conf( config, {
 				'height': 30,
+				'Name': 'name',
+				'Key': 'id',
 				'name': '', // 显示值
 				'id': null // 字段值
 			});
@@ -820,15 +822,17 @@ define(function( require, exports ){
 			return false;
 		},
 		setValue: function( val ) {
+			var c  = this.getConfig();
 			this.$doms
-			.attr('id', val.id)
-			.text( val.name );
+			.attr('id', val[c.Key])
+			.text( val[c.Name] );
 		},
 		getValue: function() {
-			return {
-				'id': this.$doms.attr('id'),
-				'name': this.$doms.text()
-			}
+			var c  = this.getConfig();
+			var ret = {};
+			ret[c.Key] = this.$doms.attr('id');
+			ret[c.Name] = this.$doms.text();
+			return ret;
 		}
 	});
 	exports.button = DropButton;
