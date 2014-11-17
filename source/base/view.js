@@ -474,7 +474,7 @@ define(function(require,exports) {
 			self.$sidebar = $([
 				'<div class="G-frameBodySidebar">',
 					'<div class="G-frameBodySidebarFlex">',
-						'<i class="G-frameBodySidebarIcon  uk-icon-angle-double-right"/>',
+						'<i class="G-frameBodySidebarIcon  angle_double_right"/>',
 					'</div>',
 					'<div class="G-frameBodySidebarWrapper">',
 						'<div class="G-frameBodySidebarContent"/>',
@@ -521,7 +521,7 @@ define(function(require,exports) {
 
 			self.$sidebar.toggleClass('act', !self.$sidebarHide);
 			self.$sidebarFlex.toggleClass('act', !self.$sidebarHide);
-			self.$sidebarFlex.find('i').toggleClass('uk-icon-anchor', !self.$sidebarHide);
+			self.$sidebarFlex.find('i').toggleClass('pin', !self.$sidebarHide);
 			self.$sidebar.find('.G-frameBodySidebarContent').toggleClass('act_right', !self.$sidebarHide);
 
 

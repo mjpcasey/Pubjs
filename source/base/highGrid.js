@@ -8,7 +8,7 @@ define(function(require, exports){
 
 	var menu = require('@base/common/menu');
 
-	var labels = require('grid/labels');
+	var labels = require('modules/labels');
 	// var format = labels.format;
 	labels = labels.labels;
 
