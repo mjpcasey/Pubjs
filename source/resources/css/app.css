@@ -813,7 +813,7 @@ label input {
   min-width: 300px;
   _width: 300px;
   background: #fff;
-  box-shadow: rgba(0, 0, 0, 0.5) 0 0 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   display: none;
 }
 .M-dialogHead {
@@ -2875,6 +2875,7 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   height: 14px;
   margin: 2px 6px;
   cursor: pointer;
+  display: inline-block;
 }
 .M-HighGridListContent {
   position: relative;
