@@ -809,14 +809,15 @@ define(function(require, exports){
 
 			this.showLoading();
 
-			var param = this.$sysParam;
+			var customParam = this.getParam();
+			var param = util.extend({}, this.$sysParam, customParam);
+
 			switch(c.reqType){
 				case 'ajax':
 					if(c.reqMethod == 'get'){
 						this.$reqID = pubjs.data[c.reqMethod](c.url, param, this, 'onData');
 					}else{
-						var customParam = this.getParam();
-						this.$reqID = pubjs.data[c.reqMethod](c.url, customParam, param, this, 'onData');
+						this.$reqID = pubjs.data[c.reqMethod](c.url, customParam, this.$sysParam, this, 'onData');
 					}
 				break;
 				case 'websocket':
