@@ -2875,6 +2875,7 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   height: 14px;
   margin: 2px 6px;
   cursor: pointer;
+  display: inline-block;
 }
 .M-HighGridListContent {
   position: relative;

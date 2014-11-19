@@ -157,6 +157,7 @@ define(function(require,exports) {
 				if (!pubjs.MVVM) {
 					pubjs.log('the plugin mvvm is not require');
 				}
+				el.removeAttr('ms-skip');
 				// 给vm添加命名空间
 				el.attr('ms-controller', this._.uri);
 				// 定义vm
@@ -711,6 +712,7 @@ define(function(require,exports) {
 				if (!pubjs.MVVM) {
 					pubjs.log('the plugin mvvm must require');
 				}
+				el.removeAttr('ms-skip');
 				// 给vm添加命名空间
 				el.attr('ms-controller', this._.uri);
 				// 定义vm

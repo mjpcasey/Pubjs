@@ -17,13 +17,11 @@ define(function(require, exports){
 			config = pubjs.conf(config, {
 				'target': parent,
 				'class': 'M-HighGrid',
-
 				'cols': [],				// 列定义
-
 				'data': null,			// 静态数据
 				'key': '_id',
 				'url': null,			// 远程数据地址
-				'param': null,			// 远程数据请求参数
+				'param': {},			// 远程数据请求参数
 				"reqMethod":"get",		// 数据获取方式
 				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
 				'auto_load': true,		// 自动加载数据
@@ -62,10 +60,14 @@ define(function(require, exports){
 
 			this.$data = config.get('data');
 
-			this.$sort = ''; // 排序，impressions|-1
+			this.$sort = '';					// 排序，impressions|-1
 
 			this.$selects = [];
 			this.$highlights = [];
+
+			// 参数
+			this.$sysParam = {};						// 系统参数
+			this.$customParam = config.get('param');	// 自定义参数
 
 			this.Super('init', arguments);
 		},
@@ -147,8 +149,9 @@ define(function(require, exports){
 
 			var el = this.getDOM();
 
+			var hasMetrics = c.metrics && c.metrics.length;
 			var layout = $([
-				'<div class="fl M-HighGridListLayoutLeft">',
+				'<div class="'+(hasMetrics?'fl':'')+' M-HighGridListLayoutLeft">',
 					'<div class="M-HighGridListCorner"></div>',
 					'<div class="M-HighGridListSidebar"></div>',
 				'</div>',
@@ -236,7 +239,7 @@ define(function(require, exports){
 				'<table cellspacing="0" cellpadding="0">',
 					'<tr class="M-HighGridListCornerTitle"></tr>',
 					'<tr class="M-HighGridListCornerAmount">',
-						c.hasAmount ? '<td colspan="'+cols.length+'">汇总</td>' : '',
+						(c.hasAmount && c.metrics && c.metrics.length) ? '<td colspan="'+cols.length+'">汇总</td>' : '',
 					'</tr>',
 				'</table>'
 			].join(''));
@@ -370,13 +373,14 @@ define(function(require, exports){
 						// 选择列
 						if(column.type == 'select'){
 							html = '<input type="checkbox"/>';
+							className += ' tc';
 							hasDataType = true;
 						}
 
 						// 操作列
 						if(column.type == 'op'){
 							// html = '<span class="M-HighGridListSidebarMenu"/>';
-							// className += ' tc';
+							className += ' tc';
 							hasDataType = true;
 						}
 
@@ -553,102 +557,133 @@ define(function(require, exports){
 				wrap = c.target || this.$el, // @优化todo
 				data = this.$data || [];
 
-			// 长度定义
-			var datasLen = data.items && data.items.length || 0,
-				indexLen = c.metrics.length,
-				colsLen = c.cols.length;
 
-			// DOM实例
-			var header = wrap.find('.M-HighGridListHeader'),
-				content = wrap.find('.M-HighGridListContent'),
-				sidebar = wrap.find('.M-HighGridListSidebar'),
-				corner = wrap.find('.M-HighGridListCorner');
 
-			var sum = 0,		// 总数
-				i,
-				max,			// 最大值
-				space,			// 间距
-				elT, elD, elL, elR;	// DOM对象
+				// 长度定义
+				var datasLen = data.items && data.items.length || 0,
+					indexLen = c.metrics.length,
+					colsLen = c.cols.length;
 
-			// 同步高度-汇总模块
-			elL = wrap.find('.M-HighGridListCornerAmount');
-			elR = wrap.find('.M-HighGridListHeaderAmount');
-			elL.height(elR.height());
+				// DOM实例
+				var header = wrap.find('.M-HighGridListHeader'),
+					content = wrap.find('.M-HighGridListContent'),
+					sidebar = wrap.find('.M-HighGridListSidebar'),
+					corner = wrap.find('.M-HighGridListCorner');
 
-			// 同步高度-下侧
-			for (i = 0; i < datasLen; i++) {
-				elL = sidebar.find('tr:eq('+i+')');
-				elR = content.find('tr:eq('+i+')');
-				max = this._getMax(elL.height(), elR.height());
-				elL.height(max);
-				elR.height(max);
-			}
+				var sum = 0,		// 总数
+					i,
+					max,			// 最大值
+					space,			// 间距
+					elT, elD, elL, elR;	// DOM对象
 
-			// 以浏览器高度作为表格的高度
-			var border = 2+1;
-			var offset = 50+20+10+20; // @todo 针对clicki新版项目：菜单高度+上边距+容器上边距+下边距
-			var pager = wrap.find('.M-HighGridPager').outerHeight();
-			var extras = wrap.find('.M-HighGridHeader').outerHeight();
-			var height = $(window).height()- corner.height()- offset; // var height = wrap.height()-corner.height();
-			sidebar.height(height- border- pager- extras);
-			content.height(height- border- pager- extras);
+			// 有指标时
+			if(c.metrics && c.metrics.length){
+				// 同步高度-汇总模块
+				elL = wrap.find('.M-HighGridListCornerAmount');
+				elR = wrap.find('.M-HighGridListHeaderAmount');
+				elL.height(elR.height());
 
-			// 同步宽度-左侧
-			for (i = 0; i < colsLen; i++) {
-				elT = wrap.find('.M-HighGridListCorner td:eq('+i+')');
-				elD = wrap.find('.M-HighGridListSidebar td:eq('+i+')');
-				max = this._getMax(elT.width(), elD.width());
-				elT.width(max);
-				elD.width(max);
-			}
-			// 设置主内容模块的左边距值
-			var conLeftWidth = wrap.find('.M-HighGridListLayoutLeft').width();
-			wrap.find('.M-HighGridListLayoutRight').css('margin-left', conLeftWidth);
+				// 同步高度-下侧
+				for (i = 0; i < datasLen; i++) {
+					elL = sidebar.find('tr:eq('+i+')');
+					elR = content.find('tr:eq('+i+')');
+					max = this._getMax(elL.height(), elR.height());
+					elL.height(max);
+					elR.height(max);
+				}
 
-			// 重置创建横向滚动条时min-width
-			content.css('min-width', 0); // wrap.width()-conLeftWidth-2
+				// 以浏览器高度作为表格的高度
+				var border = 2+1;
+				var offset = 50+20+10+20; // @todo 针对clicki新版项目：菜单高度+上边距+容器上边距+下边距
+				var pager = wrap.find('.M-HighGridPager').outerHeight();
+				var extras = wrap.find('.M-HighGridHeader').outerHeight();
+				var height = $(window).height()- corner.height()- offset; // var height = wrap.height()-corner.height();
+				sidebar.height(height- border- pager- extras);
+				content.height(height- border- pager- extras);
 
-			var className = '';
-			// 清零
-			if(isReset){
-				$('.M-HighGridListLayoutLeft').removeClass('shadow'); // 清除滚动阴影
-				header.find('table').css('width', 'inherit');
-				content.find('table').css('width', 'inherit');
-				header.css('min-width', 0);
-				content.css('min-width', 0);
-				header.css('width', wrap.width() - conLeftWidth- 2);
-				content.css('width', wrap.width() - conLeftWidth - 2);
-				content.css('min-height', 'inherit'); // 清除上一次由滚动条生成的min-height
+				// 同步宽度-左侧
+				for (i = 0; i < colsLen; i++) {
+					elT = wrap.find('.M-HighGridListCorner td:eq('+i+')');
+					elD = wrap.find('.M-HighGridListSidebar td:eq('+i+')');
+					max = this._getMax(elT.width(), elD.width());
+					elT.width(max);
+					elD.width(max);
+				}
+				// 设置主内容模块的左边距值
+				var conLeftWidth = wrap.find('.M-HighGridListLayoutLeft').width();
+				wrap.find('.M-HighGridListLayoutRight').css('margin-left', conLeftWidth);
 
-				// 清零右侧宽度
+				// 重置创建横向滚动条时min-width
+				content.css('min-width', 0); // wrap.width()-conLeftWidth-2
+
+				var className = '';
+				// 清零
+				if(isReset){
+					$('.M-HighGridListLayoutLeft').removeClass('shadow'); // 清除滚动阴影
+					header.find('table').css('width', 'inherit');
+					content.find('table').css('width', 'inherit');
+					header.css('min-width', 0);
+					content.css('min-width', 0);
+					header.css('width', wrap.width() - conLeftWidth- 2);
+					content.css('width', wrap.width() - conLeftWidth - 2);
+					content.css('min-height', 'inherit'); // 清除上一次由滚动条生成的min-height
+
+					// 清零右侧宽度
+					for (i = 0; i < indexLen; i++) {
+						// 总计模块
+						className = c.hasAmount ? 'M-HighGridListHeaderAmount' : 'M-HighGridListHeaderTitle';
+						elT = wrap.find('.'+className).find('td:eq('+i+')');
+						elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
+						elT.css('width', 'auto');
+						elD.css('width', 'auto');
+					}
+				}
+				// 同步宽度-右侧
 				for (i = 0; i < indexLen; i++) {
 					// 总计模块
 					className = c.hasAmount ? 'M-HighGridListHeaderAmount' : 'M-HighGridListHeaderTitle';
 					elT = wrap.find('.'+className).find('td:eq('+i+')');
 					elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
-					elT.css('width', 'auto');
-					elD.css('width', 'auto');
+					space = elT.outerWidth() - elT.width();
+					max = this._getMax(elT.width(), elD.width());
+					sum = sum + max + space;
+					elT.width(max);
+					elD.width(max);
 				}
-			}
+				// 更新表格宽度值，使每一列能以计算值呈现出来
+				header.find('table').width(sum);
+				content.find('table').width(sum);
 
-			// 同步宽度-右侧
-			for (i = 0; i < indexLen; i++) {
-				// 总计模块
-				className = c.hasAmount ? 'M-HighGridListHeaderAmount' : 'M-HighGridListHeaderTitle';
-				elT = wrap.find('.'+className).find('td:eq('+i+')');
-				elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
-				space = elT.outerWidth() - elT.width();
-				max = this._getMax(elT.width(), elD.width());
-				sum = sum + max + space;
-				elT.width(max);
-				elD.width(max);
-			}
-			// 更新表格宽度值，使每一列能以计算值呈现出来
-			header.find('table').width(sum);
-			content.find('table').width(sum);
+				// 防止resize后重计算时，实际内容框挤出了外框。
+				content.css('max-width',sum);
 
-			// 防止resize后重计算时，实际内容框挤出了外框。
-			content.css('max-width',sum);
+			// 无指标时
+			}else{
+				// 隐藏右侧表格
+				wrap.find('.M-HighGridListLayoutRight').hide();
+
+
+				if(isReset){
+					for (i = 0; i < colsLen; i++) {
+						elT = wrap.find('.M-HighGridListCorner td:eq('+i+')');
+						elD = wrap.find('.M-HighGridListSidebar td:eq('+i+')');
+						elT.css('width', 'auto');
+						elD.css('width', 'auto');
+					}
+				}
+				// 左侧表格占满全表
+				wrap.find('.M-HighGridListCorner table').css('width', '100%');
+
+				// 同步宽度-左侧
+				for (i = 0; i < colsLen; i++) {
+					elT = wrap.find('.M-HighGridListCorner td:eq('+i+')');
+					elD = wrap.find('.M-HighGridListSidebar td:eq('+i+')');
+					max = this._getMax(elT.width(), elD.width());
+					elT.width(max);
+					elD.width(max);
+				}
+
+			}
 		},
 		/** ---------------- 数据 ---------------- **/
 		setData: function(data){
@@ -757,7 +792,6 @@ define(function(require, exports){
 				mod.$doms.button.prop('disabled', true).addClass('refing');
 			}
 
-
 			// 若有分页模块，发送分页初始值参数
 			if(c.hasPager){
 				if(!this.get('pager')){
@@ -766,20 +800,25 @@ define(function(require, exports){
 						size:20
 					}, c.pager);
 
-					this.setParam({
+					util.extend(this.$sysParam, {
 						page: pager.page,
 						limit: pager.size
 					});
 				}
 			}
 
-			var param = this.getParam();
-
 			this.showLoading();
+
+			var customParam = this.getParam();
+			var param = util.extend({}, this.$sysParam, customParam);
 
 			switch(c.reqType){
 				case 'ajax':
-					this.$reqID = pubjs.data[c.reqMethod](c.url, param, this, 'onData');
+					if(c.reqMethod == 'get'){
+						this.$reqID = pubjs.data[c.reqMethod](c.url, param, this, 'onData');
+					}else{
+						this.$reqID = pubjs.data[c.reqMethod](c.url, customParam, this.$sysParam, this, 'onData');
+					}
 				break;
 				case 'websocket':
 					pubjs.mc.send(c.url, param, this.onData.bind(this));
@@ -814,31 +853,29 @@ define(function(require, exports){
 				this.fire("gridDataLoad",data);
 			}
 		},
-		reload: function(url, param, page){
+		reload: function(param, url, page){
 			var c = this.getConfig();
 			if (url){
 				c.url = url;
 			}
-			if (param){
-				c.param = util.extend(
-					{},
-					c.param,
-					param,
-					{page: page || 1}
-				);
 
+			if (param){
+				util.extend(this.$customParam, param);
 			}
+
+			util.extend(this.$sysParam, {
+				page: page || 1
+			});
 
 			this.load();
 		},
 		setParam: function(param, replace){
-			var cParam = this.getConfig('param');
-			cParam = replace ? param :util.extend(cParam, param);
+			var cParam = replace ? param :util.extend(this.$customParam, param);
 			this.setConfig('param', cParam);
-			return cParam;
+			return this;
 		},
 		getParam: function(){
-			return this.getConfig('param');
+			return this.$customParam;
 		},
 		showLoading: function(){
 			var el = this.getDOM();
@@ -863,7 +900,6 @@ define(function(require, exports){
 
 			return false;
 		},
-
 		// 复选框点击事件
 		eventCheckboxClick: function(ev, dom){
 			var c = this.getConfig();
@@ -949,8 +985,8 @@ define(function(require, exports){
 			this.fire('batch', [this.$selects, dom]);
 			return false;
 		},
-
 		eventTrMouseenter: function(ev, dom){
+			var c = this.getConfig();
 			var id = $(dom).attr('data-id');
 			var el = this.getDOM();
 
@@ -958,26 +994,27 @@ define(function(require, exports){
 			el.find('tr[data-id="'+id+'"]').addClass('M-HighGridListRowHover');
 
 			// 子表格
-			if(this.$subgridId != id){
-				// 销毁旧模块
-				var mod = this.get('subgrid');
-				if(mod){
-					mod.destroy();
-				}
+			if(c.subs){
+				if(this.$subgridId != id){
+					// 销毁旧模块
+					var mod = this.get('subgrid');
+					if(mod){
+						mod.destroy();
+					}
 
-				// 创建新模块
-				var c = this.getConfig();
-				var filter = c.subFilter;
-				var subTarget = el.find('tr[data-id="'+id+'"] a.M-HighGrid-subgrid');
-				this.create('subgrid', Subgrid, {
-					subs: c.subs,
-					parentTarget: el,
-					childTarget:subTarget,
-					data: this.getData(id),
-					target: el.find('.M-HighGridSubgrid'),
-					subFilter: util.isString(filter) ? this[filter]: filter,
-					offset: this.$scrollerVLen || 0
-				});
+					// 创建新模块
+					var filter = c.subFilter;
+					var subTarget = el.find('tr[data-id="'+id+'"] a.M-HighGrid-subgrid');
+					this.create('subgrid', Subgrid, {
+						subs: c.subs,
+						parentTarget: el,
+						childTarget:subTarget,
+						data: this.getData(id),
+						target: el.find('.M-HighGridSubgrid'),
+						subFilter: util.isString(filter) ? this[filter]: filter,
+						offset: this.$scrollerVLen || 0
+					});
+				}
 			}
 
 			return false;
@@ -1040,7 +1077,7 @@ define(function(require, exports){
 		// 分页切换事件
 		onChangePage: function(ev){
 			if (this.$.pager){
-				this.setParam({
+				util.extend(this.$sysParam, {
 					page: ev.param.page,
 					limit: ev.param.size
 				});
@@ -1606,28 +1643,30 @@ define(function(require, exports){
 			var c = this.getConfig();
 			var doms = this.$doms = {};
 			var prefix = 'M-HighGrid-';
-			for (var i = 0; i < c.subs.length; i++) {
-				sub = c.subs[i];
+			if(c.subs){
+				for (var i = 0; i < c.subs.length; i++) {
+					sub = c.subs[i];
 
-				if (util.isString(sub)){
-					lab = labels.get('highgrid_' + sub);
-					if (!lab){
-						pubjs.error('SubGrid Config Not Found - ' + sub);
+					if (util.isString(sub)){
+						lab = labels.get('highgrid_' + sub);
+						if (!lab){
+							pubjs.error('SubGrid Config Not Found - ' + sub);
+							continue;
+						}
+						sub = util.extend({'type':sub}, lab);
+					}else {
+						pubjs.error('SubGrid Config Not Found - ', sub);
 						continue;
 					}
-					sub = util.extend({'type':sub}, lab);
-				}else {
-					pubjs.error('SubGrid Config Not Found - ', sub);
-					continue;
+					c.subs[i] = sub;
+					btn = doms[sub.type] = sub.iconBtn = $('<a href="#"/>');
+					btn.attr({
+						'class': sub['class'] || (prefix + sub.type),
+						'title': sub.text || '',
+						'data-index': i
+					});
+					el.append(btn);
 				}
-				c.subs[i] = sub;
-				btn = doms[sub.type] = sub.iconBtn = $('<a href="#"/>');
-				btn.attr({
-					'class': sub['class'] || (prefix + sub.type),
-					'title': sub.text || '',
-					'data-index': i
-				});
-				el.append(btn);
 			}
 
 			// 执行自定义过滤函数
