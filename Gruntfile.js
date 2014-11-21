@@ -18,6 +18,7 @@ module.exports = function(grunt) {
 		'source/core/*.js',
 		'source/base/*.js',
 		'source/base/*/*.js',
+		'source/layout/*/*.js',
 		'source/plugins/*.js'
 	];
 

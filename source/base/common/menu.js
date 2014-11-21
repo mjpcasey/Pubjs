@@ -562,7 +562,7 @@ define(function( require, exports ){
 		filterOptions: function( val, opts ) {
 			var ret = [];
 			var C = this.getConfig();
-			opts = opts || C.options;
+			opts = opts || C.options || [];
 			var leng = opts.length;
 			var isline = true;
 			for( var i = 0; i < leng; i++ ) {
