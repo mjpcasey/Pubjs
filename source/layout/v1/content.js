@@ -19,7 +19,8 @@ define(function(require,exports) {
 			self.$sidebar = null;
 			self.$container = null;
 
-			self.$sidebarHide = false; // 右侧工具栏是否隐藏
+			self.$menuHide = false;		// 左侧菜单栏是否隐藏
+			self.$sidebarHide = false;	// 右侧工具栏是否隐藏
 
 			self.build();
 		},
@@ -115,7 +116,9 @@ define(function(require,exports) {
 			var sidebar = 200 *2;	// 左右侧栏宽度
 			var padding = 20*2;		// 内边距
 			var w = $(window).width()-sidebar-padding;
+
 			w = this.$sidebarHide ? w+200: w;
+			w = this.$menuHide ? w+200: w;
 			this.$container.width(w);
 		},
 		// 创建业务模块
@@ -184,6 +187,12 @@ define(function(require,exports) {
 		},
 		onSYSResize: function(ev){
 			this.updateWidth();
+		},
+		onMenuToggle: function(ev){
+			this.$menuHide = ev.param;
+			this.updateWidth();
+			this.cast('menuToggle');
+			return false;
 		}
 	});
 	exports.sidebar = SidebarContainer;
@@ -206,7 +215,7 @@ define(function(require,exports) {
 
 			var el = self.$el = $('<div></div>').appendTo(c.target);
 
-			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab mb10">').appendTo(el);
+			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab mb20">').appendTo(el);
 			self.$container = $('<div class="G-frameBodyContainer"/>').appendTo(el);
 			self.$sidebar = $([
 				'<div class="G-frameBodySidebar">',
@@ -266,7 +275,7 @@ define(function(require,exports) {
 
 			// 创建选项卡
 			var el = $('<li data-name="'+name+'"><a>'+param.tabText+'</a></li>').appendTo(dom);
-			this.uiBind(el, 'click', 'eventClickTab');
+			this.uiBind(el, 'click', 'eventSwitchTab');
 
 			// 创建容器
 			var conContent = $('<div/>').appendTo(this.$container).hide();
@@ -300,7 +309,7 @@ define(function(require,exports) {
 			// 更新最新模块名
 			this.$current = name;
 		},
-		eventClickTab: function(ev, dom){
+		eventSwitchTab: function(ev, dom){
 			dom = $(dom);
 
 			// 如果已经是激活状态，不切换
@@ -321,6 +330,8 @@ define(function(require,exports) {
 				// 为新项目设置激活状态
 				var name = dom.attr('data-name');
 				this.setActived(name);
+
+				this.cast('tabChange')
 			}
 
 			return false;

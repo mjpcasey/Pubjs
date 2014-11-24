@@ -44,7 +44,7 @@ define(function(require, ex){
 	}
 
 	function isPlainObject(val){
-		if (OP.toString.call(val).slice(8,-1) !== 'Object' || val.nodeType || val === window){
+		if (!val || OP.toString.call(val).slice(8,-1) !== 'Object' || val.nodeType || val === window){
 			return false;
 		}
 		try {

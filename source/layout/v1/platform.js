@@ -375,7 +375,8 @@ define(function(require,exports){
 			// 更新状态
 			self.$menuHide = !self.$menuHide;
 
-			app.core.cast('toggleMenu');
+			// app.core.cast('toggleMenu');
+			app.core.cast('menuToggle', self.$menuHide);
 			return false;
 		},
 		// 切换左侧菜单显示状态
