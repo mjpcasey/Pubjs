@@ -614,12 +614,15 @@ define(function(require, exports){
 				}
 
 				// 以浏览器高度作为表格的高度
-				var offset = this.getGridOffset();
-				var extras = 20;	// 下边据
+				var offset = this.$el.get(0).offsetTop;
+				var outsideWapper = this.$el.parents('.G-frameBodyContainer');
+				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
+				// var extras = 20;	// 下边据
+				var extras = 0;
 				var border = 2+1;	// 边框
 				var gridHeader = wrap.find('.M-HighGridHeader').outerHeight();
 				var pager = wrap.find('.M-HighGridPager').outerHeight();
-				var height = $(window).height()- corner.height()- offset- pager- extras - gridHeader -border ;
+				var height = outsideWapper.height()- corner.height()- offset- pager- extras - gridHeader -border ;
 
 				sidebar.height(height);
 				content.height(height);
