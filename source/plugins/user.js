@@ -5,6 +5,7 @@ define(function(require, exports){
 
 	// 用户登录检查
 	var user_data = null;
+	var right_data = null;
 	var user_guest = {
 		'id': 0,
 		'type': 0
@@ -14,9 +15,25 @@ define(function(require, exports){
 	}
 	function setUser(user){
 		user_data = user;
+		if(user.right){
+			setRight(user.right);
+		}
 	}
 	function getUser(){
 		return user_data || user_guest;
+	}
+	function setRight(data){
+		if(util.isArray(data)){
+			var right = {};
+			util.each(data, function(v){
+				right[v.code] = v.name || true;
+			});
+			data = right;
+		}
+		right_data = data;
+	}
+	function getRight(){
+		return right_data;
 	}
 
 
@@ -129,6 +146,7 @@ define(function(require, exports){
 		pubjs.setUser = setUser;
 		pubjs.getUser = getUser;
 		pubjs.getDate = getDate;
+		pubjs.getRight = getRight;
 		pubjs.getDateStorage = getDateStorage;
 		callback();
 	}
