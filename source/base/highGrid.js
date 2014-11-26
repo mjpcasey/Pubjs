@@ -19,7 +19,7 @@ define(function(require, exports){
 				'class': 'M-HighGrid',
 				'cols': [],				// 列定义
 				'data': null,			// 静态数据
-				'key': '_id',
+				'key': pubjs.config('grid/key')||'_id',
 				'url': null,			// 远程数据地址
 				'param': {},			// 远程数据请求参数
 				"reqMethod":"get",		// 数据获取方式
@@ -462,7 +462,7 @@ define(function(require, exports){
 						if(render){
 							if (util.isFunc(render)) {
 								value = render(ii, value, data, metric);
-							};
+							}
 							if(util.isString(render)&& util.isFunc(this[render])){
 								value = this[render](ii, value, data, metric);
 							}
@@ -670,16 +670,11 @@ define(function(require, exports){
 					className = c.hasAmount ? 'M-HighGridListHeaderAmount' : 'M-HighGridListHeaderTitle';
 					elT = wrap.find('.'+className).find('td:eq('+i+')');
 					elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
-
-					elHeader = wrap.find('.M-HighGridListHeaderTitle td:eq('+i+')');
-
-
 					space = elT.outerWidth() - elT.width();
 					max = this._getMax(elT.width(), elD.width());
 					sum = sum + max + space;
 					elT.width(max);
 					elD.width(max);
-					elHeader.width(max)
 				}
 				// 更新表格宽度值，使每一列能以计算值呈现出来
 				header.find('table').width(sum);
@@ -1129,8 +1124,10 @@ define(function(require, exports){
 		// 响应选项卡事件
 		onTabChange: function(ev){
 			this.calculate(true);
-			this.$.scrollerH.update();
-			this.$.scrollerV.update();
+			if(this.$){
+				this.$.scrollerH.update();
+				this.$.scrollerV.update();
+			}
 			return false;
 		},
 		// 响应手动刷新事件
@@ -1745,7 +1742,7 @@ define(function(require, exports){
 
 			// 创建下拉弹框
 			this.create('menu', menu.base, {
-				width: 84,
+				// width: 84,
 				trigger: el,
 				options: data,
 				relate_elm: el,
@@ -1777,7 +1774,8 @@ define(function(require, exports){
 		eventButtonClick: function(ev, dom){
 			if(!this.get('menu')){
 				var id = this.getDOM().parents('tr').attr('data-id');
-				this.fire('operateMenuShow', id, 'afterFire');
+				var value = this.getConfig('grid').getData(id);
+				this.fire('operateMenuShow', value, 'afterFire');
 				// return false;
 			}else{
 				this.hide();
