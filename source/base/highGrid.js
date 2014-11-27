@@ -953,7 +953,7 @@ define(function(require, exports){
 			// @优化todo , 'id'变成可配置项
 			var obj = {}
 			obj[c.key] = value;
-			var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
+			var data = value ? [obj] :(this.$data&&this.$data.items||[]);
 
 			for (var i = 0; i < data.length; i++) {
 				var index = util.index(this.$selects, data[i][c.key]);
