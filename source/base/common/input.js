@@ -571,6 +571,8 @@ define(function(require, exports){
 				// 当items要从远端拉取时的url地址
 				'class': 'M-commonRadioGroup',
 				'url': null,
+				// 默认通信方式使用ajax，可选websocket
+				"reqType": "ajax",
 				'param': null,
 				'auto_load': true,
 				// data为初始化列表
@@ -707,7 +709,20 @@ define(function(require, exports){
 			var c = self.getConfig();
 
 			pubjs.sync();
-			pubjs.data.get(c.url, c.param, self, 'afterLoad');
+			switch(c.reqType){
+				case 'ajax':
+					pubjs.data.get(
+						c.url
+						,$.extend({}, c.param, this.sysParam)
+						,self
+						,'afterLoad'
+					);
+				break;
+				case 'websocket':
+					pubjs.mc.send(c.url, $.extend({}, c.param, this.sysParam), this.afterLoad.bind(this));
+				break;
+			}
+			//pubjs.data.get(c.url, c.param, self, 'afterLoad');
 			return self;
 		},
 		afterLoad: function(err, data){
