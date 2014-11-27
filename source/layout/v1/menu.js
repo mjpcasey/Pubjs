@@ -18,12 +18,13 @@ define(function(require,exports){
 			var user = pubjs.getUser();
 
 			// 没有用户权限信息，是创建不了完整菜单列表的
-			if (!user || !user.Right){
+			if (!user || !user.right){
 				return this;
 			}
 
 			var rightsMapping = pubjs.config('rightsMapping');
-			var rights = user.Right || null;
+			var rights = user.right || null;
+
 			// var channelLink = this.$channelLink;
 
 			var c = this.getConfig();
