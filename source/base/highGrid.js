@@ -461,10 +461,10 @@ define(function(require, exports){
 						render = metric.render;
 						if(render){
 							if (util.isFunc(render)) {
-								value = render(ii, value, data, metric);
-							};
+								value = render(i, value, data[i], metric);
+							}
 							if(util.isString(render)&& util.isFunc(this[render])){
-								value = this[render](ii, value, data, metric);
+								value = this[render](i, value, data[i], metric);
 							}
 						}
 
@@ -668,15 +668,11 @@ define(function(require, exports){
 					elT = wrap.find('.'+className).find('td:eq('+i+')');
 					elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
 
-					elHeader = wrap.find('.M-HighGridListHeaderTitle td:eq('+i+')');
-
-
 					space = elT.outerWidth() - elT.width();
 					max = this._getMax(elT.width(), elD.width());
 					sum = sum + max + space;
 					elT.width(max);
 					elD.width(max);
-					elHeader.width(max)
 				}
 				// 更新表格宽度值，使每一列能以计算值呈现出来
 				header.find('table').width(sum);
@@ -1774,7 +1770,8 @@ define(function(require, exports){
 		eventButtonClick: function(ev, dom){
 			if(!this.get('menu')){
 				var id = this.getDOM().parents('tr').attr('data-id');
-				this.fire('operateMenuShow', id, 'afterFire');
+				var value = this.getConfig('grid').getData(id);
+				this.fire('operateMenuShow', value, 'afterFire');
 				// return false;
 			}else{
 				this.hide();
