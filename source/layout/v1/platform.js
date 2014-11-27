@@ -188,7 +188,6 @@ define(function(require,exports){
 			self.$delayUpdate = (self.$activeScenes !== 'MAIN');
 			if (!self.$delayUpdate){
 				if(this.$.menu){
-					console.log(self.$delayUpdate)
 					this.$.menu.updateMenu(mod, act);
 				}
 				// self.updateMenu(mod, act);
