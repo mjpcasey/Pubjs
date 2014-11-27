@@ -125,8 +125,6 @@ define(function(require,exports) {
 			var padding = 20*2;		// 内边距
 			var w = $(window).width()-sidebar-padding;
 
-			console.log('w:'+w)
-
 			w = this.$sidebarHide ? w+200: w;
 			w = this.$menuHide ? w+200: w;
 			this.$container.width(w);

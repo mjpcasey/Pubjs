@@ -461,10 +461,10 @@ define(function(require, exports){
 						render = metric.render;
 						if(render){
 							if (util.isFunc(render)) {
-								value = render(ii, value, data, metric);
+								value = render(i, value, data[i], metric);
 							}
 							if(util.isString(render)&& util.isFunc(this[render])){
-								value = this[render](ii, value, data, metric);
+								value = this[render](i, value, data[i], metric);
 							}
 						}
 
@@ -946,12 +946,12 @@ define(function(require, exports){
 		updateSelectedValue: function(add, value){
 			var c = this.getConfig();
 
-
 			// var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
 			// @优化todo , 'id'变成可配置项
 			var obj = {}
 			obj[c.key] = value;
-			var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
+
+			var data = value ? [obj] :(this.$data&&this.$data.items||[]);
 
 			for (var i = 0; i < data.length; i++) {
 				var index = util.index(this.$selects, data[i][c.key]);
