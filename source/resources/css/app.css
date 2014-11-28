@@ -2949,6 +2949,15 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   display: inline-block;
   vertical-align: middle;
 }
+.M-HighGrid .store {
+  background-image: url("../images/icons.png?1128");
+  background-repeat: no-repeat;
+  background-position: -128px -82px;
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
 .M-HighGridTab {
   margin: 0;
   padding: 0;
