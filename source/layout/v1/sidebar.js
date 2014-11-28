@@ -1,7 +1,7 @@
 define(function(require,exports) {
 	var pubjs = require('pubjs');
 	// var $ = require('jquery');
-	// var util = require('util');
+	var util = require('util');
 	var view = require('@base/view');
 	var dialog = require('@base/dialog');
 
@@ -9,7 +9,7 @@ define(function(require,exports) {
 	var Sidebar = view.container.extend({
 		init:function(config){
 			config = pubjs.conf(config, {
-				'childs': null // 子模块uri
+				'childs': [] // 子模块： 1 数组形式[{name: 'xxx', uri:'xxx'}, {...}]; 2 对象形式{name: uri}
 			});
 
 			this.$module = null; // 当前激活子模块
@@ -20,11 +20,22 @@ define(function(require,exports) {
 			var c = this.getConfig();
 
 			// 按序创建子项目
-			for(var name in c.childs){
-				this.createAsync(name, c.childs[name], {
-					target: this.$el
-				});
+			var childs = c.childs;
+			var i;
+			if(util.isArray(childs)){
+				for (var i = 0; i < childs.length; i++) {
+					this.createDelay(childs[i]['name'], childs[i]['uri'], {
+						target: this.$el
+					});
+				}
+			}else{
+				for(i in c.childs){
+					this.createDelay(i, c.childs[i], {
+						target: this.$el
+					});
+				}
 			}
+			this.createDelay(true);
 
 			// 弹框
 			this.create('popwin', dialog.base, {
