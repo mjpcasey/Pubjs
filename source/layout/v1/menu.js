@@ -36,8 +36,9 @@ define(function(require,exports){
 					// 菜单项目过滤
 					var items = [];
 					util.each(group.items, function(item){
-						if (item.auth && util.find(rights, rightsMapping[item['auth']]) === null){
-							return; // 没有权限, 不添加
+						// 如果不是超级用户，且没有权限，不添加
+						if (!user.super && item.auth && util.find(rights, rightsMapping[item['auth']]) === null){
+							return;
 						}
 						items.push(item);
 					});
