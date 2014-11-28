@@ -134,6 +134,7 @@ define(function(require,exports) {
 		init: function(config){
 			config = pubjs.conf(config, {
 				'class': 'M-sidebarItem',
+				'width': 500,
 				'popwinItem': '' // 创建在弹框里的项目
 			});
 
@@ -172,6 +173,9 @@ define(function(require,exports) {
 
 			// 更新弹框位置
 			popwin.show();
+			if(c.width){
+				popwin.css({ 'width': c.width});
+			}
 			var position = this.getPosition(this.$el, popwin.$el);
 			popwin.update(position);
 		},
