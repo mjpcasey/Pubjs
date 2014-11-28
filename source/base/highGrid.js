@@ -1747,7 +1747,8 @@ define(function(require, exports){
 		},
 		// 响应菜单选中事件
 		onMenuSelected: function(ev){
-			var data = ev.param[0];
+			var len = ev.param.length;
+			var data = ev.param[len -1];
 			var ids = this.getConfig('grid').getValue('selects');
 			this.fire('batchSelect', [data, ids]);
 			return false;
