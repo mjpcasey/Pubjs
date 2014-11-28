@@ -13,6 +13,7 @@ define(function(require,exports) {
 			var self = this;
 
 			self.$config = pubjs.conf(config, {
+				'class': 'M-content'
 			});
 
 			self.$el = null;
@@ -68,6 +69,13 @@ define(function(require,exports) {
 
 			// self.$sidebar.height($(window).height()-50);
 			self.$container.width(self.$container.width()-200);
+
+			// 绝对定位，保持内容区是填满状态
+			self.$container.css({
+				position: 'absolute',
+				top: self.$container.get(0).offsetTop,
+				bottom: 20 // 下边据20px
+			});
 
 			return self;
 		},
@@ -201,6 +209,7 @@ define(function(require,exports) {
 	var TabSidebarContainer = SidebarContainer.extend({
 		init: function(config, parent){
 			this.$config = pubjs.conf(config, {
+				'class': 'M-content'
 			});
 
 			this.$first = true;		// 首个创建的tab有act状态
@@ -214,6 +223,13 @@ define(function(require,exports) {
 			var c = self.getConfig();
 
 			var el = self.$el = $('<div></div>').appendTo(c.target);
+
+			var cls = c['class'];
+			if (cls){
+				el.addClass(
+					util.isArray(cls) ? cls.join(' ') : cls
+				);
+			}
 
 			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab mb20">').appendTo(el);
 			self.$container = $('<div class="G-frameBodyContainer"/>').appendTo(el);
@@ -235,6 +251,13 @@ define(function(require,exports) {
 
 			// self.$sidebar.height($(window).height()-50);
 			self.$container.width(self.$container.width()-200);
+
+			// 绝对定位，保持内容区是填满状态
+			self.$container.css({
+				position: 'absolute',
+				top: self.$container.get(0).offsetTop,
+				bottom: 20 // 下边据20px
+			});
 
 			return self;
 		},

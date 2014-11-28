@@ -19,7 +19,7 @@ define(function(require, exports){
 				'class': 'M-HighGrid',
 				'cols': [],				// 列定义
 				'data': null,			// 静态数据
-				'key': '_id',
+				'key': pubjs.config('grid/key')||'_id',
 				'url': null,			// 远程数据地址
 				'param': {},			// 远程数据请求参数
 				"reqMethod":"get",		// 数据获取方式
@@ -614,12 +614,15 @@ define(function(require, exports){
 				}
 
 				// 以浏览器高度作为表格的高度
-				var offset = this.getGridOffset();
-				var extras = 20;	// 下边据
+				var offset = this.$el.get(0).offsetTop;
+				var outsideWapper = this.$el.parents('.G-frameBodyContainer');
+				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
+				// var extras = 20;	// 下边据
+				var extras = 0;
 				var border = 2+1;	// 边框
 				var gridHeader = wrap.find('.M-HighGridHeader').outerHeight();
 				var pager = wrap.find('.M-HighGridPager').outerHeight();
-				var height = $(window).height()- corner.height()- offset- pager- extras - gridHeader -border ;
+				var height = outsideWapper.height()- corner.height()- offset- pager- extras - gridHeader -border ;
 
 				sidebar.height(height);
 				content.height(height);
@@ -944,7 +947,6 @@ define(function(require, exports){
 		updateSelectedValue: function(add, value){
 			var c = this.getConfig();
 
-
 			// var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
 			// @优化todo , 'id'变成可配置项
 			var obj = {}
@@ -1122,8 +1124,10 @@ define(function(require, exports){
 		// 响应选项卡事件
 		onTabChange: function(ev){
 			this.calculate(true);
-			this.$.scrollerH.update();
-			this.$.scrollerV.update();
+			if(this.$){
+				this.$.scrollerH.update();
+				this.$.scrollerV.update();
+			}
 			return false;
 		},
 		// 响应手动刷新事件
@@ -1738,7 +1742,7 @@ define(function(require, exports){
 
 			// 创建下拉弹框
 			this.create('menu', menu.base, {
-				width: 84,
+				// width: 84,
 				trigger: el,
 				options: data,
 				relate_elm: el,
