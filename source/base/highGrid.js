@@ -670,6 +670,7 @@ define(function(require, exports){
 					className = c.hasAmount ? 'M-HighGridListHeaderAmount' : 'M-HighGridListHeaderTitle';
 					elT = wrap.find('.'+className).find('td:eq('+i+')');
 					elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
+
 					space = elT.outerWidth() - elT.width();
 					max = this._getMax(elT.width(), elD.width());
 					sum = sum + max + space;
@@ -950,7 +951,6 @@ define(function(require, exports){
 			// @优化todo , 'id'变成可配置项
 			var obj = {}
 			obj[c.key] = value;
-
 			var data = value ? [obj] :(this.$data&&this.$data.items||[]);
 
 			for (var i = 0; i < data.length; i++) {
@@ -1751,7 +1751,8 @@ define(function(require, exports){
 		},
 		// 响应菜单选中事件
 		onMenuSelected: function(ev){
-			var data = ev.param[0];
+			var len = ev.param.length;
+			var data = ev.param[len -1];
 			var ids = this.getConfig('grid').getValue('selects');
 			this.fire('batchSelect', [data, ids]);
 			return false;

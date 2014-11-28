@@ -156,41 +156,8 @@ define(function(require,exports) {
 				top: top,
 				left: -popwin.outerWidth()
 			};
-		},
-		// @暂遗弃
-		getPosition2: function(self, popwin){
-			var item = self[0];
-
-			var current = item.offsetParent;
-			var left = item.offsetLeft;
-			var top = item.offsetTop;
-
-			while (current !== null && current !== document.body){
-				left += current.offsetLeft;
-				top += current.offsetTop;
-				current = current.offsetParent;
-			}
-
-			// 模块的垂直位置如果大于屏幕高度的一半，居下定位；
-			var height = document.body.clientHeight || document.documentElement.clientHeight;	// 屏幕高度
-			if(top > (height/2)){
-				// 两容器的差值
-				var dif = self.outerHeight()-popwin.outerHeight();
-				top+=dif;
-			}
-
-			// 偏移量；为了覆盖弹框右边框值
-			var offset = 10;
-
-			return {
-				top: top,
-				left: left-popwin.outerWidth()+offset
-			};
 		}
 	});
 	exports.item = Item;
-
-
-
 
 });

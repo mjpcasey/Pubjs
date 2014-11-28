@@ -1108,5 +1108,18 @@ define(function(require, ex){
 				o.focus();
 			}
 		}
-	}
+	};
+
+	ex.keys = function(obj, format){
+		var ret = [];
+		for(var key in obj){
+			if(obj.hasOwnProperty(key)){
+				if(format && isFunc(format)){
+					key = format(key);
+				}
+				ret.push(key);
+			}
+		}
+		return ret;
+	};
 });
