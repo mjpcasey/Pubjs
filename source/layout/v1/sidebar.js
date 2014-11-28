@@ -9,7 +9,7 @@ define(function(require,exports) {
 	var Sidebar = view.container.extend({
 		init:function(config){
 			config = pubjs.conf(config, {
-				'childs': [] // 子模块： 1 数组形式[{name: 'xxx', uri:'xxx'}, {...}]; 2 对象形式{name: uri}
+				'items': [] // 子模块： 1 数组形式[{name: 'xxx', uri:'xxx'}, {...}]; 2 对象形式{name: uri}
 			});
 
 			this.$module = null; // 当前激活子模块
@@ -19,20 +19,26 @@ define(function(require,exports) {
 		afterBuild:function(){
 			var c = this.getConfig();
 
+			// 子模块显隐状态标志位
+			var display = this.$display = {};
+
 			// 按序创建子项目
-			var childs = c.childs;
-			var i;
-			if(util.isArray(childs)){
-				for (var i = 0; i < childs.length; i++) {
-					this.createDelay(childs[i]['name'], childs[i]['uri'], {
+			var i, name;
+			var items = c.items;
+			if(util.isArray(items)){
+				for (i = 0; i < items.length; i++) {
+					name = items[i]['name'];
+					this.createDelay(name, items[i]['uri'], {
 						target: this.$el
 					});
+					display[name] = true;
 				}
 			}else{
-				for(i in c.childs){
-					this.createDelay(i, c.childs[i], {
+				for(i in items){
+					this.createDelay(i, items[i], {
 						target: this.$el
 					});
+					display[i] = true;
 				}
 			}
 			this.createDelay(true);
@@ -46,6 +52,23 @@ define(function(require,exports) {
 				"showHead": false,
 				"showClose": false
 			});
+		},
+		toggleItem: function(name, bool){
+			var display = this.$display[name];
+
+			var item = this.get(name);
+			if(item){
+				var action;
+				if(bool !== undefined ){
+					action = bool ? 'show' : 'hide';
+					display = bool ? true : false;
+				}else{
+					action = display ? 'show' : 'hide';
+					display = !display
+				}
+
+				item[action]();
+			}
 		},
 		toggleActive: function(module){
 			// 移除其他项目的激活状态
