@@ -105,6 +105,7 @@ z[20,20,-2,-2]			{iconDate}		    date.png
 z[14,14,0,0]			{highGridOperation}		highGridOperation.png		# 表格操作按钮
 z[16,16,0,0]			{running}				running.png					# 启用状态
 z[16,16,0,0]			{pause}					pause.png					# 停用状态
+z[16,16,0,0]			{store}					store.png					# 归档状态
 
 z[12,12,0,0]			{refreshAuto}			refreshAuto.png				# 自动刷新按钮
 z[12,12,0,0]	(act)	{refreshAuto}			refreshAuto_act.png			# 自动刷新按钮 -勾选后
