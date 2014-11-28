@@ -37,7 +37,7 @@ define(function( require, exports ){
 				'data_set': null,		// 设置菜单展开后的选中数据
 				'auto_send': false,		// 拉取数据后自动发消息
 				'reqType': 'ajax',		// 默认通信方式使用ajax，可选websocket
-				'z': 1000				// 菜单zindex
+				'z': 10000				// 菜单zindex
 			});
 			this.$subArr = [];			// 存放下一级子菜单
 			this.$subMenuSelected = {};	// 存放子菜单的选中数据
@@ -562,7 +562,7 @@ define(function( require, exports ){
 		filterOptions: function( val, opts ) {
 			var ret = [];
 			var C = this.getConfig();
-			opts = opts || C.options;
+			opts = opts || C.options || [];
 			var leng = opts.length;
 			var isline = true;
 			for( var i = 0; i < leng; i++ ) {

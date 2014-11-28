@@ -44,7 +44,7 @@ define(function(require, ex){
 	}
 
 	function isPlainObject(val){
-		if (OP.toString.call(val).slice(8,-1) !== 'Object' || val.nodeType || val === window){
+		if (!val || OP.toString.call(val).slice(8,-1) !== 'Object' || val.nodeType || val === window){
 			return false;
 		}
 		try {
@@ -1108,5 +1108,18 @@ define(function(require, ex){
 				o.focus();
 			}
 		}
-	}
+	};
+
+	ex.keys = function(obj, format){
+		var ret = [];
+		for(var key in obj){
+			if(obj.hasOwnProperty(key)){
+				if(format && isFunc(format)){
+					key = format(key);
+				}
+				ret.push(key);
+			}
+		}
+		return ret;
+	};
 });

@@ -19,7 +19,7 @@ define(function(require, exports){
 				'class': 'M-HighGrid',
 				'cols': [],				// 列定义
 				'data': null,			// 静态数据
-				'key': '_id',
+				'key': pubjs.config('grid/key')||'_id',
 				'url': null,			// 远程数据地址
 				'param': {},			// 远程数据请求参数
 				"reqMethod":"get",		// 数据获取方式
@@ -44,7 +44,7 @@ define(function(require, exports){
 				'tab': null,			// 指标分组配置信息
 				'default_metrics': [],	// 指标分组中属于默认组的指标，支持'{组名}'的形式过滤
 				// 'default_sort': true,	// 默认栏目排序
-				//
+
 				'subs': null,
 				'subFilter': null,
 
@@ -83,7 +83,7 @@ define(function(require, exports){
 					'<div class="M-HighGridHeaderRight fr"></div>',
 				'</div>',
 				'<div class="M-HighGridList cl"></div>',
-				'<div class="M-HighGridPager mt10 tr"></div>',
+				'<div class="M-HighGridPager pt10 tr"></div>',
 				'<div class="M-tableListLoading"></div>'
 			].join('')));
 			var con = el.find('.M-HighGridHeaderLeft');
@@ -445,6 +445,7 @@ define(function(require, exports){
 						'class': (i===0 )? 'M-HighGridListContentFirstTr even': ((i%2 === 0)?'even':'')
 					});
 
+					var render;
 					for (var ii = 0; ii < cols.length; ii++) {
 						metric = cols[ii];
 
@@ -456,12 +457,23 @@ define(function(require, exports){
 							value = data[i][metric.name];
 						}
 
+						// 渲染函数
+						render = metric.render;
+						if(render){
+							if (util.isFunc(render)) {
+								value = render(i, value, data[i], metric);
+							}
+							if(util.isString(render)&& util.isFunc(this[render])){
+								value = this[render](i, value, data[i], metric);
+							}
+						}
+
 						if(metric.format && util.isFunc(metric.format)){
 							value = metric.format(value)
 						}
 
 						td = this.buildTd({
-							text: value || '-'
+							html: value || '-'
 						});
 						tr.append(td);
 					}
@@ -551,13 +563,24 @@ define(function(require, exports){
 			}
 			return tr;
 		},
+		// 获取列表左上角top坐标值
+		getGridOffset: function(){
+			var el = this.$el.get(0);
+			var top = el.offsetTop;
+			var current = el.offsetParent;
+
+			while (current !== null && current !== document.body){
+				top += current.offsetTop;
+				current = current.offsetParent;
+			}
+
+			return top;
+		},
 		// 设置表格长宽
 		calculate: function(isReset){
 			var c = this.getConfig(),
 				wrap = c.target || this.$el, // @优化todo
 				data = this.$data || [];
-
-
 
 				// 长度定义
 				var datasLen = data.items && data.items.length || 0,
@@ -576,8 +599,6 @@ define(function(require, exports){
 					space,			// 间距
 					elT, elD, elL, elR;	// DOM对象
 
-			// 有指标时
-			if(c.metrics && c.metrics.length){
 				// 同步高度-汇总模块
 				elL = wrap.find('.M-HighGridListCornerAmount');
 				elR = wrap.find('.M-HighGridListHeaderAmount');
@@ -593,13 +614,18 @@ define(function(require, exports){
 				}
 
 				// 以浏览器高度作为表格的高度
-				var border = 2+1;
-				var offset = 50+20+10+20; // @todo 针对clicki新版项目：菜单高度+上边距+容器上边距+下边距
+				var offset = this.$el.get(0).offsetTop;
+				var outsideWapper = this.$el.parents('.G-frameBodyContainer');
+				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
+				// var extras = 20;	// 下边据
+				var extras = 0;
+				var border = 2+1;	// 边框
+				var gridHeader = wrap.find('.M-HighGridHeader').outerHeight();
 				var pager = wrap.find('.M-HighGridPager').outerHeight();
-				var extras = wrap.find('.M-HighGridHeader').outerHeight();
-				var height = $(window).height()- corner.height()- offset; // var height = wrap.height()-corner.height();
-				sidebar.height(height- border- pager- extras);
-				content.height(height- border- pager- extras);
+				var height = outsideWapper.height()- corner.height()- offset- pager- extras - gridHeader -border ;
+
+				sidebar.height(height);
+				content.height(height);
 
 				// 同步宽度-左侧
 				for (i = 0; i < colsLen; i++) {
@@ -644,6 +670,7 @@ define(function(require, exports){
 					className = c.hasAmount ? 'M-HighGridListHeaderAmount' : 'M-HighGridListHeaderTitle';
 					elT = wrap.find('.'+className).find('td:eq('+i+')');
 					elD = wrap.find('.M-HighGridListContentFirstTr td:eq('+i+')');
+
 					space = elT.outerWidth() - elT.width();
 					max = this._getMax(elT.width(), elD.width());
 					sum = sum + max + space;
@@ -656,34 +683,6 @@ define(function(require, exports){
 
 				// 防止resize后重计算时，实际内容框挤出了外框。
 				content.css('max-width',sum);
-
-			// 无指标时
-			}else{
-				// 隐藏右侧表格
-				wrap.find('.M-HighGridListLayoutRight').hide();
-
-
-				if(isReset){
-					for (i = 0; i < colsLen; i++) {
-						elT = wrap.find('.M-HighGridListCorner td:eq('+i+')');
-						elD = wrap.find('.M-HighGridListSidebar td:eq('+i+')');
-						elT.css('width', 'auto');
-						elD.css('width', 'auto');
-					}
-				}
-				// 左侧表格占满全表
-				wrap.find('.M-HighGridListCorner table').css('width', '100%');
-
-				// 同步宽度-左侧
-				for (i = 0; i < colsLen; i++) {
-					elT = wrap.find('.M-HighGridListCorner td:eq('+i+')');
-					elD = wrap.find('.M-HighGridListSidebar td:eq('+i+')');
-					max = this._getMax(elT.width(), elD.width());
-					elT.width(max);
-					elD.width(max);
-				}
-
-			}
 		},
 		/** ---------------- 数据 ---------------- **/
 		setData: function(data){
@@ -809,14 +808,15 @@ define(function(require, exports){
 
 			this.showLoading();
 
-			var param = this.$sysParam;
+			var customParam = this.getParam();
+			var param = util.extend({}, this.$sysParam, customParam);
+
 			switch(c.reqType){
 				case 'ajax':
 					if(c.reqMethod == 'get'){
 						this.$reqID = pubjs.data[c.reqMethod](c.url, param, this, 'onData');
 					}else{
-						var customParam = this.getParam();
-						this.$reqID = pubjs.data[c.reqMethod](c.url, customParam, param, this, 'onData');
+						this.$reqID = pubjs.data[c.reqMethod](c.url, customParam, this.$sysParam, this, 'onData');
 					}
 				break;
 				case 'websocket':
@@ -947,12 +947,11 @@ define(function(require, exports){
 		updateSelectedValue: function(add, value){
 			var c = this.getConfig();
 
-
 			// var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
 			// @优化todo , 'id'变成可配置项
 			var obj = {}
 			obj[c.key] = value;
-			var data = value ? [{'id':value}] :(this.$data&&this.$data.items||[]);
+			var data = value ? [obj] :(this.$data&&this.$data.items||[]);
 
 			for (var i = 0; i < data.length; i++) {
 				var index = util.index(this.$selects, data[i][c.key]);
@@ -1116,10 +1115,19 @@ define(function(require, exports){
 			return false;
 		},
 		// 响应指标组切换事件
-		onTabChange: function(ev){
+		onMeticsTabChange: function(ev){
 			var data = ev.param;
 			this.setConfig('metrics', data);
 			this.setData(this.$data);
+			return false;
+		},
+		// 响应选项卡事件
+		onTabChange: function(ev){
+			this.calculate(true);
+			if(this.$){
+				this.$.scrollerH.update();
+				this.$.scrollerV.update();
+			}
 			return false;
 		},
 		// 响应手动刷新事件
@@ -1385,7 +1393,7 @@ define(function(require, exports){
 				this.$panelShowing = false;
 			}
 
-			this.fire('tabChange', cols);
+			this.fire('metricsTabChange', cols);
 
 			return false;
 		},
@@ -1447,7 +1455,7 @@ define(function(require, exports){
 		// 响应面板保存事件
 		onPanelSave: function(ev){
 			var value = ev.param;
-			this.fire('tabChange', value);
+			this.fire('metricsTabChange', value);
 			return false;
 		}
 	});
@@ -1734,7 +1742,7 @@ define(function(require, exports){
 
 			// 创建下拉弹框
 			this.create('menu', menu.base, {
-				width: 84,
+				// width: 84,
 				trigger: el,
 				options: data,
 				relate_elm: el,
@@ -1743,7 +1751,8 @@ define(function(require, exports){
 		},
 		// 响应菜单选中事件
 		onMenuSelected: function(ev){
-			var data = ev.param[0];
+			var len = ev.param.length;
+			var data = ev.param[len -1];
 			var ids = this.getConfig('grid').getValue('selects');
 			this.fire('batchSelect', [data, ids]);
 			return false;
@@ -1766,7 +1775,8 @@ define(function(require, exports){
 		eventButtonClick: function(ev, dom){
 			if(!this.get('menu')){
 				var id = this.getDOM().parents('tr').attr('data-id');
-				this.fire('operateMenuShow', id, 'afterFire');
+				var value = this.getConfig('grid').getData(id);
+				this.fire('operateMenuShow', value, 'afterFire');
 				// return false;
 			}else{
 				this.hide();
