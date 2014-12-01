@@ -22,7 +22,7 @@ define(function(require,exports) {
 			var items = this.getConfig('items');
 
 			// 若是对象，转成数组
-			if(util.isObject(items)){
+			if(util.isObject(items) && !util.isArray(items)){
 				var trans = [];
 				for(i in items){
 					trans.push({name: i, uri: items[i]});
