@@ -75,7 +75,7 @@ define(function(require,exports) {
 					status = !status;
 				}
 
-				item[action]();
+				item.el[action]();
 			}else{
 				pubjs.error('找不到 ['+name+' ]项目');
 			}
@@ -188,6 +188,9 @@ define(function(require,exports) {
 			}
 			var position = this.getPosition(this.$el.parent(), popwin.$el);
 			popwin.update(position);
+		},
+		getValue: function(){
+			return this.$value;
 		},
 		// 计算弹框定位
 		getPosition: function(self, popwin){

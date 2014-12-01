@@ -3075,6 +3075,32 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   cursor: pointer;
   min-height: 60px;
 }
+.M-sidebarItemOption {
+  width: 70px;
+  display: inline-block;
+  margin-right: 10px;
+}
+.M-sidebarItemOption label {
+  max-width: 55px;
+  margin-right: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+}
+.M-sidebarItemOption i {
+  background-image: url("../images/icons.png?1128");
+  background-repeat: no-repeat;
+  background-position: -48px -122px;
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.M-sidebarItemOption i:hover {
+  background-image: url("../images/icons_act.png?1128");
+  background-repeat: no-repeat;
+}
 .M-sidebarStaticItem {
   cursor: default;
   min-height: 40px;
