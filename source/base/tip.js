@@ -235,10 +235,9 @@ define(function(require, exports){
 		setData: function(data){
 			var con = this.$doms.content;
 			if (util.isString(data)){
-				con.text(data);
-			}else {
-				con.empty().append(data);
+				data = '<div>' + data.split('\n').join('</div><div>') + '</div>';
 			}
+			con.empty().append(data);
 			this.updatePosition();
 			return this;
 		},
@@ -450,7 +449,7 @@ define(function(require, exports){
 					width: c.width,
 					height: c.height
 				});
-				mod.getContainer().text(c.data);
+				mod.setData(c.data);
 			}else{
 				if(ev.type == 'mouseenter'){
 					mod.show();
