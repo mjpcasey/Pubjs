@@ -15,7 +15,7 @@ define(function(require, exports){
 	}
 	function setUser(user){
 		user_data = user;
-		if(user.right){
+		if(user && user.right){
 			setRight(user.right);
 		}
 	}
