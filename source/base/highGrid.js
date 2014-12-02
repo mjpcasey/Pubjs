@@ -1755,6 +1755,7 @@ define(function(require, exports){
 			var data = ev.param[len -1];
 			var ids = this.getConfig('grid').getValue('selects');
 			this.fire('batchSelect', [data, ids]);
+			this.hide();
 			return false;
 		}
 	});
