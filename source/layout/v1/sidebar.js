@@ -75,7 +75,7 @@ define(function(require,exports) {
 					status = !status;
 				}
 
-				item[action]();
+				item.el[action]();
 			}else{
 				pubjs.error('找不到 ['+name+' ]项目');
 			}
