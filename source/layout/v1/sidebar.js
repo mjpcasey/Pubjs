@@ -189,6 +189,9 @@ define(function(require,exports) {
 			var position = this.getPosition(this.$el.parent(), popwin.$el);
 			popwin.update(position);
 		},
+		getValue: function(){
+			return this.$value;
+		},
 		// 计算弹框定位
 		getPosition: function(self, popwin){
 			var top = self[0].offsetTop;
