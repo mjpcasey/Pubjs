@@ -1,6 +1,6 @@
 define(function(require,exports) {
 	var pubjs = require('pubjs');
-	// var $ = require('jquery');
+	var $ = require('jquery');
 	var util = require('util');
 	var view = require('@base/view');
 	var dialog = require('@base/dialog');
@@ -17,31 +17,39 @@ define(function(require,exports) {
 			this.Super('init', arguments);
 		},
 		afterBuild:function(){
-			var c = this.getConfig();
+			var i;
+			this.$items = {};	// 子模块
+			var items = this.getConfig('items');
 
-			// 子模块显隐状态标志位
-			var display = this.$display = {};
+			// 若是对象，转成数组
+			if(util.isObject(items) && !util.isArray(items)){
+				var trans = [];
+				for(i in items){
+					trans.push({name: i, uri: items[i]});
+				}
+				items = trans;
+			}
 
 			// 按序创建子项目
-			var i, name;
-			var items = c.items;
+			var name, elm;
 			if(util.isArray(items)){
 				for (i = 0; i < items.length; i++) {
 					name = items[i]['name'];
+					elm = $('<div class="M-sidebarLayout"/>').appendTo(this.$el);
 					this.createDelay(name, items[i]['uri'], {
-						target: this.$el
+						target: elm
 					});
-					display[name] = true;
+
+					this.$items[name] = {
+						el: elm,
+						status: true
+					};
+
 				}
+				this.createDelay(true);
 			}else{
-				for(i in items){
-					this.createDelay(i, items[i], {
-						target: this.$el
-					});
-					display[i] = true;
-				}
+				pubjs.error(LANG('数据格式不正确'));
 			}
-			this.createDelay(true);
 
 			// 弹框
 			this.create('popwin', dialog.base, {
@@ -54,28 +62,30 @@ define(function(require,exports) {
 			});
 		},
 		toggleItem: function(name, bool){
-			var display = this.$display[name];
+			var item = this.$items[name];
 
-			var item = this.get(name);
 			if(item){
 				var action;
+				var status = item['status'];
 				if(bool !== undefined ){
 					action = bool ? 'show' : 'hide';
-					display = bool ? true : false;
+					status = bool ? true : false;
 				}else{
-					action = display ? 'show' : 'hide';
-					display = !display
+					action = status ? 'show' : 'hide';
+					status = !status;
 				}
 
-				item[action]();
+				item.el[action]();
+			}else{
+				pubjs.error('找不到 ['+name+' ]项目');
 			}
 		},
 		toggleActive: function(module){
 			// 移除其他项目的激活状态
-			this.$el.find('.M-sidebarItemAct').removeClass('M-sidebarItemAct');
+			this.$el.find('.M-sidebarLayoutAct').removeClass('M-sidebarLayoutAct');
 
 			if(module !== false){
-				module.addClass('M-sidebarItemAct');
+				module.$el.parent().addClass('M-sidebarLayoutAct');
 			}
 		},
 		onChildClick: function(ev){
@@ -150,7 +160,7 @@ define(function(require,exports) {
 		// 项目点击事件
 		eventClick: function(ev, elm){
 			// 激活状态中禁用点击
-			if(!this.$el.hasClass('M-sidebarItemAct')){
+			if(!this.$el.parent().hasClass('M-sidebarLayoutAct')){
 				// 参数：模块实例
 				this.fire('childClick', this, 'afterChildClick');
 				return false;
@@ -176,8 +186,11 @@ define(function(require,exports) {
 			if(c.width){
 				popwin.css({ 'width': c.width});
 			}
-			var position = this.getPosition(this.$el, popwin.$el);
+			var position = this.getPosition(this.$el.parent(), popwin.$el);
 			popwin.update(position);
+		},
+		getValue: function(){
+			return this.$value;
 		},
 		// 计算弹框定位
 		getPosition: function(self, popwin){
