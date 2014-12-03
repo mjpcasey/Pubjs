@@ -3054,6 +3054,31 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   width: 22px;
   height: 22px;
 }
+.M-HighGrid-period {
+  background-position: -149px -44px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGrid-mediaAndAd {
+  background-position: -128px -157px;
+  width: 16px;
+  height: 16px;
+}
+.M-HighGrid-geo {
+  background-position: -149px -132px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGrid-client {
+  background-position: -149px -66px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGrid-product {
+  background-position: -149px -88px;
+  width: 22px;
+  height: 22px;
+}
 .M-HighGridListRowSelected {
   font-weight: bold;
 }

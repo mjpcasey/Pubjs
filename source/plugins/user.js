@@ -15,7 +15,7 @@ define(function(require, exports){
 	}
 	function setUser(user){
 		user_data = user;
-		if(user.right){
+		if(user && user.right){
 			setRight(user.right);
 		}
 	}
@@ -34,6 +34,9 @@ define(function(require, exports){
 	}
 	function getRight(){
 		return right_data;
+	}
+	function checkRight(right) {
+		return !!right_data[right];
 	}
 
 
@@ -147,6 +150,7 @@ define(function(require, exports){
 		pubjs.getUser = getUser;
 		pubjs.getDate = getDate;
 		pubjs.getRight = getRight;
+		pubjs.checkRight = checkRight;
 		pubjs.getDateStorage = getDateStorage;
 		callback();
 	}
