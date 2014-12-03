@@ -869,7 +869,8 @@ define(function(require, exports){
 			this.load();
 		},
 		setParam: function(param, replace){
-			var cParam = replace ? param :util.extend(this.$customParam, param);
+			var cParam = replace ? param : $.extend(this.$customParam, param);
+			// var cParam = replace ? param :util.extend(this.$customParam, param);
 			this.setConfig('param', cParam);
 			return this;
 		},
@@ -1755,6 +1756,7 @@ define(function(require, exports){
 			var data = ev.param[len -1];
 			var ids = this.getConfig('grid').getValue('selects');
 			this.fire('batchSelect', [data, ids]);
+			this.hide();
 			return false;
 		}
 	});

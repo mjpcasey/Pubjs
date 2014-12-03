@@ -35,6 +35,9 @@ define(function(require, exports){
 	function getRight(){
 		return right_data;
 	}
+	function checkRight(right) {
+		return !!right_data[right];
+	}
 
 
 	var COOKIE_BEGIN = "begindate",
@@ -147,6 +150,7 @@ define(function(require, exports){
 		pubjs.getUser = getUser;
 		pubjs.getDate = getDate;
 		pubjs.getRight = getRight;
+		pubjs.checkRight = checkRight;
 		pubjs.getDateStorage = getDateStorage;
 		callback();
 	}
