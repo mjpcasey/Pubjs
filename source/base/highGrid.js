@@ -869,7 +869,8 @@ define(function(require, exports){
 			this.load();
 		},
 		setParam: function(param, replace){
-			var cParam = replace ? param :util.extend(this.$customParam, param);
+			var cParam = replace ? param : $.extend(this.$customParam, param);
+			// var cParam = replace ? param :util.extend(this.$customParam, param);
 			this.setConfig('param', cParam);
 			return this;
 		},
