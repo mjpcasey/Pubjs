@@ -146,12 +146,12 @@ define(function(require,exports) {
 				this.createAsync(name, uri, config, function(mod){
 					// todo 要不要绑定作用域
 					if(util.isFunc(callback)){
-						callback(mod);
+						callback(true, mod);
 					}
 				});
 			}else{
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(false, mod);
 				}
 			}
 		},
@@ -271,7 +271,7 @@ define(function(require,exports) {
 			if(this.$data[name]){
 				var mod = this.get(name);
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(false, mod);
 				}
 				return false;
 			}
@@ -288,7 +288,7 @@ define(function(require,exports) {
 			// 创建业务模块
 			this.createAsync(name, uri, config, function(mod){
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(true, mod);
 				}
 			});
 		},
