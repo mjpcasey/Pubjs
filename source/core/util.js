@@ -742,8 +742,8 @@ define(function(require, ex){
 			case 'w': return t.getDay() % 7;
 			case 'a': return t.getHours() < 12 ? 'am':'pm';
 			case 'A': return t.getHours() < 12 ? 'AM':'PM';
-			case 'g': return t.getHours() % 12 + 1;
-			case 'h': return fix0(t.getHours() % 12 + 1, 2);
+			case 'g': return t.getHours() % 12;
+			case 'h': return fix0(t.getHours() % 12, 2);
 			case 'G': return t.getHours();
 			case 'H': return fix0(t.getHours(), 2);
 			case 'i': return fix0(t.getMinutes(), 2);
