@@ -859,7 +859,7 @@ define(function(require, exports){
 			}
 
 			if (param){
-				util.extend(this.$customParam, param);
+				$.extend(this.$customParam, param);
 			}
 
 			util.extend(this.$sysParam, {
