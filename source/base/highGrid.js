@@ -17,7 +17,7 @@ define(function(require, exports){
 			config = pubjs.conf(config, {
 				'target': parent,
 				'class': 'M-HighGrid',
-				'cols': [],				// 列定义
+				'cols': [],				// 列定义,type:op,index,id
 				'data': null,			// 静态数据
 				'key': pubjs.config('grid/key')||'_id',
 				'url': null,			// 远程数据地址
@@ -253,6 +253,11 @@ define(function(require, exports){
 					html = '<input type="checkbox" />';
 				}
 
+				// 序号列
+				if(cols[i].type == 'id'){
+					cols[i].text = cols[i].text || LANG('序号');
+				}
+
 				el = this.buildTd({
 					'text': cols[i].text,
 					'html': html,
@@ -366,22 +371,27 @@ define(function(require, exports){
 
 						isIndexCol = column.type == 'index';
 
-						if(column.type == 'index'){
-							hasDataType = true;
-						}
+						switch(column.type){
+							case 'id':			// 序号列
+								html = '<span>'+(i+1)+'</span>';
+								className += ' tc';
+								hasDataType = true;
+							break;
+							case 'select':		// 选择列
+								html = '<input type="checkbox"/>';
+								className += ' tc';
+								hasDataType = true;
+							break;
+							case 'op':			// 操作列
+								className += ' tc';
+								hasDataType = true;
+							break;
 
-						// 选择列
-						if(column.type == 'select'){
-							html = '<input type="checkbox"/>';
-							className += ' tc';
-							hasDataType = true;
-						}
-
-						// 操作列
-						if(column.type == 'op'){
-							// html = '<span class="M-HighGridListSidebarMenu"/>';
-							className += ' tc';
-							hasDataType = true;
+							case 'index':		// 主列
+								hasDataType = true;
+							break;
+							default:
+							break;
 						}
 
 						if(column.render){
@@ -410,6 +420,7 @@ define(function(require, exports){
 							'dataType': hasDataType ? column.type : null
 						});
 						tr.append(td);
+
 						// 清除变量
 						html = width = className = type= title = hasDataType= '';
 					}
