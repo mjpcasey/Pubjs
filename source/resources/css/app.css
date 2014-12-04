@@ -2695,6 +2695,15 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   white-space: nowrap;
   line-height: inherit;
 }
+.M-HighGrid td.center {
+  text-align: center;
+}
+.M-HighGrid td.left {
+  text-align: left;
+}
+.M-HighGrid td.right {
+  text-align: right;
+}
 .M-HighGridRefreshAuto {
   color: #444;
   padding: 0 5px;

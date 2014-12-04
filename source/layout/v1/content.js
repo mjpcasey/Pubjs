@@ -136,22 +136,21 @@ define(function(require,exports) {
 				param = null;
 			}
 
-			var config = $.extend({}, {
-				target: this.getContainer(),
-				targetSidebar: this.getSidebar()
-			}, param);
-
 			var mod = this.get(name);
 			if(!mod){
+				var config = $.extend({}, {
+					target: this.getContainer(),
+					targetSidebar: this.getSidebar()
+				}, param);
+
 				this.createAsync(name, uri, config, function(mod){
-					// todo 要不要绑定作用域
 					if(util.isFunc(callback)){
-						callback(mod);
+						callback(mod, false);
 					}
 				});
 			}else{
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(mod, true);
 				}
 			}
 		},
@@ -271,7 +270,7 @@ define(function(require,exports) {
 			if(this.$data[name]){
 				var mod = this.get(name);
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(mod, true);
 				}
 				return false;
 			}
@@ -288,7 +287,7 @@ define(function(require,exports) {
 			// 创建业务模块
 			this.createAsync(name, uri, config, function(mod){
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(mod, false);
 				}
 			});
 		},
