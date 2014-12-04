@@ -36,7 +36,34 @@ define(function(require, exports){
 		return right_data;
 	}
 	function checkRight(right) {
-		return !!right_data[right];
+		var isAnd;
+		var valid;
+		if(right && right[0] == '&') {
+			right = right.slice(1);
+			isAnd = true;
+		}
+
+		/*
+			与的时候,valid默认是true
+			或的时候,valid默认是false
+		 */
+		valid = isAnd;
+		var rights = right.split(',');
+		util.each(rights, function(access) {
+			access = util.trim(access);
+			if(access) {
+				if(isAnd && !(valid = right_data[access])) {
+					valid = false;
+					return false;
+				}
+				else if(!isAnd && (valid = right_data[access])){
+					valid = true;
+					return false;
+				}
+			}
+		});
+
+		return valid;
 	}
 
 

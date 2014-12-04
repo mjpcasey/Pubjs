@@ -32,35 +32,40 @@ define(function(require,exports) {
 			var mod = el.attr('pub-mod');
 			var name = el.attr('pub-name');
 			var config = el.attr('pub-config');
+			var right = el.attr('pub-auth');
 			var mod_name = null;
-
-			// 获取模块配置
-			if (config){
-				try {
-					config = JSON.parse(config);
-				}catch(e){
-					config = null;
+			/*
+				检查权限,有就创建.
+			 */
+			if(!right || pubjs.checkRight(right)) {
+				// 获取模块配置
+				if (config){
+					try {
+						config = JSON.parse(config);
+					}catch(e){
+						config = null;
+					}
 				}
-			}
-			// 有模块名称, 判断模块是否存在
-			if (name){
-				mod_name = name.replace(/\//g, '_');
-				if (self.get(mod_name)){
-					return;
+				// 有模块名称, 判断模块是否存在
+				if (name){
+					mod_name = name.replace(/\//g, '_');
+					if (self.get(mod_name)){
+						return;
+					}
+					// 读取模块配置
+					if (!config && module_config){
+						config = util.clone(util.prop(module_config, name));
+					}
 				}
-				// 读取模块配置
-				if (!config && module_config){
-					config = util.clone(util.prop(module_config, name));
+				// 修正创建容器对象参数
+				if (!config){
+					config = {target: el};
+				}else if (!config.target){
+					config.target = el;
 				}
+				// 创建模块
+				self.createDelay(mod_name, mod, config);
 			}
-			// 修正创建容器对象参数
-			if (!config){
-				config = {target: el};
-			}else if (!config.target){
-				config.target = el;
-			}
-			// 创建模块
-			self.createDelay(mod_name, mod, config);
 		});
 		self.createDelay(true, callback || "afterBuildTemplate", param);
 	}
