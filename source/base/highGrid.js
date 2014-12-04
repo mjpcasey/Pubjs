@@ -468,12 +468,14 @@ define(function(require, exports){
 							}
 						}
 
+						// 格式化函数
 						if(metric.format && util.isFunc(metric.format)){
 							value = metric.format(value)
 						}
 
 						td = this.buildTd({
-							html: value || '-'
+							'html': value || '-',
+							'class': metric.align || ''
 						});
 						tr.append(td);
 					}
@@ -494,8 +496,8 @@ define(function(require, exports){
 				con = $('<div class="fl"></div>').width( (c.width || 150) - 20).appendTo(td);
 			}
 
-			if(c.class){
-				con.addClass(c.class);
+			if(c['class']){
+				con.addClass(c['class']);
 			}
 
 			if(c.format){
