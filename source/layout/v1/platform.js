@@ -319,11 +319,11 @@ define(function(require,exports){
 		// 窗口大小改变更新高度
 		eventResizeSyncHeight: function(evt, elm){
 			var self = this;
-			// 更新高度
-			self.syncHeight();
 
 			clearTimeout(self.$timeoutId);
 			self.$timeoutId = setTimeout(function(){
+				// 更新高度
+				self.syncHeight();
 				// 改变窗体大小，发送消息
 				app.core.cast('sYSResize');
 			}, 100);
