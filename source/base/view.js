@@ -32,35 +32,40 @@ define(function(require,exports) {
 			var mod = el.attr('pub-mod');
 			var name = el.attr('pub-name');
 			var config = el.attr('pub-config');
+			var right = el.attr('pub-auth');
 			var mod_name = null;
-
-			// 获取模块配置
-			if (config){
-				try {
-					config = JSON.parse(config);
-				}catch(e){
-					config = null;
+			/*
+				检查权限,有就创建.
+			 */
+			if(!right || pubjs.checkRight(right)) {
+				// 获取模块配置
+				if (config){
+					try {
+						config = JSON.parse(config);
+					}catch(e){
+						config = null;
+					}
 				}
-			}
-			// 有模块名称, 判断模块是否存在
-			if (name){
-				mod_name = name.replace(/\//g, '_');
-				if (self.get(mod_name)){
-					return;
+				// 有模块名称, 判断模块是否存在
+				if (name){
+					mod_name = name.replace(/\//g, '_');
+					if (self.get(mod_name)){
+						return;
+					}
+					// 读取模块配置
+					if (!config && module_config){
+						config = util.clone(util.prop(module_config, name));
+					}
 				}
-				// 读取模块配置
-				if (!config && module_config){
-					config = util.clone(util.prop(module_config, name));
+				// 修正创建容器对象参数
+				if (!config){
+					config = {target: el};
+				}else if (!config.target){
+					config.target = el;
 				}
+				// 创建模块
+				self.createDelay(mod_name, mod, config);
 			}
-			// 修正创建容器对象参数
-			if (!config){
-				config = {target: el};
-			}else if (!config.target){
-				config.target = el;
-			}
-			// 创建模块
-			self.createDelay(mod_name, mod, config);
 		});
 		self.createDelay(true, callback || "afterBuildTemplate", param);
 	}
@@ -404,20 +409,21 @@ define(function(require,exports) {
 		},
 		// 创建业务模块
 		createBusiness: function(name, uri, param, callback){
-			var config = $.extend({}, {
-				target: this.getDOM()
-			}, param);
-
 			var mod = this.get(name);
 			if(!mod){
+
+				var config = $.extend({}, {
+					target: this.getDOM()
+				}, param);
+
 				this.createAsync(name, uri, config, function(mod){
 					if(util.isFunc(callback)){
-						callback(mod);
+						callback(mod, false);
 					}
 				});
 			}else{
 				if(util.isFunc(callback)){
-					callback(mod);
+					callback(mod, true);
 				}
 			}
 		},
@@ -428,188 +434,6 @@ define(function(require,exports) {
 		buildFromTemplate: _buildFromTemplate
 	});
 	exports.container = Container;
-
-	// 两列布局，附带侧边栏
-	var ContainerWithSidebar = Container.extend({
-		init: function(config, parent){
-			var self = this;
-
-			self.$config = pubjs.conf(config, {
-
-			});
-
-			self.$el = null;
-			self.$sidebar = null;
-			self.$container = null;
-
-			self.$sidebarHide = false; // 右侧工具栏是否隐藏
-
-			self.build();
-		},
-		build: function(){
-			var self = this;
-			var c = self.getConfig();
-
-			var el = self.$el = $('<div></div>').appendTo(c.target);
-
-			// 设置初始属性
-			if (c.attr){
-				el.attr(c.attr);
-			}
-			if (c.css){
-				el.css(c.css);
-			}
-			var cls = c['class'];
-			if (cls){
-				el.addClass(
-					util.isArray(cls) ? cls.join(' ') : cls
-				);
-			}
-			if (c.html){
-				el.html(c.html);
-			}else if (c.text){
-				el.text(c.text);
-			}
-
-			self.$container = $('<div class="G-frameBodyContainer"/>').appendTo(el);
-			self.$sidebar = $([
-				'<div class="G-frameBodySidebar">',
-					'<div class="G-frameBodySidebarFlex">',
-						'<i class="G-frameBodySidebarIcon  angle_double_right"/>',
-					'</div>',
-					'<div class="G-frameBodySidebarWrapper">',
-						'<div class="G-frameBodySidebarContent"/>',
-					'</div>',
-				'</div>'
-			].join('')).appendTo(el);
-
-			self.$sidebarFlex = self.$sidebar.find('.G-frameBodySidebarFlex');
-
-			self.uiBind(document, 'mousemove mouseout','eventToggleFlexBtn');
-			self.uiBind(self.$sidebarFlex, 'click', 'eventToggleSideBar');
-
-			// self.$sidebar.height($(window).height()-50);
-			self.$container.width(self.$container.width()-200);
-
-			return self;
-		},
-		// 鼠标经过时显示或隐藏侧边栏
-		eventToggleFlexBtn: function(evt, elm){
-			var self = this;
-			var x = evt.pageX;
-			var y = evt.pageY;
-			var w = $(window).width();
-			var headHeight = 50; //@todo 获取platform 的header高度。doms.head.height();
-
-			var toolsFlexWidth = self.$sidebarFlex.width();
-			var toolsWidth = self.$sidebar.width();
-
-			// 显隐右侧flex
-			self.$sidebarFlex.toggleClass('act', (w - x <= toolsFlexWidth && y > headHeight) ? true : false);
-
-			// 是否同时显示工具栏
-			if(self.$sidebarHide){
-				if(w - x <= toolsFlexWidth){
-					self.$sidebar.toggleClass('act', false);
-				}else if(w - x > toolsWidth){
-					self.$sidebar.toggleClass('act', true);
-				}
-			}
-		},
-		// 切换侧边栏
-		eventToggleSideBar: function(evt, elm){
-			var self = this;
-
-			self.$sidebar.toggleClass('act', !self.$sidebarHide);
-			self.$sidebarFlex.toggleClass('act', !self.$sidebarHide);
-			self.$sidebarFlex.find('i').toggleClass('pin', !self.$sidebarHide);
-			self.$sidebar.find('.G-frameBodySidebarContent').toggleClass('act_right', !self.$sidebarHide);
-
-
-			// 更新状态
-			self.$sidebarHide = !self.$sidebarHide;
-
-			this.updateWidth();
-			this.cast('toolsToggle');
-			return false;
-		},
-		// 更新宽度
-		updateWidth: function(){
-			var sidebar = 200 *2;	// 左右侧栏宽度
-			var padding = 20*2;		// 内边距
-			var w = $(window).width()-sidebar-padding;
-			w = this.$sidebarHide ? w+200: w;
-			this.$container.width(w);
-		},
-		// 创建业务模块
-		createBusiness: function(name, uri, param, callback){
-			if(util.isFunc(param)){
-				callback = param;
-				param = null;
-			}
-
-			var config = $.extend({}, {
-				target: this.getContainer(),
-				targetMenu: this.getSidebar()
-			}, param);
-
-			var mod = this.get(name);
-			if(!mod){
-				this.createAsync(name, uri, config, function(mod){
-					// todo 要不要绑定作用域
-					if(util.isFunc(callback)){
-						callback(mod);
-					}
-				});
-			}else{
-				if(util.isFunc(callback)){
-					callback(mod);
-				}
-			}
-		},
-		getConfig: function(name){
-			return this.$config.get(name);
-		},
-		setConfig: function(name, value){
-			this.$config.set(name, value);
-			return this;
-		},
-		append: function(){
-			var el = this.$el;
-			if (el){
-				el.append.apply(el, arguments);
-			}
-			return this;
-		},
-		/**
-		 * 把当前容器插入到指定的容器中
-		 * @param  {Object} target 容器实例或者jQuery对象实例
-		 * @return {Object}        Container实例
-		 */
-		appendTo: function(target){
-			if (target){
-				if (util.isString(target)){
-					this.$el.appendTo(target);
-				}else {
-					this.$el.appendTo(target.jquery ? target : target.getDOM());
-				}
-			}
-			return this;
-		},
-		getContainer: function(){
-			return this.$container;
-		},
-		getDOM: function(){
-			return this.$container;
-		},
-		getSidebar: function(){
-			return this.$sidebar.find('.G-frameBodySidebarContent');
-		},
-		onSYSResize: function(ev){
-			this.updateWidth();
-		}
-	});
-	exports.containerWithSidebar = ContainerWithSidebar;
 
 	// Widget代理公共函数
 	function _uiBindProxy(method, args, Super){
