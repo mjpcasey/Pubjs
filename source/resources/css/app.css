@@ -3119,6 +3119,17 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   cursor: pointer;
   min-height: 60px;
 }
+.M-sidebarItemHeader {
+  margin-bottom: 12px;
+}
+.M-sidebarItemHeaderTitle {
+  color: #999;
+  font-size: 13px;
+}
+.M-sidebarItemHeader i {
+  display: inline-block;
+  vertical-align: middle;
+}
 .M-sidebarItem span.M-sidebarItemOption {
   width: 70px;
   display: inline-block;
@@ -3146,10 +3157,6 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
 .M-sidebarItemOption i:hover {
   background-image: url("../images/icons_act.png?1203");
   background-repeat: no-repeat;
-}
-.M-sidebarStaticItem {
-  cursor: default;
-  min-height: 40px;
 }
 .M-sidebarTitle {
   color: #999;
