@@ -862,4 +862,411 @@ define(function(require, exports){
 		}
 	});
 	exports.checkboxGroup = CheckBoxGroup;
+
+	var SubLevelCheckbox = view.container.extend({
+		init: function(config){
+			config = pubjs.conf(config, {
+				'class': 'M-commonSLC',
+				'target': parent,
+				'readonly': false,
+				'selected': null,
+				'getSubs': false,
+				'callback': null,
+				// 子级对应的key
+				"key":"child",
+				// 层级值对应的key
+				"valueKey":"value",
+				// 显示名称对应的key
+				"nameKey":"name",
+				// 是否发消息
+				"silence":true,
+				"level":2
+			});
+			var self = this;
+			self.Super('init', arguments);
+
+
+			var el = this.getDOM();
+			this.$guid = util.guid('c_');
+			this.$list = null;
+			this.$selected = config.$data['selected'];
+			this.$key = config.$data['key'];
+			this.$vKey = config.$data['valueKey'];
+			this.$nKey = config.$data['nameKey'];
+
+			var doms = this.doms = {};
+			doms.head = $('<ul class="M-commonSLCHead" />').appendTo(el);
+			doms.body = $('<div class="M-commonSLCBody" />').appendTo(el);
+
+			doms.head.append('<span>' + LANG('数据加载中...') + '</span>');
+
+			// 绑定事件
+			this.dg(doms.head, 'li', 'click', 'eventSwitchSection');
+			this.dg(doms.head, 'li > input', 'change', 'eventToggleSection');
+			this.dg(doms.body, '.M-commonSLCItem', 'mouseenter mouseleave', 'eventHoverItem');
+			if (!config.$data['readonly']){
+				this.dg(doms.body, 'input', 'change', 'eventToggleChange');
+			}
+
+		},
+		/**
+		 * 设置选项列表
+		 * @param {Array} list 列表对象
+		 */
+		setList: function(list){
+			this.$list = list;
+			this.buildDom();
+		},
+		buildDom : function(noAfterBuild ){
+			var doms = this.doms;
+			var list = this.$list;
+			var c = this.$config;
+			var self = this;
+			doms.head.empty();
+			doms.body.empty();
+
+			for (var i=0; i<list.length; i++){
+				var id = self.$guid + '_' + i;
+				self.buildSection(id, list[i]);
+			}
+
+			// 显示默认面板
+			doms.head.children(':eq(0)').addClass('act');
+			doms.body.children(':gt(0)').hide();
+
+			if (c.get('readonly')){
+				doms.head.find('input:checkbox').prop('disabled', true);
+				doms.body.find('input:checkbox').prop('disabled', true);
+			}
+
+			// 设置选中的选项
+			if (self.$selected){
+				self.setData(self.$selected);
+			}
+
+			// 回调函数
+			var callback = c.get('callback');
+			if (callback && $.isFunction(callback)) {
+				callback.call(self);
+			}
+			return self;
+		},
+		eventToggleChange: function(evt, elm){
+			var type = $(elm).attr('data-type');
+			switch (type){
+				case 'zone':
+					this.eventToggleZone(evt, elm);
+					break;
+				case 'item':
+					this.eventToggleItem(evt, elm);
+					break;
+				case 'sub':
+					this.eventToggleSub(evt, elm);
+					break;
+			}
+			if(!this.$config.get('silence')){
+				// 非静默模式
+				this.fire(
+					"subLevelChange"
+					,{
+						"type":type
+						,"data":this.getData()
+					}
+				);
+			}
+		},
+		// 创建分区
+		buildSection: function(id, data){
+			var doms = this.doms;
+			var head = $('<li/>').attr('data-link', id).appendTo(doms.head);
+			var body = $('<div/>').attr('data-link', id).appendTo(doms.body);
+
+			$('<input type="checkbox"/>').val(data[this.$vKey] === 0 && '0' || data[this.$vKey] || '').appendTo(head);
+			$('<label/>').text(data[this.$nKey]).appendTo(head);
+			var tmp = data[this.$key];
+			if(tmp){
+				for (var i=0; i<tmp.length; i++){
+					var con = $('<div class="M-commonSLCZone"/>').toggleClass('alt', (i%2 === 0)).appendTo(body);
+					this.buildZone(id + '_' + i, con,tmp[i]);
+				}
+			}
+			tmp = null;
+		},
+		eventSwitchSection: function(evt, elm){
+			elm = $(elm);
+			elm.siblings().removeClass('act');
+			var link = elm.addClass('act').attr('data-link');
+			this.doms.body.children().hide().filter('[data-link="'+link+'"]').show();
+		},
+		eventToggleSection: function(evt, elm){
+			var dom = $(elm);
+			var chk = dom.prop('checked');
+			var link = dom.parent().attr('data-link');
+			var body = this.doms.body.children('[data-link="'+link+'"]');
+			body.find('input').prop('checked', chk);
+			body.find('.M-commonSLCSubCount').hide();
+			if(!this.$config.get('silence')){
+				// 非静默模式
+				this.fire(
+					"subLevelChange"
+					,{
+						"type":"all"
+						,"data":this.getData()
+					}
+				);
+			}
+		},
+		updateSectionCheck: function(body){
+			var input = body.find('input');
+			var check = input.filter(':checked').length;
+			var link = body.attr('data-link');
+			var dom = this.doms.head.find('[data-link="'+link+'"] > input');
+			dom.prop('checked', (input.length > 0 && check == input.length));
+		},
+		// 创建栏目
+		buildZone: function(id, con, data){
+			var head = $('<div class="M-commonSLCZoneHead" />').appendTo(con);
+			$('<input id="'+id+'" type="checkbox" data-type="zone"/>').val(data[this.$vKey] === 0 && '0' || data[this.$vKey] || '').appendTo(head);
+			$('<label for="'+id+'"/>').text(data[this.$nKey]).appendTo(head);
+			var tmp = data[this.$key];
+			if (!tmp || !tmp.length){
+				return;
+			}
+			var body = $('<ul class="M-commonSLCZoneBody" />').appendTo(con);
+			for (var i=0; i<tmp.length; i++){
+				var item = $('<li class="M-commonSLCItem"/>').appendTo(body);
+				this.buildItem(id + '_' + i, item,tmp[i]);
+			}
+			body.append('<div class="clear"/>');
+			tmp = null;
+		},
+		eventToggleZone: function(evt, elm){
+			var dom = $(elm);
+			var chk = dom.prop('checked');
+			dom = dom.parent().next();
+			if (dom.length){
+				dom.find('input').prop('checked', chk);
+				dom.find('.M-commonSLCSubCount').hide();
+			}else {
+				dom = $(elm).parent();
+			}
+			this.updateSectionCheck(dom.parent().parent());
+		},
+		updateZoneCheck: function(body){
+			var input = body.find('input');
+			var check = input.filter(':checked').length;
+			body.prev().children('input').prop('checked', (input.length > 0 && check == input.length));
+			this.updateSectionCheck(body.parent().parent());
+		},
+		// 创建项目
+		buildItem: function(id, con, data){
+			var head = con, body = null
+				,tmp = data[this.$key];
+			if (tmp && tmp.length){
+				head = $('<div class="M-commonSLCItemHead" />').appendTo(con);
+				body = $('<ul class="M-commonSLCSub" />').appendTo(con);
+				$('<span class="M-commonSLCSubCount" />').appendTo(con);
+				con.addClass('hasSub');
+			}
+
+			$('<input id="'+id+'" type="checkbox" data-type="item"/>').val(data[this.$vKey] === 0 && '0' || data[this.$vKey] || '').appendTo(head);
+			$('<label for="'+id+'"/>').text(data[this.$nKey]).appendTo(head);
+
+			if (body){
+				for (var i=0; i<tmp.length; i++){
+					var item = $('<li/>').appendTo(body);
+					this.buildSubItem(id + '_' + i, item,tmp[i]);
+				}
+			}
+			tmp = null;
+		},
+		eventHoverItem: function(evt, elm){
+			var dom = $(elm);
+			if (evt.type == 'mouseenter'){
+				dom = dom.children('.M-commonSLCItemHead');
+				if (dom.length){
+					dom.parent().addClass('act');
+					dom.next().css('left', dom.innerWidth()-1);
+				}
+			}else {
+				dom.removeClass('act');
+			}
+		},
+		eventToggleItem: function(evt, elm){
+			var dom = $(elm);
+			if (dom.parent().hasClass('M-commonSLCItemHead')){
+				var chk = dom.prop('checked');
+				dom = dom.parent().next();
+				dom.find('input').prop('checked', chk);
+				dom.next().hide();
+			}
+			this.updateZoneCheck(dom.parent().parent());
+		},
+		// 创建子项目
+		buildSubItem: function(id, con, data){
+			$('<input id="'+id+'" type="checkbox" data-type="sub"/>').val(data[this.$vKey] === 0 && '0' || data[this.$vKey] || '').appendTo(con);
+			$('<label for="'+id+'"/>').text(data[this.$nKey]).appendTo(con);
+		},
+		eventToggleSub: function(evt, elm){
+			var ul = $(elm).parent().parent();
+			var total = ul.children().length;
+			var check = ul.find('input:checked').length;
+			if (check > 0 && check != total){
+				ul.next().css('display', 'block').text(check + '/' + total);
+			}else {
+				ul.next().hide();
+			}
+			ul.prev().children('input').prop('checked', check > 0);
+
+			this.updateZoneCheck(ul.parent().parent());
+		},
+
+		/**
+		 * 设置选中的项目
+		 * @param {Array} sels 选中的项目ID值
+		 * @return {None} 无返回
+		 */
+		setData: function(sels){
+			this.reset();
+			if (!sels || !sels.length){
+				return;
+			}
+			this.$selected = sels;
+
+			var i,map = {};
+			for (i=sels.length-1; i>=0; i--){
+				map[sels[i]] = 1;
+			}
+
+			var dom, body = this.doms.body;
+			var doms = body.find('input[value!=""]');
+			for (i=doms.length-1; i>=0; i--){
+				dom = doms.eq(i);
+				if (map[dom.val()]){
+					dom.prop('checked', true);
+				}
+			}
+
+			// 更新项目状态
+			var total, check, input;
+			doms = body.find('.M-commonSLCSub');
+			for (i=0; i<doms.length; i++){
+				dom = doms.eq(i);
+				input = dom.prev().children('input');
+				total = dom.find('input');
+				if (input.prop('checked')){
+					total.prop('checked', true);
+				}else {
+					check = total.filter(':checked');
+					if (input.prop('checked')){
+						if (check.length === 0){
+							total.prop('checked', true);
+						}
+					}else {
+						if (check.length > 0){
+							input.prop('checked', true);
+						}
+					}
+					if (check.length > 0 && check.length < total.length){
+						dom.next().css('display', 'block').text(check.length + '/' + total.length);
+					}
+				}
+			}
+
+			// 更新栏目状态
+			doms = body.find('.M-commonSLCZoneBody');
+			for (i=0; i<doms.length; i++){
+				dom = doms.eq(i);
+				input = dom.prev().children('input');
+				total = dom.find('input');
+				if (input.prop('checked')){
+					total.prop('checked', true);
+					dom.find('.M-commonSLCSubCount').hide();
+				}else {
+					check = total.filter(':checked');
+					if (total.length > 0 && check.length == total.length){
+						input.prop('checked', true);
+					}
+				}
+			}
+
+			// 更新分区状态
+			doms = body.children();
+			for (i=0; i<doms.length; i++){
+				dom = doms.eq(i);
+				input = this.doms.head.find('input:eq('+i+')');
+				total = dom.find('.M-commonSLCZoneHead > input');
+				if (input.prop('checked')){
+					total.prop('checked', true);
+					dom.find('.M-commonSLCSubCount').hide();
+				}else {
+					check = total.filter(':checked');
+					if (total.length > 0 && check.length == total.length){
+						input.prop('checked', true);
+					}
+				}
+			}
+		},
+		/**
+		 * 清空所有选择
+		 * @return {None} 无返回
+		 */
+		reset: function(){
+			var doms = this.doms;
+			doms.head.find('input').prop('checked', false);
+			doms.body.find('input').prop('checked', false);
+			doms.body.find('.M-commonSLCSubCount').hide();
+			this.$selected = null;
+		},
+		/**
+		 * 获取选中的区域数据
+		 * @return {Array} 返回选中的区域ID数组
+		 */
+		getData: function(){
+			var merge = !this.getConfig('getSubs');
+			var ret = [];
+			// 获取项目数据
+			var dom, input, total, check, i, body = this.doms.body;
+			var doms = body.find('.M-commonSLCItem');
+			for (i=0; i<doms.length; i++){
+				dom = doms.eq(i);
+				input = dom.children('input');
+				if (input.length){
+					if (input.prop('checked') && input.val() !== ''){
+						ret.push(input.val());
+					}
+				}else {
+					total = dom.find('.M-commonSLCSub input');
+					check = total.filter(':checked');
+					input = dom.find('.M-commonSLCItemHead > input');
+					if (total.length > 0 && check.length == total.length && input.val() !== ''){
+						ret.push(input.val());
+						if (merge){ check = false; }
+					}
+					if (check){
+						for (var j=0; j<check.length; j++){
+							input = check.eq(j);
+							if (input.val() !== ''){
+								ret.push(input.val());
+							}
+						}
+					}
+				}
+			}
+			// 获取分区数据
+			doms = body.find('.M-commonSLCZoneHead > input[value!=""]');
+			for (i=0; i<doms.length; i++){
+				input = doms.eq(i);
+				if (input.prop('checked')){
+					ret.push(input.val());
+				}
+			}
+
+			this.$selected = ret;
+			return ret;
+		}
+
+	});
+
+	exports.subLevelCheckbox = SubLevelCheckbox;
 });
