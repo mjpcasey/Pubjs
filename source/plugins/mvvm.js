@@ -166,6 +166,7 @@ define(function(require, exports){
 			buildVMCtrl: function(id, vm, view_model, moduel) {
 				return new VMCtrl(id, vm, view_model, moduel);
 			},
+			config: avalon.config,
 			globalVMDefineName : "global_view_model"
 		};
 		return MVVM;
