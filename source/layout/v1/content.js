@@ -25,7 +25,7 @@ define(function(require,exports) {
 
 			this.$el.addClass('G-frameBodyContainer');
 			this.updateHeight();
-			return self;
+			return this;
 		},
 		updateHeight: function(){
 			// 总高度
@@ -407,8 +407,6 @@ define(function(require,exports) {
 			var frame = $(window).height();
 			// 头部高度
 			var header = $('.G-frameHeadWrapper').height();
-			// 边距值
-			var padding = 20;
 
 			this.$el.height(frame-header);
 
