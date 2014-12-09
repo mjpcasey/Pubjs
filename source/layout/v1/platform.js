@@ -143,12 +143,10 @@ define(function(require,exports){
 			var doms = self.$doms;
 			var h = $(window).height();
 			var headHeight = self.$headHeight;
-			var bodyContentPadding = self.$bodyContentPadding;
 
 			doms.menuListWrapper.height(h-headHeight);
-			doms.content.height(h-headHeight-bodyContentPadding);
+			doms.content.height(h-headHeight);
 			// doms.toolsContentWrapper.height(h-headHeight);
-
 			return this;
 		},
 		// 更新模块状态

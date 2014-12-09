@@ -3104,6 +3104,9 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
 .M-HighGridListRowHighlight {
   background: #FFF4D7 !important;
 }
+.M-containerScroll .content {
+  padding: 20px;
+}
 .M-containerScrollTitle {
   color: #3A3A3A;
   font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif;
