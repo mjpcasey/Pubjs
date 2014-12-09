@@ -2,10 +2,134 @@ define(function(require,exports) {
 	var $ = require('jquery');
 	var pubjs = require('pubjs');
 	var util = require('util');
-
-	// 普通容器
 	var view = require('@base/view');
-	exports.container = view.container;
+
+
+	// 替换语言标记
+	var lang_pattern = /\{\% (.+?) \%\}/g;
+	function lang_replace(full, text){
+		return LANG(text);
+	}
+
+	/** ----    列表     ---- **/
+
+	// 固定高度 -列表
+	var Base = view.container.extend({
+		init: function(config, parent){
+			this.$config = pubjs.conf(config, {
+			});
+			this.Super('init', arguments);
+		},
+		build: function(noAfterBuild){
+			var self = this;
+			if (self.$ready){ return self; }
+			self.$ready = 1;
+
+			var c = this.getConfig();
+			var el = c.el;
+			if (!el){
+				if (c.tag === 'body'){
+					el = $('body:first');
+				}else {
+					el = $('<'+c.tag+'/>');
+				}
+			}
+			// 设置初始属性
+			if (c.attr){
+				el.attr(c.attr);
+			}
+			if (c.css){
+				el.css(c.css);
+			}
+			var cls = c['class'];
+			if (cls){
+				el.addClass(
+					util.isArray(cls) ? cls.join(' ') : cls
+				);
+			}
+			// 强制加上类名
+			el.addClass('G-frameBodyContainer');
+
+			// 保存元素
+			self.$el = el;
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm is not require');
+				}
+				el.removeAttr('ms-skip');
+				// 给vm添加命名空间
+				el.attr('ms-controller', this._.uri);
+				// 定义vm
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
+							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
+						}
+					});
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描
+				el.attr('ms-skip', 1);
+			}
+
+			function _build() {
+				// 插入元素到目标容器
+				if (!c.el && el && c.tag !== 'body' && c.target){
+					self.appendTo(c.target);
+				}
+				// 调用后续构建函数
+				if (!noAfterBuild && util.isFunc(self.afterBuild)){
+					self.afterBuild();
+				}
+				if (c.view_model) {
+					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				}
+
+				self.syncHeight();
+
+			}
+
+			// 加载模板
+			if (c.tplFile) {
+				pubjs.sync();
+				pubjs.data.loadFile(c.tplFile, function(err, tpl) {
+					if (err) {
+						pubjs.log('load template [[' + c.tplFile + ']] error');
+					} else {
+						el.append(tpl.replace(lang_pattern, lang_replace));
+					}
+					_build();
+					pubjs.sync(true);
+				});
+				return self;
+			}
+
+			if (c.html){
+				el.html(c.html);
+			} else if (c.text){
+				el.text(c.text);
+			}
+
+			_build();
+
+
+
+			return self;
+		},
+		syncHeight: function(){
+			var h = $(window).height();
+			var header = 50+20;
+			this.$el.height(h-header);
+
+			return this;
+		}
+	});
+	exports.base = Base;
 
 	// 两列布局，附带侧边栏
 	var SidebarContainer = view.container.extend({
@@ -13,7 +137,7 @@ define(function(require,exports) {
 			var self = this;
 
 			self.$config = pubjs.conf(config, {
-				'class': 'M-content'
+				'class': 'M-containerSidebar'
 			});
 
 			self.$el = null;
@@ -208,7 +332,7 @@ define(function(require,exports) {
 	var TabSidebarContainer = SidebarContainer.extend({
 		init: function(config, parent){
 			this.$config = pubjs.conf(config, {
-				'class': 'M-content'
+				'class': 'M-containerTabSidebar'
 			});
 
 			this.$first = true;		// 首个创建的tab有act状态
@@ -361,6 +485,169 @@ define(function(require,exports) {
 	});
 	exports.tabSidebar = TabSidebarContainer;
 
+
+	// 超过屏幕高度时有滚动条 -表单
+	var Scroll = view.container.extend({
+		init: function(config, parent){
+			var self = this;
+			self.$config = pubjs.conf(config, {
+				// 容器元素 (可指定容器的DOM元素而不创建)
+				'el': null,
+				// 容器标签
+				'tag': 'div',
+				// 容器插入目标DOM对象
+				'target': parent,
+				// 容器文字内容
+				'text': null,
+				// 容器HTML内容 (HTML内容如果设置, 将覆盖文字内容)
+				'html': null,
+				// 对象CSS类
+				'class': null,
+				// 容器属性对象, 调用jQuery的attr方法直接设置
+				'attr': null,
+				// 容器Style属性对象, 调用jQuery的css方法直接设置
+				'css': null,
+				// 表单标题
+				'title': '',
+
+				// 模板路径
+				'tplFile': ''
+			});
+			self.$el = null;
+
+			// 构建元素
+			self.build();
+		},
+		syncHeight: function(){
+			var h = $(window).height();
+			var header = 50+20+46;
+			this.$el.height(h-header);
+
+			return this;
+		},
+		getDOM: function(){
+			return this.$content;
+		},
+		getContainer: function(){
+			return this.$content;
+		},
+		build: function(noAfterBuild){
+			var self = this;
+			var c = this.getConfig();
+			var wrap = this.$el = $('<div class="G-frameBodyContainer"><div class="content" /></div>');
+
+
+			self.createAsync('scroller', '@base/common/base.scroller', {
+				'target': wrap,
+				'content': wrap.find('.content'),
+				'dir': 'V',
+				'watch': 200
+			});
+
+			// 设置初始属性
+			if (c.attr){
+				wrap.attr(c.attr);
+			}
+			if (c.css){
+				wrap.css(c.css);
+				wrap.css({'position': 'relative'});
+			}
+			var cls = c['class'];
+			if (cls){
+				wrap.addClass(
+					util.isArray(cls) ? cls.join(' ') : cls
+				);
+				wrap.addClass('M-containerScroll');
+			}
+
+			// 保存元素
+			var el = this.$content = wrap.find('.content');
+
+
+			$('<div class="M-containerScrollTitle"/>').text(c.title).appendTo(el);
+
+
+			this.$doms = {
+				content: wrap.find('.content'),
+				title: wrap.find('.M-containerScrollTitle')
+			};
+
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm is not require');
+				}
+				el.removeAttr('ms-skip');
+				// 给vm添加命名空间
+				el.attr('ms-controller', this._.uri);
+				// 定义vm
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
+							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
+						}
+					});
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描
+				el.attr('ms-skip', 1);
+			}
+
+			function _build() {
+				// 插入元素到目标容器
+				if (wrap && c.target){
+					wrap.appendTo(c.target);
+				}
+				// 调用后续构建函数
+				if (!noAfterBuild && util.isFunc(self.afterBuild)){
+					self.afterBuild();
+				}
+				if (c.view_model) {
+					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				}
+
+				self.syncHeight();
+			}
+
+
+			// 加载模板
+			if (c.tplFile) {
+				pubjs.sync();
+				pubjs.data.loadFile(c.tplFile, function(err, tpl) {
+					if (err) {
+						pubjs.log('load template [[' + c.tplFile + ']] error');
+					} else {
+						el.append(tpl.replace(lang_pattern, lang_replace));
+					}
+					_build();
+					pubjs.sync(true);
+				});
+				return self;
+			}else{
+				if (c.text){
+					el.text(c.text);
+				}
+
+				if (c.html){
+					el.html(c.html);
+				}
+				_build();
+			}
+
+			return self;
+		},
+		setCrumbs: function(text){
+			if(util.isArray(text)){
+				text = text.join('/');
+			}
+			this.$doms.title.text(text);
+		}
+	});
+	exports.scroll = Scroll;
 
 });
 
