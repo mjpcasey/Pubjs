@@ -16,13 +16,8 @@ define(function(require,exports){
 			self.$activeScenes = null;
 			self.$delayUpdate = false;
 			self.$containers = {};
-			// self.$channelLink = []; // 保存uri的值
-
 			self.$menuHide = false; // 是否隐藏菜单
-
 			self.$headHeight = 50; // 页面头部header高度
-			self.$bodyContentPadding = 40; //页面padding上下合计高度
-
 			self.$timeoutId = null;
 
 			self.build();
@@ -58,14 +53,7 @@ define(function(require,exports){
 								'</div>',
 								'<div class="G-frameBodyMenuFooter"/>',
 							'</div>',
-							'<div class="G-frameBodyContent">',
-								'<div class="G-frameBodyContentWrapper">',
-									// '<div class="G-frameBodyTitle">',
-									// 	'<div class="G-frameBodyTitleText"/>',
-									// 	'<div class="G-frameBodyTitleCrumbs"/>',
-									// '</div>',
-								'</div>',
-							'</div>',
+							'<div class="G-frameBodyContent" />',
 						'</div>',
 					'</div>',
 				'</div>',
@@ -91,8 +79,7 @@ define(function(require,exports){
 				'menuListWrapper': $('.G-frameBodyMenuListWrapper', body),
 				'menuList': $('.G-frameBodyMenuList', body),
 				'footer': $('.G-frameBodyMenuFooter', body),
-				'content': $('.G-frameBodyContent', body),
-				'container': $('.G-frameBodyContentWrapper', body),
+				'container': $('.G-frameBodyContent', body),
 				'login_container': $('.G-frameLoginContainer', body),
 				'SCENES_MAIN': $('#SCENES_MAIN'),
 				'SCENES_POPUP': $('#SCENES_POPUP'),
@@ -103,7 +90,6 @@ define(function(require,exports){
 			var C = app.config;
 			// body.toggleClass('G-frameWideScreen', (WIN.screen.availWidth > 1024));
 
-			// self.setTitle(app.config('login_title'));
 
 			// 依次创建子模块
 			var mods = self.$config.get('modules');
@@ -117,8 +103,6 @@ define(function(require,exports){
 			// 顶部信息设置
 			doms.logo.find('a').attr('title', LANG(C('app_logo/title')))
 				.find('img').attr('src', C('app_logo/small'));
-
-			// self.create('toolbar', UserToolbar, {target: doms.toolbar});
 
 			doms.footer.html(C('app_footer'));
 
@@ -145,8 +129,8 @@ define(function(require,exports){
 			var headHeight = self.$headHeight;
 
 			doms.menuListWrapper.height(h-headHeight);
-			doms.content.height(h-headHeight);
-			// doms.toolsContentWrapper.height(h-headHeight);
+			doms.container.height(h-headHeight);
+
 			return this;
 		},
 		// 更新模块状态
@@ -191,16 +175,6 @@ define(function(require,exports){
 		// 设置窗口标题
 		setTitle: function(title){
 			DOC.title = title + ' - ' + app.config('app_title');
-			return this;
-		},
-		// 设置头部标题
-		setHeaderTitle: function(text){
-			if(text){
-				this.$doms.title.text(text);
-				this.$doms.title.parent().show();
-			}else{
-				this.$doms.title.parent().hide();
-			}
 			return this;
 		},
 		// 获取容器DOM对象
@@ -328,23 +302,20 @@ define(function(require,exports){
 					doms.menu.toggleClass('act', true);
 				}
 			}
-
 		},
 		// 切换左右两侧栏
 		eventToggleMenu: function(evt, elm){
 			var self = this;
 			var doms = self.$doms;
-			// var type = $(elm).attr('data-type');
 
 			doms.menu.toggleClass('act', !self.$menuHide);
 			doms.menuFlex.toggleClass('act', !self.$menuHide);
 			doms.menuFlexIcon.toggleClass('uk-icon-anchor', !self.$menuHide);
-			doms.content.toggleClass('act_left', !self.$menuHide);
+			doms.container.toggleClass('act_left', !self.$menuHide);
 
 			// 更新状态
 			self.$menuHide = !self.$menuHide;
 
-			// app.core.cast('toggleMenu');
 			app.core.cast('menuToggle', self.$menuHide);
 			return false;
 		},
@@ -358,8 +329,5 @@ define(function(require,exports){
 		}
 	});
 	exports.base = Platform;
-
-
-
 
 });
