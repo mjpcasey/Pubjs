@@ -102,7 +102,7 @@ z[20,20,-2,-2]			{iconDate}		    date.png
 
 
 # -------------- highGrid
-z[14,14,0,0]			{highGridOperation}		highGridOperation.png		# 表格操作按钮
+z[26,26,-5,-7]			{highGridOperation}		highGridOperation.png		# 表格操作按钮
 z[16,16,0,0]			{running}				running.png					# 启用状态
 z[16,16,0,0]			{pause}					pause.png					# 停用状态
 z[16,16,0,0]			{store}					store.png					# 归档状态
