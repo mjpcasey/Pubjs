@@ -1593,6 +1593,7 @@ define(function(require, exports, module){
 					list[i].reset();
 				}
 			}
+			return this;
 		}
 	});
 	exports.Module = Module;
