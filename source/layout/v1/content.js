@@ -2,10 +2,43 @@ define(function(require,exports) {
 	var $ = require('jquery');
 	var pubjs = require('pubjs');
 	var util = require('util');
-
-	// 普通容器
 	var view = require('@base/view');
-	exports.container = view.container;
+
+
+	// 替换语言标记
+	var lang_pattern = /\{\% (.+?) \%\}/g;
+	function lang_replace(full, text){
+		return LANG(text);
+	}
+
+	/** ----    列表     ---- **/
+
+	// 无侧边栏列表页
+	var Base = view.container.extend({
+		init: function(config, parent){
+			this.$config = pubjs.conf(config, {
+			});
+			this.Super('init', arguments);
+		},
+		build: function(noAfterBuild){
+			this.Super('build', arguments);
+
+			this.$el.addClass('G-frameBodyContainer');
+			this.updateHeight();
+			return this;
+		},
+		updateHeight: function(){
+			// 总高度
+			var frame = $(window).height();
+			// 头部高度
+			var header = $('.G-frameHeadWrapper').height();
+
+			this.$el.outerHeight(frame-header);
+
+			return this;
+		}
+	});
+	exports.base = Base;
 
 	// 两列布局，附带侧边栏
 	var SidebarContainer = view.container.extend({
@@ -13,7 +46,7 @@ define(function(require,exports) {
 			var self = this;
 
 			self.$config = pubjs.conf(config, {
-				'class': 'M-content'
+				'class': 'M-containerSidebar'
 			});
 
 			self.$el = null;
@@ -73,8 +106,8 @@ define(function(require,exports) {
 			// 绝对定位，保持内容区是填满状态
 			self.$container.css({
 				position: 'absolute',
-				top: self.$container.get(0).offsetTop,
-				bottom: 20 // 下边据20px
+				bottom: 0,
+				top: self.$container.get(0).offsetTop
 			});
 
 			return self;
@@ -208,7 +241,7 @@ define(function(require,exports) {
 	var TabSidebarContainer = SidebarContainer.extend({
 		init: function(config, parent){
 			this.$config = pubjs.conf(config, {
-				'class': 'M-content'
+				'class': 'M-containerTabSidebar'
 			});
 
 			this.$first = true;		// 首个创建的tab有act状态
@@ -230,7 +263,7 @@ define(function(require,exports) {
 				);
 			}
 
-			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab mb20">').appendTo(el);
+			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab">').appendTo(el);
 			self.$container = $('<div class="G-frameBodyContainer"/>').appendTo(el);
 			self.$sidebar = $([
 				'<div class="G-frameBodySidebar">',
@@ -253,9 +286,9 @@ define(function(require,exports) {
 
 			// 绝对定位，保持内容区是填满状态
 			self.$container.css({
+				bottom: 0,
 				position: 'absolute',
-				top: self.$container.get(0).offsetTop,
-				bottom: 20 // 下边据20px
+				top: self.$container.get(0).offsetTop
 			});
 
 			return self;
@@ -361,6 +394,151 @@ define(function(require,exports) {
 	});
 	exports.tabSidebar = TabSidebarContainer;
 
+
+	// 超过屏幕高度时有滚动条 -表单
+	var Scroll = view.container.extend({
+		init: function(config, parent){
+			this.$config = pubjs.conf(config, {
+			});
+			this.Super('init', arguments);
+		},
+		updateHeight: function(){
+			// 总高度
+			var frame = $(window).height();
+			// 头部高度
+			var header = $('.G-frameHeadWrapper').height();
+
+			this.$el.height(frame-header);
+
+			return this;
+		},
+		getDOM: function(){
+			return this.$doms.container;
+		},
+		getContainer: function(){
+			return this.$doms.container;
+		},
+		build: function(noAfterBuild){
+			var self = this;
+			var c = this.getConfig();
+
+			// 外部容器
+			var wrapper = this.$el = $('<div class="M-containerScroll"></div>');
+
+			// 内部容器
+			var container = $('<div class="content" />').appendTo(wrapper);
+
+			// 表单标题
+			var title = $('<div class="M-containerScrollTitle"/>').appendTo(container);
+
+
+			// 滚动条
+			self.createAsync('scroller', '@base/common/base.scroller', {
+				'dir': 'V',
+				'watch': 200,
+				'target': wrapper,
+				'content': wrapper.find('.content')
+			});
+
+			this.$doms = {
+				container: container,
+				title: title
+			};
+
+			// 外部容器设置初始属性
+			if (c.attr){
+				wrapper.attr(c.attr);
+			}
+			if (c.css){
+				wrapper.css(c.css);
+				wrapper.css({'position': 'relative'});
+			}
+			var cls = c['class'];
+			if (cls){
+				wrapper.addClass(
+					util.isArray(cls) ? cls.join(' ') : cls
+				);
+				wrapper.addClass('M-containerScroll');
+			}
+
+
+			// 内部容器 MVVM
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm is not require');
+				}
+				container.removeAttr('ms-skip');
+				// 给vm添加命名空间
+				container.attr('ms-controller', this._.uri);
+				// 定义vm
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
+							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
+						}
+					});
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描
+				container.attr('ms-skip', 1);
+			}
+
+			function _build() {
+				// 插入元素到目标容器
+				if (wrapper && c.target){
+					wrapper.appendTo(c.target);
+				}
+				// 调用后续构建函数
+				if (!noAfterBuild && util.isFunc(self.afterBuild)){
+					self.afterBuild();
+				}
+				if (c.view_model) {
+					pubjs.MVVM.scan(container[0], pubjs.GlobalVM);
+				}
+
+				self.updateHeight();
+			}
+
+
+			// 加载模板
+			if (c.tplFile) {
+				pubjs.sync();
+				pubjs.data.loadFile(c.tplFile, function(err, tpl) {
+					if (err) {
+						pubjs.log('load template [[' + c.tplFile + ']] error');
+					} else {
+						container.append(tpl.replace(lang_pattern, lang_replace));
+					}
+					_build();
+					pubjs.sync(true);
+				});
+				return self;
+			}else{
+				if (c.text){
+					container.text(c.text);
+				}
+
+				if (c.html){
+					container.html(c.html);
+				}
+				_build();
+			}
+
+			return self;
+		},
+		setCrumbs: function(text){
+			if(util.isArray(text)){
+				text = text.join('/');
+			}
+			this.$doms.title.text(text);
+		}
+	});
+	exports.scroll = Scroll;
 
 });
 

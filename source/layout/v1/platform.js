@@ -60,10 +60,10 @@ define(function(require,exports){
 							'</div>',
 							'<div class="G-frameBodyContent">',
 								'<div class="G-frameBodyContentWrapper">',
-									'<div class="G-frameBodyTitle">',
-										'<div class="G-frameBodyTitleText"/>',
-										'<div class="G-frameBodyTitleCrumbs"/>',
-									'</div>',
+									// '<div class="G-frameBodyTitle">',
+									// 	'<div class="G-frameBodyTitleText"/>',
+									// 	'<div class="G-frameBodyTitleCrumbs"/>',
+									// '</div>',
 								'</div>',
 							'</div>',
 						'</div>',
@@ -114,8 +114,6 @@ define(function(require,exports){
 				self.createAsync(mod.name, mod.uri, mod.config);
 			}
 
-			self.buildContent();
-
 			// 顶部信息设置
 			doms.logo.find('a').attr('title', LANG(C('app_logo/title')))
 				.find('img').attr('src', C('app_logo/small'));
@@ -139,47 +137,16 @@ define(function(require,exports){
 			// 监听logout登出
 			self.userLogout();
 		},
-		// 构建内容区的滚动条
-		buildContent: function(){
-			var self = this;
-			var doms = self.$doms;
-			//创建结果滚动条
-			if(!self.get('scroll_content')){
-				self.createAsync('scroll_content', '@base/common/base.scroller', {
-					'target': doms.content,
-					'content': doms.container,
-					'dir': 'V'
-					,'watch': 300
-				});
-			}
-			self.updateScroll();
-		},
-		// 更新容器滚动条状态
-		updateScroll: function(){
-			var scroll_menu = this.get('scroll_menu');
-			var scroller_content = this.get('scroll_content');
-			if (scroll_menu){
-				scroll_menu.update();
-			}
-			if(scroller_content){
-				scroller_content.update();
-			}
-			return this;
-		},
 		// 同步菜单与内容区域高度
 		syncHeight: function(){
 			var self = this;
 			var doms = self.$doms;
 			var h = $(window).height();
 			var headHeight = self.$headHeight;
-			var bodyContentPadding = self.$bodyContentPadding;
 
 			doms.menuListWrapper.height(h-headHeight);
-			doms.content.height(h-headHeight-bodyContentPadding);
+			doms.content.height(h-headHeight);
 			// doms.toolsContentWrapper.height(h-headHeight);
-
-			self.updateScroll();
-
 			return this;
 		},
 		// 更新模块状态
@@ -259,6 +226,9 @@ define(function(require,exports){
 
 				var uri = '';
 				switch(type){
+					case 'scroll':
+						uri = content.scroll;
+					break;
 					case 'sidebar':
 						uri = content.sidebar;
 					break;
@@ -266,7 +236,7 @@ define(function(require,exports){
 						uri = content.tabSidebar;
 					break;
 					default:
-						uri = content.container;
+						uri = content.base;
 					break;
 				}
 

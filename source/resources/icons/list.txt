@@ -123,6 +123,7 @@ z[22,22,0,0]			{product}				product.png
 z[22,22,0,0]			{frequency}				frequency.png
 z[22,22,0,0]			{whisky}				whisky.png
 z[22,22,0,0]			{geo}					geo.png
+z[22,22,0,0]			{mediaAndAd}			mediaAndAd.png
 
 z[6,8,0,0]				{arrowUp}				arrowUp.png
 z[6,8,0,0]				{arrowDown}				arrowDown.png
