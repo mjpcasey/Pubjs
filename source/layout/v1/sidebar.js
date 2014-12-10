@@ -155,6 +155,19 @@ define(function(require,exports) {
 			this.toggleActive(false);
 
 			return false;
+		},
+		onSYSResize: function(ev){
+			var el = this.$el.find('.M-sidebarWrapper');
+			var h = $(window).height()-$('.G-frameHeadWrapper').height()
+
+			// 更新侧边栏高度
+			el.css({
+				'height': h,
+				'min-height': h
+			});
+
+			// 更新侧边栏滚动条
+			this.$.scroller.update();
 		}
 	});
 	exports.base = Sidebar;
