@@ -1,0 +1,38 @@
+// 功能库
+#lib {
+	// 线性渐变
+	.linear(@from:#fff,@to:#bbb){
+		background-color:@to;
+		background-repeat:no-repeat;
+		background-image:-webkit-linear-gradient(@from,@to);
+		background-image:-moz-linear-gradient(top,@from,@to);
+		background-image:-ms-linear-gradient(@from,@to);
+		background-image:-o-linear-gradient(@from,@to);
+		background-image:linear-gradient(@from,@to);
+		filter:"progid:DXImageTransform.Microsoft.gradient(startColorstr='@{from}', endColorstr='@{to}', GradientType=0)";
+	}
+
+	// 三角
+	.triangle(@size:5px,@arr:transparent transparent rgba(0, 0, 0, 0.6) transparent) {
+		height:0;
+		width:0;
+		overflow:hidden;
+		content:" ";
+		border-width:@size;
+		border-color:@arr;
+		border-style:solid;
+	}
+
+	// 透明度
+	.opacity(@opacity) {
+		opacity: @opacity / 100;
+		filter: ~"alpha(opacity=@{opacity})";
+	}
+
+	// css属性动画
+	.transition(@key:all,@delay:.3s,@type:ease-in-out) {
+		-moz-transition:@arguments;
+		transition:@arguments;
+	}
+}
+
