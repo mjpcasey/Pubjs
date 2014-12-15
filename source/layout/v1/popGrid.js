@@ -262,10 +262,6 @@ define(function(require,exports){
 				title = subgridConfig.title.call(null, opts, subgridConfig);
 			}
 
-			if (util.isString(modulesConfig)) {
-				modulesConfig = {uri: modulesConfig};
-			}
-
 			if (!util.isArray(modulesConfig)) {
 				modulesConfig = [modulesConfig];
 			}
@@ -306,10 +302,10 @@ define(function(require,exports){
 				self.$.menu.addItem(name, title, cont.fixed);
 
 				util.each(modulesConfig, function(modconf) {
-					if (!modconf.uri) {
-						pubjs.error('can not create popGrid module without uri');
-						return;
+					if (util.isString(modconf)) {
+						modconf = {uri: modconf};
 					}
+
 					container.createBusiness(
 						'POP_GRID_MODULE' + util.guid(),
 						modconf.uri,
