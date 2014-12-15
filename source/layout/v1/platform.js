@@ -5,12 +5,21 @@ define(function(require,exports){
 		$ = require("jquery"),
 		content = require('@layout/v1/content');
 
+	require('@layout/v1/main.css');
+
 	var Platform = app.Module.extend({
 		init: function(config){
 			var self = this;
 			self.$config = app.conf(config, {
 				'target': 'body',
-				'modules': [ /** {name:'模块名', uri:'模块路径', target: '目标位置', config:配置} **/ ] // 子模块配置
+				'modules': [ // 子模块配置
+					/** {name:'模块名', uri:'模块路径', target: '目标位置', config:配置} **/
+					{ // 弹出表格模块
+						name: 'pop_grid',
+						uri: '@layout/v1/popGrid.base',
+						target: 'SCENES_POP_GRID'
+					}
+				]
 			});
 
 			self.$activeScenes = null;
@@ -57,6 +66,7 @@ define(function(require,exports){
 						'</div>',
 					'</div>',
 				'</div>',
+				'<div id="SCENES_POP_GRID" class="G-frameScenes" />',
 				'<div id="SCENES_POPUP" class="G-frameScenes" />',
 				'<div id="SCENES_LOGIN" class="G-frameScenes">',
 					'<div class="G-frameLoginContainer" />',
@@ -82,6 +92,7 @@ define(function(require,exports){
 				'container': $('.G-frameBodyContent', body),
 				'login_container': $('.G-frameLoginContainer', body),
 				'SCENES_MAIN': $('#SCENES_MAIN'),
+				'SCENES_POP_GRID': $('#SCENES_POP_GRID'),
 				'SCENES_POPUP': $('#SCENES_POPUP'),
 				'SCENES_LOGIN': $('#SCENES_LOGIN')
 			};
@@ -153,13 +164,16 @@ define(function(require,exports){
 			var body = self.$target;
 
 			name = name.toUpperCase();
-			body.removeClass('appScenesLogin appScenesMain');
+			body.removeClass('appScenesLogin appScenesMain appScenesPopGrid');
 			switch (name){
 				case 'MAIN':
 					body.addClass('appScenesMain');
 					break;
 				case 'LOGIN':
 					body.addClass('appScenesLogin');
+					break;
+				case 'POP_GRID':
+					body.addClass('appScenesPopGrid');
 					break;
 				default:
 					return self;
@@ -326,6 +340,20 @@ define(function(require,exports){
 				(show === undefined) ? show : !show
 			);
 			return this.syncHeight();
+		},
+		// 新增一项弹出表格
+		popGridPush: function(config) {
+			var self = this;
+			if (self.$activeScenes !== 'POP_GRID') {
+				self.$originScenes = self.$activeScenes;
+			}
+			self.switchScenes('POP_GRID');
+			return self.$.pop_grid.addItem(config);
+		},
+		// 弹出表格影藏消息处理
+		onPopGridHide: function(ev) {
+			this.switchScenes(this.$originScenes);
+			return false;
 		}
 	});
 	exports.base = Platform;
