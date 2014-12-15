@@ -213,6 +213,9 @@ define(function(require,exports){
 			self.$isHidden = true;
 			return self;
 		},
+		count: function() {
+			return this.$containers.length;
+		},
 		updateSize: function() {
 			var doms = this.$doms;
 			var container = this.getContainer();
