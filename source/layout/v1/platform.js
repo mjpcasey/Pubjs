@@ -5,7 +5,7 @@ define(function(require,exports){
 		$ = require("jquery"),
 		content = require('@layout/v1/content');
 
-	require('@layout/v1/main.css');
+	require('@layout/v1/css/main.css');
 
 	var Platform = app.Module.extend({
 		init: function(config){
