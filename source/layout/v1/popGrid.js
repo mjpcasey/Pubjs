@@ -320,14 +320,14 @@ define(function(require,exports){
 						),
 						function(mod) {
 							cont.modules.push(mod);
-							if(util.isFunc(opts.callback)) {
+							if(util.isFunction(opts.callback)) {
 								opts.callback.apply(null, [true, cont, opts].slice(arguments));
 							}
 						}
 					);
 				});
 
-			} else if (cont.modules && util.isFunc(opts.callbacka)) {
+			} else if (cont.modules && util.isFunction(opts.callbacka)) {
 				opts.callback.call(null, false, cont, opts);
 			}
 

@@ -124,7 +124,7 @@ define(function(require,exports){
 			var mod;
 			for (var i = 0; i < mods.length; i++) {
 				mod = mods[i];
-				util.extend(mod.config, { target: self.getDOM(mod.target)})
+				mod.config = util.extend({}, mod.config, { target: self.getDOM(mod.target)});
 				self.createAsync(mod.name, mod.uri, mod.config);
 			}
 
