@@ -45,7 +45,7 @@ define(function(require, exports){
 				'default_metrics': [],	// 指标分组中属于默认组的指标，支持'{组名}'的形式过滤
 				// 'default_sort': true,	// 默认栏目排序
 
-				'subs': null,
+				'subs': null,			// 子表格配置，eg: ['campaign', 'sweety']
 				'subFilter': null,
 
 				'pager': null,			// 分页模块配置信息
@@ -1679,19 +1679,23 @@ define(function(require, exports){
 						pubjs.error('SubGrid Config Not Found - ', sub);
 						continue;
 					}
-					c.subs[i] = sub;
-					btn = doms[sub.type] = sub.iconBtn = $('<a href="#"/>');
+					var param = c.subs[i] = sub;
+					btn = doms[sub.type] = sub.iconBtn = $('<a/>');
 					btn.attr({
 						'class': sub['class'] || (prefix + sub.type),
 						'title': sub.text || '',
 						'data-index': i
 					});
 					el.append(btn);
+
+					this.uiBind(btn, 'click', param, 'eventSubItemClick');
 				}
 			}
 
 			// 执行自定义过滤函数
-			c.subFilter(c.subs, c.data);
+			if(c.subFilter && util.isFunc(c.subFilter)){
+				c.subFilter(c.subs, c.data);
+			}
 
 			// 定位
 			var position = util.offset(c.childTarget, c.parentTarget);
@@ -1704,6 +1708,21 @@ define(function(require, exports){
 			// 绑定样式激活事件
 			this.uiBind(el, 'mouseenter', 'eventIconMouseenter');
 			this.uiBind(el, 'mouseleave', 'eventIconMouseleave');
+		},
+		/**
+		 * config 说明
+		 * @property {String}   type            subgrid类型  在config app/subgrid中配置
+		 * @property {String}   name     [可选] 模块名称(传入相同名称在多次调用时不会创建新的模块)
+		 * @property {Object}   param    [可选] 模块参数
+		 * @property {String}   title    [可选] 菜单标题  可在subgrid配置中获取
+		 * @property {Object}   config   [可选] 模块配置
+		 * @property {Function} callback [可选] 模块回调
+		 */
+		eventSubItemClick: function(ev){
+			// console.log(ev.data.type);
+			// console.log(pubjs.showSubgrid)
+			pubjs.showSubgrid(ev.data.type);
+			return false;
 		},
 		eventIconMouseenter: function(ev, dom){
 			this.toggleActive(true);

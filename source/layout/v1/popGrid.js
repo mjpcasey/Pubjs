@@ -258,7 +258,7 @@ define(function(require,exports){
 
 			if (util.isString(subgridConfig.title)) {
 				title = subgridConfig.title;
-			} else if (util.isFunction(subgridConfig.title)) {
+			} else if (util.isFunc(subgridConfig.title)) {
 				title = subgridConfig.title.call(null, opts, subgridConfig);
 			}
 
