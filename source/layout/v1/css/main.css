@@ -568,6 +568,27 @@
   cursor: default;
   background: #f5f5f5;
 }
+.G-framePopGridOpenBtn {
+  position: fixed;
+  right: 30px;
+  bottom: 20px;
+  z-index: 91;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #fff;
+  background: #999;
+  -webkit-border-radius: 50%;
+  -khtml-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+.G-framePopGridOpenBtn:hover {
+  background: #666;
+  color: #fff;
+}
 .G-frameScenes {
   display: none;
 }

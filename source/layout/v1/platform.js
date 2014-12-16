@@ -96,6 +96,9 @@ define(function(require,exports){
 				'SCENES_POPUP': $('#SCENES_POPUP'),
 				'SCENES_LOGIN': $('#SCENES_LOGIN')
 			};
+			// popgrid弹出按钮
+			doms.popGridOpenBtn = $('<a class="G-framePopGridOpenBtn"><i class="uk-icon-table"></i></a>').appendTo(doms.SCENES_POPUP).hide();
+			self.uiBind(doms.popGridOpenBtn, 'click', 'eventPopGridOpen');
 
 			// 初始化动态内容
 			var C = app.config;
@@ -107,7 +110,7 @@ define(function(require,exports){
 			var mod;
 			for (var i = 0; i < mods.length; i++) {
 				mod = mods[i];
-				mod.config = util.extend({}, mod.config, { target: self.getDOM(mod.target)})
+				mod.config = util.extend({}, mod.config, { target: self.getDOM(mod.target)});
 				self.createAsync(mod.name, mod.uri, mod.config);
 			}
 
@@ -341,18 +344,37 @@ define(function(require,exports){
 			);
 			return this.syncHeight();
 		},
-		// 新增一项弹出表格
-		popGridPush: function(config) {
+		// 根据subgrid的个数判定是否显示popGrid打开按钮
+		togglePopGridBtnDisplay: function() {
+			var self = this;
+			self.$doms.popGridOpenBtn.toggle(self.$.pop_grid.count() > 0);
+			return self;
+		},
+		// popGrid打开按钮点击事件
+		eventPopGridOpen: function(evt) {
+			this.openPopGrid();
+			evt.preventDefault();
+		},
+		// 打开popGrid窗口
+		openPopGrid: function() {
 			var self = this;
 			if (self.$activeScenes !== 'POP_GRID') {
 				self.$originScenes = self.$activeScenes;
 			}
 			self.switchScenes('POP_GRID');
+		},
+		// 新增一项弹出表格
+		popGridPush: function(config) {
+			var self = this;
+			self.openPopGrid();
+			self.setTimeout(self.togglePopGridBtnDisplay, 100);
 			return self.$.pop_grid.addItem(config);
 		},
 		// 弹出表格影藏消息处理
 		onPopGridHide: function(ev) {
-			this.switchScenes(this.$originScenes);
+			var self = this;
+			self.switchScenes(self.$originScenes);
+			self.togglePopGridBtnDisplay();
 			return false;
 		}
 	});
