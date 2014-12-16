@@ -320,7 +320,7 @@ define(function(require,exports){
 						),
 						function(mod) {
 							cont.modules.push(mod);
-							if(util.isFunction(opts.callback)) {
+							if(util.isFunc(opts.callback)) {
 								opts.callback.apply(null, [true, cont, opts].slice(arguments));
 							}
 						}
