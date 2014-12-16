@@ -1163,6 +1163,7 @@ define(function(require, exports){
 				'reqMethod': 'get',
 				'list': {},
 				'async': false,
+				'silent': true,
 				'active': null
 			});
 			this.$first = null;
@@ -1311,7 +1312,7 @@ define(function(require, exports){
 		},
 		eventClick: function(evt, elm){
 			var tab = $(elm).attr('data-tab');
-			this.switchTab(tab);
+			this.switchTab(tab, this.getConfig('silent'));
 		},
 		getActive:function(dom){
 			return dom ? this.$tabs[this.$active] : this.$active;
