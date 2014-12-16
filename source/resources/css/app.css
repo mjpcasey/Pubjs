@@ -3108,6 +3108,21 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   width: 22px;
   height: 22px;
 }
+.M-HighGrid-region {
+  background-position: -154px -154px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGrid-period {
+  background-position: -154px -44px;
+  width: 22px;
+  height: 22px;
+}
+.M-HighGrid-client {
+  background-position: -154px -66px;
+  width: 22px;
+  height: 22px;
+}
 .M-HighGridListRowSelected {
   font-weight: bold;
 }

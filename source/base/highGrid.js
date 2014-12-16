@@ -39,10 +39,10 @@ define(function(require, exports){
 				'hasSwitch': true,		// 是否有切换到对比表格
 				'hasBatch': false,		// 是否有批量操作
 
-				'metrics': [],			// 要显示的指标列，支持'{组名}'的形式过滤
+				'metrics': [],			// 要显示的指标列，支持'{组名}'的形式过滤; 若不填，默认为tab参数中的cols的并集
 				'hasTab': true,			// 是否显示指标分组模块
-				'tab': null,			// 指标分组配置信息
-				'default_metrics': [],	// 指标分组中属于默认组的指标，支持'{组名}'的形式过滤
+				'tab': null,			// 指标分组配置信息；{'组名':{"text":"String", "cols":[]}}
+				'default_metrics': [],	// 指标分组中属于默认组的指标，支持'{组名}'的形式过滤; 若不填，默认为metrics参数的值
 				// 'default_sort': true,	// 默认栏目排序
 
 				'subs': null,			// 子表格配置，eg: ['campaign', 'sweety']
@@ -68,6 +68,18 @@ define(function(require, exports){
 			// 参数
 			this.$sysParam = {};						// 系统参数
 			this.$customParam = config.get('param');	// 自定义参数
+
+
+			// 若无metrics 参数，则以tab参数("tab/组名/cols")下的并集作为默认值
+			var c = config.get();
+			var tab = c.tab;
+			var metrics = [];
+			if(c.hasTab && (!c.metrics || !c.metrics.length)){
+				for (var e in tab) {
+					metrics = metrics.concat(tab[e].cols);
+				}
+				config.set('metrics', metrics);
+			}
 
 			this.Super('init', arguments);
 		},
@@ -292,13 +304,18 @@ define(function(require, exports){
 			var metric;
 			var name, value;
 			for (var i = 0; i < metrics.length; i++) {
-				metric = metrics[i]
-				// 支持从labels.js中读取配置
+				metric = metrics[i];
+
 				if(util.isString(metric)){
-					name = metric; // 保存指标名
-					metric = labels.get(metric)
-					metric.name = name;
-					metric.sort = true; // 只是给字符串的情况，默认是可排序的
+					// 从 tab 参数中读取配置
+					metric = this.getMetricFromTab(metric);
+					// 支持从labels.js中读取配置
+					if(util.isString(metric)){
+						name = metric; // 保存指标名
+						metric = labels.get(metric);
+						metric.name = name;
+						metric.sort = true; // 只是给字符串的情况，默认是可排序的
+					}
 				}
 				elTitle = this.buildTd({
 					'text': metric.text || '-',
@@ -314,8 +331,16 @@ define(function(require, exports){
 
 						// 格式化数值
 						if(util.isString(metric)){
-							value = data[metric];
-							metric = labels.get(metric);
+
+							metric = this.getMetricFromTab(metric);
+							// 从tab参数中读取配置
+							if( !util.isString(metric)){
+								value = data[metric.name];
+							}else{
+								// 从 labels.js中读取配置
+								value = data[metric];
+								metric = labels.get(metric);
+							}
 						}else{
 							value = data[metric.name];
 						}
@@ -462,8 +487,15 @@ define(function(require, exports){
 
 						// 格式化数值
 						if(util.isString(metric)){
-							value = data[i][metric];
-							metric = labels.get(metric);
+							metric = this.getMetricFromTab(metric);
+							// 从tab参数中读取配置
+							if( !util.isString(metric)){
+								value = data[i][metric.name];
+							}else{
+								// 从 labels.js中读取配置
+								value = data[i][metric];
+								metric = labels.get(metric);
+							}
 						}else{
 							value = data[i][metric.name];
 						}
@@ -1129,7 +1161,7 @@ define(function(require, exports){
 			return false;
 		},
 		// 响应指标组切换事件
-		onMeticsTabChange: function(ev){
+		onMetricsTabChange: function(ev){
 			var data = ev.param;
 			this.setConfig('metrics', data);
 			this.setData(this.$data);
@@ -1191,15 +1223,19 @@ define(function(require, exports){
 		/** ---------------- 内部函数 ---------------- **/
 		// 获取过滤后的要显示的指标集
 		getMetrics: function(){
-			var metrics = this.getConfig('default_metrics');
-			var tab = this.getConfig('tab');
-			var arr = [];
-			var name;
+			var c = this.getConfig();
 
+			// 若无default_metrics 参数，则以 metrics 值作为默认值
+			var defMetrics = c.default_metrics;
+			var metrics = (defMetrics && defMetrics.length) ? defMetrics: c.metrics;
+
+			var name;
+			var arr = [];
 			for (var i = 0; i < metrics.length; i++) {
-				var abbr = metrics[i].match(/{(.+)}/)
+				// 支持"{组名}"过滤
+				var abbr = metrics[i].match(/{(.+)}/);
 				if(abbr){
-					name = tab[abbr[1]];
+					name = c.tab[abbr[1]];
 					if(util.isObject(name)){
 						arr = arr.concat(name.cols);
 					}
@@ -1208,6 +1244,26 @@ define(function(require, exports){
 				}
 			}
 			return arr;
+		},
+		// 获取tab/cols 参数中的值
+		getMetricFromTab: function(name){
+			var tab = this.getConfig('tab');
+			// 把tab 配置中的cols的合并成一个数组
+			var cols = [];
+			for (var e in tab) {
+				cols = cols.concat(tab[e].cols);
+			}
+
+			for (var i = 0; i < cols.length; i++) {
+				if(util.isObject(cols[i])){
+					if(cols[i].name == name){
+						// 返回对象
+						return cols[i];
+					}
+				}
+			}
+			// 返回原值
+			return name;
 		},
 		// 获取两者间的最大值
 		_getMax: function(a, b){
@@ -1368,8 +1424,16 @@ define(function(require, exports){
 						};
 						cols = data[name].cols
 						for (var i = 0; i < cols.length; i++) {
-							if(util.find(filter, cols[i], 'name')){
-								obj[name].cols.push(cols[i]);
+							// 字符串
+							if(util.isString(cols[i])){
+								if(util.find(filter, cols[i])){
+									obj[name].cols.push(cols[i]);
+								}
+							}else{
+								// 对象
+								if(util.find(filter, cols[i].name, 'name')){
+									obj[name].cols.push(cols[i]);
+								}
 							}
 						}
 					}
@@ -1413,7 +1477,11 @@ define(function(require, exports){
 		},
 		// 获取显示的默认值
 		getDefaultMetrics: function(){
-			var metrics = this.getConfig('default_metrics');
+			// 如果用户没设置default_metrics，则以metrics值作为默认显示值
+			var allMetrics = this.getConfig('metrics');
+			var defaultMetrics = this.getConfig('default_metrics');
+			var metrics = (defaultMetrics && defaultMetrics.length) ? defaultMetrics: allMetrics;
+
 			var tab = this.getConfig('tab');
 			var arr = [];
 			var name;
@@ -1437,12 +1505,15 @@ define(function(require, exports){
 			var c = this.getConfig();
 			this.$panelShowing = !this.$panelShowing;
 
+			// 若没有配置default_metrics 参数，使用metrics代替
+			var metrics = (c.default_metrics && c.default_metrics.length) ? c.default_metrics : c.metrics;
+
 			if(this.$panelShowing){
 				// 创建popwin
 				this.create('tabPanel', TabPanel, {
 					'gridName': c.gridName,
 					'tab': c.tab,
-					'default_metrics': c.default_metrics,
+					'default_metrics': metrics,
 					'position':{
 						'mode': 'bottom, right',
 						'element': $(ev.target).parents('.M-HighGridTab')
@@ -1525,9 +1596,14 @@ define(function(require, exports){
 					cols = data[e].cols;
 					$('<strong>'+data[e].text+'</strong>').appendTo(td);
 					for (var i = 0; i < cols.length; i++) {
-						// @todo 暂默认都认为必须从lables中读取
-						metric = labels.get(cols[i]);
-						$('<label><input type="checkbox" data-name="'+cols[i]+'"/>'+metric.text+'</label>').appendTo(td);
+						metric = cols[i];
+
+						// 支持直接传字符串形式，从lables.js中读取对应配置
+						if(util.isString(cols[i])){
+							metric = labels.get(cols[i]);
+						}
+
+						$('<label><input type="checkbox" data-name="'+(metric.name||cols[i])+'"/>'+metric.text+'</label>').appendTo(td);
 					}
 				}
 			}
@@ -1577,17 +1653,24 @@ define(function(require, exports){
 			var name;
 
 			for (var i = 0; i < metrics.length; i++) {
-				var abbr = metrics[i].match(/{(.+)}/)
-				if(abbr){
-					name = tab[abbr[1]];
-					if(util.isObject(name)){
-						arr = arr.concat(name.cols);
+				// 字符串
+				if(util.isString(metrics[i])){
+					// 组名匹配
+					var abbr = metrics[i].match(/{(.+)}/)
+
+					if(abbr){
+						name = tab[abbr[1]];
+						if(util.isObject(name)){
+							arr = arr.concat(name.cols);
+						}
+					}else{
+						arr.push(metrics[i]);
 					}
 				}else{
+					// 对象
 					arr.push(metrics[i]);
 				}
 			}
-
 			return arr;
 		},
 		setValue: function(value){
@@ -1719,9 +1802,11 @@ define(function(require, exports){
 		 * @property {Function} callback [可选] 模块回调
 		 */
 		eventSubItemClick: function(ev){
-			// console.log(ev.data.type);
-			// console.log(pubjs.showSubgrid)
-			pubjs.showSubgrid(ev.data.type);
+			var data = this.getConfig('data');
+			pubjs.showSubgrid({
+				type: ev.data.type,
+				title: data.Name+ '/' +ev.data.text
+			});
 			return false;
 		},
 		eventIconMouseenter: function(ev, dom){
