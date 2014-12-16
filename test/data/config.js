@@ -43,6 +43,36 @@ define(function(){
 					}
 				}
 			}
+			// subgrid配置示例
+			/*,subgrid: {
+				'creative': {
+					'type': 'sidebar',
+					'title': '',
+					'modules': {
+						'uri': 'module/uri.module'
+					}
+				},
+				'ads': {
+					'type': 'tabSideBar',
+					'title': function(opts, config) {},
+					'modules': [
+						{
+							'uri': 'module/uri.module',
+							'config': {
+								'tabText': '广告位'
+							}
+						},
+						{
+							'uri': 'module/uri.module',
+							'param': {'id': 100}
+							'config': {
+								'tabText': '广告列表'
+							}
+						}
+					]
+				}
+
+			}*/
 		},
 		// 控制器所在目录
 		app_base: ROOT('controller/'),

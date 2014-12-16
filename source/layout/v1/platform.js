@@ -5,12 +5,21 @@ define(function(require,exports){
 		$ = require("jquery"),
 		content = require('@layout/v1/content');
 
+	require('@layout/v1/css/main.css');
+
 	var Platform = app.Module.extend({
 		init: function(config){
 			var self = this;
 			self.$config = app.conf(config, {
 				'target': 'body',
-				'modules': [ /** {name:'模块名', uri:'模块路径', target: '目标位置', config:配置} **/ ] // 子模块配置
+				'modules': [ // 子模块配置
+					/** {name:'模块名', uri:'模块路径', target: '目标位置', config:配置} **/
+					{ // 弹出表格模块
+						name: 'pop_grid',
+						uri: '@layout/v1/popGrid.base',
+						target: 'SCENES_POP_GRID'
+					}
+				]
 			});
 
 			self.$activeScenes = null;
@@ -57,6 +66,7 @@ define(function(require,exports){
 						'</div>',
 					'</div>',
 				'</div>',
+				'<div id="SCENES_POP_GRID" class="G-frameScenes" />',
 				'<div id="SCENES_POPUP" class="G-frameScenes" />',
 				'<div id="SCENES_LOGIN" class="G-frameScenes">',
 					'<div class="G-frameLoginContainer" />',
@@ -82,9 +92,13 @@ define(function(require,exports){
 				'container': $('.G-frameBodyContent', body),
 				'login_container': $('.G-frameLoginContainer', body),
 				'SCENES_MAIN': $('#SCENES_MAIN'),
+				'SCENES_POP_GRID': $('#SCENES_POP_GRID'),
 				'SCENES_POPUP': $('#SCENES_POPUP'),
 				'SCENES_LOGIN': $('#SCENES_LOGIN')
 			};
+			// popgrid弹出按钮
+			doms.popGridOpenBtn = $('<a class="G-framePopGridOpenBtn"><i class="uk-icon-table"></i></a>').appendTo(doms.SCENES_POPUP).hide();
+			self.uiBind(doms.popGridOpenBtn, 'click', 'eventPopGridOpen');
 
 			// 初始化动态内容
 			var C = app.config;
@@ -96,7 +110,7 @@ define(function(require,exports){
 			var mod;
 			for (var i = 0; i < mods.length; i++) {
 				mod = mods[i];
-				util.extend(mod.config, { target: self.getDOM(mod.target)})
+				mod.config = util.extend({}, mod.config, { target: self.getDOM(mod.target)});
 				self.createAsync(mod.name, mod.uri, mod.config);
 			}
 
@@ -153,13 +167,16 @@ define(function(require,exports){
 			var body = self.$target;
 
 			name = name.toUpperCase();
-			body.removeClass('appScenesLogin appScenesMain');
+			body.removeClass('appScenesLogin appScenesMain appScenesPopGrid');
 			switch (name){
 				case 'MAIN':
 					body.addClass('appScenesMain');
 					break;
 				case 'LOGIN':
 					body.addClass('appScenesLogin');
+					break;
+				case 'POP_GRID':
+					body.addClass('appScenesPopGrid');
 					break;
 				default:
 					return self;
@@ -326,6 +343,39 @@ define(function(require,exports){
 				(show === undefined) ? show : !show
 			);
 			return this.syncHeight();
+		},
+		// 根据subgrid的个数判定是否显示popGrid打开按钮
+		togglePopGridBtnDisplay: function() {
+			var self = this;
+			self.$doms.popGridOpenBtn.toggle(self.$.pop_grid.count() > 0);
+			return self;
+		},
+		// popGrid打开按钮点击事件
+		eventPopGridOpen: function(evt) {
+			this.openPopGrid();
+			evt.preventDefault();
+		},
+		// 打开popGrid窗口
+		openPopGrid: function() {
+			var self = this;
+			if (self.$activeScenes !== 'POP_GRID') {
+				self.$originScenes = self.$activeScenes;
+			}
+			self.switchScenes('POP_GRID');
+		},
+		// 新增一项弹出表格
+		popGridPush: function(config) {
+			var self = this;
+			self.openPopGrid();
+			self.setTimeout(self.togglePopGridBtnDisplay, 100);
+			return self.$.pop_grid.addItem(config);
+		},
+		// 弹出表格影藏消息处理
+		onPopGridHide: function(ev) {
+			var self = this;
+			self.switchScenes(self.$originScenes);
+			self.togglePopGridBtnDisplay();
+			return false;
 		}
 	});
 	exports.base = Platform;
