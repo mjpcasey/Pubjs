@@ -89,7 +89,9 @@ module.exports = function(grunt) {
 		less: {
 			dev: {
 				files:{
-					'source/resources/css/app.css': 'source/resources/less/app.less'
+					'source/resources/css/app.css': 'source/resources/less/app.less',
+					'source/layout/v1/css/main.css': 'source/layout/v1/less/main.less',
+					'source/layout/v2/css/main.css': 'source/layout/v2/less/main.less'
 				}
 			},
 			old: {
@@ -121,7 +123,9 @@ module.exports = function(grunt) {
 			less: {
 				files: [
 					'source/resources/less/**/*.less',
-					'source/resources/less/*/*.less'
+					'source/resources/less/*/*.less',
+					'source/layout/*/less/*.less',
+					'source/layout/*/less/*/*.less'
 				],
 				tasks: ['less:dev']
 			},

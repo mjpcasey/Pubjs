@@ -1,0 +1,857 @@
+.G-frameWrapper {
+  background: #ffffff;
+}
+.G-frameHead,
+.G-frameBody {
+  width: 100%;
+  margin: 0 auto;
+}
+.G-frameWideScreen .G-frameWrapper {
+  min-width: 1200px;
+}
+.G-frameHead {
+  height: 50px;
+  padding-bottom: 0px;
+}
+.G-frameHead ul {
+  margin: 0;
+  padding: 0;
+}
+.G-frameHeadWrapper {
+  background: #162327;
+  width: 100%;
+  z-index: 100;
+  position: relative;
+}
+.G-frameHeadLogo {
+  float: left;
+  height: 50px;
+  line-height: 50px;
+  overflow: hidden;
+  padding-right: 20px;
+  padding-left: 20px;
+  width: 160px;
+}
+.G-frameHeadMenu {
+  float: left;
+  height: 50px;
+}
+.G-frameHeadMenu li {
+  float: left;
+  height: 46px;
+  padding: 0 15px;
+  cursor: pointer;
+  width: 80px;
+  text-align: center;
+}
+.G-frameHeadMenu li a {
+  line-height: 50px;
+  font-size: 1.2em;
+  text-decoration: none;
+  color: #ffffff;
+  display: inline-block;
+  height: 50px;
+  width: 100%;
+}
+.G-frameHeadMenu li:hover {
+  background: #cf2222;
+  border-bottom: 4px solid #cf2222;
+}
+.G-frameHeadMenu li.act {
+  cursor: default;
+  background: #000;
+  border-bottom: 4px solid #cf2222;
+}
+.G-frameHeadMenu li.act a {
+  cursor: default;
+}
+.G-frameHeadLanguage {
+  float: right;
+  height: 50px;
+}
+.G-frameHeadLanguage a {
+  float: left;
+  display: block;
+  width: 16px;
+  height: 11px;
+  margin: 20px 7px 0 0;
+}
+.G-frameHeadLanguageCN {
+  background: url(../images/language/zh-cn.png) no-repeat;
+}
+.G-frameHeadLanguageEN {
+  background: url(../images/language/en-us.png) no-repeat;
+}
+.G-frameHeadAdminSwitch {
+  float: right;
+  font-size: 1.2em;
+  color: #a1a1a1;
+  cursor: pointer;
+}
+.G-frameHeadAdminSwitch ul {
+  height: 50px;
+  line-height: 50px;
+  padding: 0 20px !important;
+  max-width: 110px;
+  background: #000;
+  text-align: center;
+}
+.G-frameHeadAdminSwitch ul.act {
+  background: #ab0000;
+}
+.G-frameHeadAdminSwitch ul.act a {
+  color: #ffffff;
+}
+.G-frameHeadAdminSwitch li {
+  width: 100%;
+}
+.G-frameHeadAdminSwitch li a {
+  line-height: 50px;
+  font-size: 13px;
+  text-decoration: none;
+  color: #a1a1a1;
+  display: inline-block;
+  height: 50px;
+}
+.G-frameHeadAdminSwitch li a:hover {
+  color: #ffffff;
+}
+.G-frameHeadAdminSwitch li a i {
+  margin: 0 4px;
+  line-height: 50px;
+  height: 50px;
+}
+.G-frameHeadAdminSwitch li.act {
+  display: none;
+}
+.G-frameHeadAdminSwitch li.act_hide {
+  display: none;
+}
+.G-frameHeadAdminSwitch li.admin i {
+  float: right;
+}
+.G-frameHeadAdminSwitch li.list i {
+  float: left;
+}
+.G-frameBody {
+  position: relative;
+  background: #ffffff;
+  margin: 0px auto;
+}
+.G-frameBodyMenu {
+  float: left;
+  width: 200px;
+  color: #7A7979;
+  font-size: 13px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #162327;
+  box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.3);
+  z-index: 99;
+}
+.G-frameBodyMenu.act {
+  display: none;
+}
+.G-frameBodyMenuFlex {
+  position: absolute;
+  display: none;
+  top: 0;
+  height: 100%;
+  width: 20px;
+  background: #202c33;
+  z-index: 100;
+  cursor: pointer;
+}
+.G-frameBodyMenuFlex i {
+  position: absolute;
+  top: 50%;
+  left: 4px;
+  color: #d6d6d6;
+}
+.G-frameBodyMenuFlex.act {
+  display: block;
+}
+.G-frameBodyMenuListWrapper {
+  min-height: 0 !important;
+}
+.G-frameBodyMenuBlock {
+  display: none;
+}
+.G-frameBodyMenuGroup strong {
+  display: block;
+  font-size: 12px;
+  text-indent: 0;
+  border-bottom: 0.1em solid #0f171a;
+  font-weight: normal;
+  color: #737373;
+  height: 30px;
+  line-height: 30px;
+  text-indent: 22px;
+}
+.G-frameBodyMenuGroup ul {
+  margin: 0;
+  padding: 0;
+}
+.G-frameBodyMenuGroup li {
+  padding: 0;
+  text-align: left;
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+}
+.G-frameBodyMenuGroup li.act {
+  background: #000;
+}
+.G-frameBodyMenuGroup li.act i {
+  width: 5px;
+  height: 30px;
+  background: #ce3939;
+  display: inline-block;
+  vertical-align: bottom;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.G-frameBodyMenuGroup a {
+  color: #d6d6d6;
+  text-decoration: none;
+  display: block;
+  text-indent: 32px;
+  position: relative;
+}
+.G-frameBodyMenuGroup a:hover {
+  color: #ffffff;
+  background: #202c33;
+}
+.G-frameBodyMenuGroup .act a {
+  color: #ffffff;
+  background: #000000;
+}
+.G-frameBodyMenuFooter {
+  background: #000000;
+  line-height: 30px;
+  text-align: center;
+  height: 30px;
+  color: #444;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+.G-frameBodyContent {
+  overflow: hidden;
+  position: relative;
+  zoom: 1;
+  margin-left: 200px;
+  background: #ffffff;
+  min-height: 0 !important;
+}
+.G-frameBodyContent:after {
+  content: " ";
+  display: table;
+  clear: both;
+}
+.G-frameBodyContent.act_left {
+  margin-left: 0;
+}
+.G-frameBodyContent.act_right {
+  margin-right: 0;
+}
+.G-frameBodyTools {
+  width: 200px;
+  background: #f2f2f2;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  font-size: 13px;
+  border-left: 1px solid #dfdfdf;
+  z-index: 99;
+}
+.G-frameBodyTools.act {
+  display: none;
+}
+.G-frameBodyToolsFlex {
+  position: absolute;
+  display: none;
+  right: 0px;
+  top: 0;
+  height: 100%;
+  width: 20px;
+  background: #d9d9d9;
+  z-index: 100;
+  cursor: pointer;
+}
+.G-frameBodyToolsFlex i {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  color: #444;
+}
+.G-frameBodyToolsFlex.act {
+  display: block;
+}
+.G-frameBodyToolsContentWrapper {
+  height: 100%;
+}
+.G-frameBodyTitle {
+  clear: both;
+  z-index: 1;
+  height: 46px;
+  position: relative;
+}
+.G-frameBodyTitleText {
+  float: left;
+  color: #3A3A3A;
+  font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  height: 40px;
+  line-height: 40px;
+  cursor: default;
+  display: inline-block;
+}
+.G-frameBodyTitleCrumbs {
+  display: inline-block;
+  color: #7E7E7E;
+  font-family: "Microsoft YaHei", Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  height: 40px;
+  line-height: 40px;
+  cursor: default;
+}
+.G-frameBodyFull .G-frameBodyMenu {
+  display: none;
+}
+.G-frameBodyFull .G-frameBodyTools {
+  display: none;
+}
+.G-frameBodyFull .G-frameBodyContent {
+  border: none;
+  box-shadow: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+.G-frameBodyWithoutTools .G-frameBodyTools {
+  display: none;
+}
+.G-frameBodyWithoutTools .G-frameBodyContent {
+  border: none;
+  box-shadow: none;
+  margin-right: 0;
+}
+.G-frameBodyContainer {
+  position: relative;
+  padding: 20px;
+}
+.G-frameBodySidebar {
+  width: 200px;
+  background: #f8f8f8;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  font-size: 13px;
+  border-left: 1px solid #dfdfdf;
+  z-index: 99;
+}
+.G-frameBodySidebar.act {
+  display: none;
+}
+.G-frameBodySidebarFlex {
+  position: absolute;
+  display: none;
+  right: 0px;
+  top: 0;
+  height: 100%;
+  width: 20px;
+  background: #d9d9d9;
+  z-index: 1101;
+  cursor: pointer;
+}
+.G-frameBodySidebarFlex i {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  color: #444;
+}
+.G-frameBodySidebarFlex.act {
+  display: block;
+}
+.G-frameBodySidebarWrapper {
+  height: 100%;
+}
+.G-frameBodyTab {
+  margin-top: 26px;
+  margin-left: 20px;
+  min-height: 34px;
+}
+.G-frameUserToolbar {
+  float: right;
+  height: 50px;
+  position: relative;
+  line-height: 50px;
+  font-size: 1.2em;
+  color: #a1a1a1;
+  margin-left: 10px;
+}
+.G-frameUserToolbarBox {
+  position: relative;
+  min-width: 145px;
+  _width: 145px;
+  float: right;
+  height: 50px;
+  line-height: 50px;
+  color: #a1a1a1;
+  cursor: pointer;
+}
+.G-frameUserToolbarBox:hover {
+  color: #ffffff;
+}
+.G-frameUserToolbarBoxResult {
+  float: right;
+  height: 50px;
+}
+.G-frameUserToolbarBoxName,
+.G-frameUserToolbarBoxSiteName {
+  display: block;
+  text-align: right;
+}
+.G-frameUserToolbarBoxName.act,
+.G-frameUserToolbarBoxSiteName.act {
+  line-height: 25px !important;
+}
+.G-frameUserToolbarBoxName {
+  padding-top: 4px;
+  line-height: 40px;
+}
+.G-frameUserToolbarBoxSiteName {
+  font-size: 12px;
+  line-height: 18px;
+}
+.G-frameUserToolbarBoxBtn {
+  margin-left: 14px;
+  margin-right: 25px;
+  float: right;
+  height: 50px;
+  line-height: 50px;
+  font-size: 16px;
+}
+.G-frameUserToolbarBox.act {
+  color: #ffffff;
+}
+.G-frameUserToolbarList {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0px;
+  z-index: 999;
+  width: 380px;
+  padding: 3px 0;
+  background: #ffffff;
+  border-left: 1px solid #dfdfdf;
+  box-shadow: rgba(0, 0, 0, 0.3) 1px 1px 3px;
+}
+.G-frameUserToolbarList li {
+  width: 100%;
+}
+.G-frameUserToolbarList li a {
+  display: block;
+  color: #525252;
+  height: 30px;
+  line-height: 30px;
+  padding: 0 0 0 15px;
+}
+.G-frameUserToolbarList li a:hover,
+.G-frameUserToolbarList li a:active {
+  background: #FDF6DD;
+  color: #272727;
+}
+.G-frameUserToolbarConUserInfo {
+  border-bottom: 1px solid #cdcdcd;
+  font-size: 13px;
+  height: 36px;
+  padding: 20px;
+}
+.G-frameUserToolbarConUserInfoName {
+  color: #7e7e7e;
+}
+.G-frameUserToolbarConUserInfoOp {
+  padding: 0;
+  margin: 0;
+  height: 30px;
+  line-height: 30px;
+}
+.G-frameUserToolbarConUserInfoOp li {
+  float: left;
+  margin-right: 20px;
+}
+.G-frameUserToolbarConUserFinance {
+  border-bottom: 1px solid #cdcdcd;
+  height: 20px;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+.G-frameUserToolbarConSitelistCon {
+  min-height: 200px;
+  width: 100%;
+}
+.G-frameUserToolbarConSitelistConList {
+  width: 100% !important;
+}
+.G-frameUserToolbarConSitelistConList .title {
+  text-align: center;
+  padding: 10px;
+}
+.G-frameUserToolbarConSitelistConList .list {
+  cursor: default;
+  background: white;
+}
+.G-frameUserToolbarConSitelistConList .list .search {
+  height: 44px;
+  line-height: 44px;
+  background: #eeeeee;
+  position: relative;
+  text-align: center;
+}
+.G-frameUserToolbarConSitelistConList .list .search input {
+  width: 336px !important;
+  height: 30px;
+  border: 1px solid #ddd;
+  padding: 0 5px;
+  outline: none;
+}
+.G-frameUserToolbarConSitelistConList .list .search input:focus {
+  border-color: #99baca;
+}
+.G-frameUserToolbarConSitelistConList .list .btnSearch,
+.G-frameUserToolbarConSitelistConList .list .btnCancel {
+  width: 20px;
+  height: 20px;
+  color: #c4c4c4;
+  position: absolute;
+  top: 17px;
+  right: 28px;
+  cursor: pointer;
+}
+.G-frameUserToolbarConSitelistConList .list .btnCancel {
+  display: none;
+}
+.G-frameUserToolbarConSitelistConList .list > div {
+  padding: 0 !important;
+}
+.G-frameUserToolbarConSitelistConList .list .options {
+  min-width: 100px;
+}
+.G-frameUserToolbarConSitelistConList .list .option {
+  display: block;
+  text-decoration: none;
+  position: relative;
+  height: 38px;
+  background: #ffffff;
+  cursor: pointer;
+  color: #9c9c9c;
+  text-align: left;
+  padding: 5px 20px;
+  border-top: 1px solid #cdcdcd;
+}
+.G-frameUserToolbarConSitelistConList .list .option strong {
+  font-weight: normal;
+  color: #444;
+  font-size: 13px;
+}
+.G-frameUserToolbarConSitelistConList .list .option:hover {
+  background: #fafafa;
+}
+.G-frameUserToolbarConSitelistConList .list .option.act {
+  cursor: default;
+  background: #f5f5f5;
+}
+.G-framePopGridOpenBtn {
+  position: fixed;
+  right: 30px;
+  bottom: 20px;
+  z-index: 91;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 18px;
+  color: #fff;
+  background: #999;
+  -webkit-border-radius: 50%;
+  -khtml-border-radius: 50%;
+  -moz-border-radius: 50%;
+  border-radius: 50%;
+}
+.G-framePopGridOpenBtn:hover {
+  background: #666;
+  color: #fff;
+}
+.G-frameScenes {
+  display: none;
+}
+.appScenesMain {
+  background: #ffffff;
+}
+.appScenesMain #SCENES_MAIN,
+.appScenesMain #SCENES_POPUP {
+  display: block;
+}
+.appScenesMain #SCENES_POPUP {
+  z-index: 100;
+  width: 100%;
+}
+.appScenesMainSiteList {
+  color: #6c6b6b;
+  border: 1px solid #ccc;
+  line-height: 32px;
+  font-size: 20px;
+  text-shadow: #ffffff 1px 1px 0;
+  background-color: #ededed;
+  background-repeat: no-repeat;
+  background-image: -webkit-linear-gradient(#f1f1f1, #ededed);
+  background-image: -moz-linear-gradient(top, #f1f1f1, #ededed);
+  background-image: -ms-linear-gradient(#f1f1f1, #ededed);
+  background-image: -o-linear-gradient(#f1f1f1, #ededed);
+  background-image: linear-gradient(#f1f1f1, #ededed);
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#f1f1f1', endColorstr='#ededed', GradientType=0)";
+}
+.appScenesMainSiteList .arrow {
+  background: none;
+  top: 20px;
+  right: 11px;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  content: " ";
+  border-width: 6px;
+  border-color: #7e7e7e transparent transparent transparent;
+  border-style: solid;
+}
+.appScenesMainSiteList .list .btnSearch {
+  top: 14px;
+}
+.appScenesMainSiteList .list .btnCancel {
+  top: 12px;
+  right: 6px;
+}
+.appScenesMainSiteList .list .options .option {
+  position: relative;
+  margin: -1px 0 0;
+  border-top: 1px solid #cdcdcd;
+  height: 34px;
+  line-height: 34px;
+  padding: 0 11px;
+  background: #F4F4F4;
+  cursor: pointer;
+  color: #6C6B6B;
+  text-align: left;
+}
+.appScenesMainSiteList .list .options .option strong {
+  font-weight: bolder;
+  padding-right: .5em;
+  width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline;
+  float: left;
+  font-size: 12px;
+}
+.appScenesMainSiteList .list .options .option em {
+  color: #aaa;
+  font-style: normal;
+  font-weight: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline;
+  float: left;
+  width: 55%;
+  font-size: 12px;
+  text-align: right;
+}
+.appScenesMainSiteList .list .options .option:hover {
+  background: #FEFDFD;
+}
+.appScenesMainSiteList .list .options .act {
+  box-shadow: inset 0 1px 3px rgba(183, 182, 182, 0.26), 0 1px 0 #dad9d9;
+  background: #e8e7e7;
+}
+.appScenesMainSiteList:hover {
+  background-color: #eeeeee;
+  background-repeat: no-repeat;
+  background-image: -webkit-linear-gradient(#f8f8f8, #eeeeee);
+  background-image: -moz-linear-gradient(top, #f8f8f8, #eeeeee);
+  background-image: -ms-linear-gradient(#f8f8f8, #eeeeee);
+  background-image: -o-linear-gradient(#f8f8f8, #eeeeee);
+  background-image: linear-gradient(#f8f8f8, #eeeeee);
+  filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8f8f8', endColorstr='#eeeeee', GradientType=0)";
+}
+#SCENES_POPUP {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.appScenesLogin #SCENES_LOGIN {
+  display: block;
+}
+.appScenesLoginMain {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 520px;
+  margin: -320px 0 0 -260px;
+}
+.appScenesPopGrid #SCENES_POP_GRID {
+  display: block;
+  z-index: 100;
+  width: 100%;
+}
+.appScenesPopGrid #SCENES_MAIN,
+.appScenesPopGrid #SCENES_POPUP {
+  display: block;
+}
+.appScenesPopGridBlock {
+  position: relative;
+  padding-left: 150px;
+  background: rgba(0, 0, 0, 0.7);
+}
+.appScenesPopGridCtrl {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 150px;
+  cursor: pointer;
+}
+.appScenesPopGridCtrlBtn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 50px;
+  height: 50px;
+  margin-top: -25px;
+  margin-left: -25px;
+  text-align: center;
+  font-size: 40px;
+  vertical-align: middle;
+  color: #fff;
+}
+.appScenesPopGridMain {
+  padding-left: 225px;
+  height: 100%;
+  background: #fff;
+  position: relative;
+}
+.appScenesPopGridContent {
+  padding-right: 20px;
+  height: 100%;
+}
+.appScenesPopGridSingle {
+  position: relative;
+  height: 100%;
+  margin-right: -20px;
+}
+.appScenesPopGridMenu {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+}
+.appScenesPopGridMenu-wrap {
+  height: 100%;
+  overflow: hidden;
+  padding-right: 20px;
+  background: #f8f8f8;
+}
+.appScenesPopGridMenu-main {
+  width: 205px;
+  padding-top: 15px;
+}
+.appScenesPopGridMenu-content {
+  padding-left: 12px;
+}
+.appScenesPopGridMenu-item {
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  font-size: 13px;
+  color: #595959;
+  background: #efefef;
+  padding-left: 10px;
+  padding-right: 24px;
+  cursor: pointer;
+}
+.appScenesPopGridMenu-item-corner {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  line-height: 0;
+  font-size: 0;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  content: " ";
+  border-width: 5px;
+  border-color: #555555 transparent transparent #555555;
+  border-style: solid;
+}
+.appScenesPopGridMenu-item-content {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.appScenesPopGridMenu-item-ctrl {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: none;
+  width: 24px;
+  height: 30px;
+  overflow: hidden;
+}
+.appScenesPopGridMenu-item-ctrl-wrap {
+  width: 48px;
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+.appScenesPopGridMenu-item-ctrl.hover {
+  width: 48px;
+}
+.appScenesPopGridMenu-item-removeBtn,
+.appScenesPopGridMenu-item-fixedBtn {
+  width: 24px;
+  height: 30px;
+  font-size: 12px;
+  vertical-align: middle;
+  text-align: center;
+}
+.appScenesPopGridMenu-item:hover {
+  background: #e6e6e6;
+}
+.appScenesPopGridMenu-item.active {
+  background: #dbdbdb;
+}
+.appScenesPopGridMenu-item.active .appScenesPopGridMenu-item-ctrl,
+.appScenesPopGridMenu-item:hover .appScenesPopGridMenu-item-ctrl {
+  display: block;
+}
+.appScenesPopGridMenu-item.fixed .appScenesPopGridMenu-item-corner {
+  display: block;
+}
+#SCENES_POP_GRID {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

@@ -9,7 +9,8 @@ define(function(require,exports) {
 	var Sidebar = view.container.extend({
 		init:function(config){
 			config = pubjs.conf(config, {
-				'items': [] // 子模块： 1 数组形式[{name: 'xxx', uri:'xxx'}, {...}]; 2 对象形式{name: uri}
+				'items': [], // 子模块： 1 数组形式[{name: 'xxx', uri:'xxx'}, {...}]; 2 对象形式{name: uri}
+				'class': 'M-sidebar'
 			});
 
 			this.$module = null; // 当前激活子模块
@@ -17,6 +18,25 @@ define(function(require,exports) {
 			this.Super('init', arguments);
 		},
 		afterBuild:function(){
+			var el = this.$el;
+
+			// 外部容器
+			var wrapper = $('<div class="M-sidebarWrapper"></div>').appendTo(el);
+
+			// 设定高度
+			wrapper.height($(window).height()-$('.G-frameHeadWrapper').height());
+
+			// 内部容器
+			var container = $('<div class="content" />').appendTo(wrapper);
+
+			// 滚动条
+			this.createAsync('scroller', '@base/common/base.scroller', {
+				'dir': 'V',
+				'watch': 200,
+				'target': wrapper,
+				'content': container
+			});
+
 			var i;
 			this.$items = {};	// 子模块
 			var items = this.getConfig('items');
@@ -35,7 +55,7 @@ define(function(require,exports) {
 			if(util.isArray(items)){
 				for (i = 0; i < items.length; i++) {
 					name = items[i]['name'];
-					elm = $('<div class="M-sidebarLayout"/>').appendTo(this.$el);
+					elm = $('<div class="M-sidebarLayout"/>').appendTo(container);
 					this.createDelay(name, items[i]['uri'], {
 						target: elm
 					});
@@ -135,6 +155,19 @@ define(function(require,exports) {
 			this.toggleActive(false);
 
 			return false;
+		},
+		onSYSResize: function(ev){
+			var el = this.$el.find('.M-sidebarWrapper');
+			var h = $(window).height()-$('.G-frameHeadWrapper').height()
+
+			// 更新侧边栏高度
+			el.css({
+				'height': h,
+				'min-height': h
+			});
+
+			// 更新侧边栏滚动条
+			this.$.scroller.update();
 		}
 	});
 	exports.base = Sidebar;

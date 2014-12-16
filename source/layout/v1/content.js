@@ -13,7 +13,7 @@ define(function(require,exports) {
 
 	/** ----    列表     ---- **/
 
-	// 固定高度 -列表
+	// 无侧边栏列表页
 	var Base = view.container.extend({
 		init: function(config, parent){
 			this.$config = pubjs.conf(config, {
@@ -21,110 +21,19 @@ define(function(require,exports) {
 			this.Super('init', arguments);
 		},
 		build: function(noAfterBuild){
-			var self = this;
-			if (self.$ready){ return self; }
-			self.$ready = 1;
+			this.Super('build', arguments);
 
-			var c = this.getConfig();
-			var el = c.el;
-			if (!el){
-				if (c.tag === 'body'){
-					el = $('body:first');
-				}else {
-					el = $('<'+c.tag+'/>');
-				}
-			}
-			// 设置初始属性
-			if (c.attr){
-				el.attr(c.attr);
-			}
-			if (c.css){
-				el.css(c.css);
-			}
-			var cls = c['class'];
-			if (cls){
-				el.addClass(
-					util.isArray(cls) ? cls.join(' ') : cls
-				);
-			}
-			// 强制加上类名
-			el.addClass('G-frameBodyContainer');
-
-			// 保存元素
-			self.$el = el;
-			if (c.view_model) {
-				if (!pubjs.MVVM) {
-					pubjs.log('the plugin mvvm is not require');
-				}
-				el.removeAttr('ms-skip');
-				// 给vm添加命名空间
-				el.attr('ms-controller', this._.uri);
-				// 定义vm
-				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
-					util.each(c.view_model, function(vm_value, vm_field) {
-						if (util.isFunc(vm_value)) {
-							vm[vm_field] = function() {
-								vm_value.apply(self, arguments);
-							}
-						} else {
-							vm[vm_field] = util.clone(vm_value);
-						}
-					});
-				});
-				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
-			} else {
-				// 非MVVM模块禁止扫描
-				el.attr('ms-skip', 1);
-			}
-
-			function _build() {
-				// 插入元素到目标容器
-				if (!c.el && el && c.tag !== 'body' && c.target){
-					self.appendTo(c.target);
-				}
-				// 调用后续构建函数
-				if (!noAfterBuild && util.isFunc(self.afterBuild)){
-					self.afterBuild();
-				}
-				if (c.view_model) {
-					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
-				}
-
-				self.syncHeight();
-
-			}
-
-			// 加载模板
-			if (c.tplFile) {
-				pubjs.sync();
-				pubjs.data.loadFile(c.tplFile, function(err, tpl) {
-					if (err) {
-						pubjs.log('load template [[' + c.tplFile + ']] error');
-					} else {
-						el.append(tpl.replace(lang_pattern, lang_replace));
-					}
-					_build();
-					pubjs.sync(true);
-				});
-				return self;
-			}
-
-			if (c.html){
-				el.html(c.html);
-			} else if (c.text){
-				el.text(c.text);
-			}
-
-			_build();
-
-
-
-			return self;
+			this.$el.addClass('G-frameBodyContainer');
+			this.updateHeight();
+			return this;
 		},
-		syncHeight: function(){
-			var h = $(window).height();
-			var header = 50+20;
-			this.$el.height(h-header);
+		updateHeight: function(){
+			// 总高度
+			var frame = $(window).height();
+			// 头部高度
+			var header = $('.G-frameHeadWrapper').height();
+
+			this.$el.outerHeight(frame-header);
 
 			return this;
 		}
@@ -197,8 +106,8 @@ define(function(require,exports) {
 			// 绝对定位，保持内容区是填满状态
 			self.$container.css({
 				position: 'absolute',
-				top: self.$container.get(0).offsetTop,
-				bottom: 20 // 下边据20px
+				bottom: 0,
+				top: self.$container.get(0).offsetTop
 			});
 
 			return self;
@@ -354,7 +263,7 @@ define(function(require,exports) {
 				);
 			}
 
-			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab mb20">').appendTo(el);
+			self.$tabCon = $('<ul class="G-frameBodyTab uk-tab">').appendTo(el);
 			self.$container = $('<div class="G-frameBodyContainer"/>').appendTo(el);
 			self.$sidebar = $([
 				'<div class="G-frameBodySidebar">',
@@ -377,9 +286,9 @@ define(function(require,exports) {
 
 			// 绝对定位，保持内容区是填满状态
 			self.$container.css({
+				bottom: 0,
 				position: 'absolute',
-				top: self.$container.get(0).offsetTop,
-				bottom: 20 // 下边据20px
+				top: self.$container.get(0).offsetTop
 			});
 
 			return self;
@@ -489,96 +398,78 @@ define(function(require,exports) {
 	// 超过屏幕高度时有滚动条 -表单
 	var Scroll = view.container.extend({
 		init: function(config, parent){
-			var self = this;
-			self.$config = pubjs.conf(config, {
-				// 容器元素 (可指定容器的DOM元素而不创建)
-				'el': null,
-				// 容器标签
-				'tag': 'div',
-				// 容器插入目标DOM对象
-				'target': parent,
-				// 容器文字内容
-				'text': null,
-				// 容器HTML内容 (HTML内容如果设置, 将覆盖文字内容)
-				'html': null,
-				// 对象CSS类
-				'class': null,
-				// 容器属性对象, 调用jQuery的attr方法直接设置
-				'attr': null,
-				// 容器Style属性对象, 调用jQuery的css方法直接设置
-				'css': null,
-				// 表单标题
-				'title': '',
-
-				// 模板路径
-				'tplFile': ''
+			this.$config = pubjs.conf(config, {
 			});
-			self.$el = null;
-
-			// 构建元素
-			self.build();
+			this.Super('init', arguments);
 		},
-		syncHeight: function(){
-			var h = $(window).height();
-			var header = 50+20+46;
-			this.$el.height(h-header);
+		updateHeight: function(){
+			// 总高度
+			var frame = $(window).height();
+			// 头部高度
+			var header = $('.G-frameHeadWrapper').height();
+
+			this.$el.height(frame-header);
 
 			return this;
 		},
 		getDOM: function(){
-			return this.$content;
+			return this.$doms.container;
 		},
 		getContainer: function(){
-			return this.$content;
+			return this.$doms.container;
 		},
 		build: function(noAfterBuild){
 			var self = this;
 			var c = this.getConfig();
-			var wrap = this.$el = $('<div class="G-frameBodyContainer"><div class="content" /></div>');
+
+			// 外部容器
+			var wrapper = this.$el = $('<div class="M-containerScroll"></div>');
+
+			// 内部容器
+			var container = $('<div class="content" />').appendTo(wrapper);
+
+			// 表单标题
+			var title = $('<div class="M-containerScrollTitle"/>').appendTo(container);
 
 
+			// 滚动条
 			self.createAsync('scroller', '@base/common/base.scroller', {
-				'target': wrap,
-				'content': wrap.find('.content'),
 				'dir': 'V',
-				'watch': 200
+				'watch': 200,
+				'target': wrapper,
+				'content': wrapper.find('.content')
 			});
 
-			// 设置初始属性
+			this.$doms = {
+				container: container,
+				title: title
+			};
+
+			// 外部容器设置初始属性
 			if (c.attr){
-				wrap.attr(c.attr);
+				wrapper.attr(c.attr);
 			}
 			if (c.css){
-				wrap.css(c.css);
-				wrap.css({'position': 'relative'});
+				wrapper.css(c.css);
+				wrapper.css({'position': 'relative'});
 			}
 			var cls = c['class'];
 			if (cls){
-				wrap.addClass(
+				wrapper.addClass(
 					util.isArray(cls) ? cls.join(' ') : cls
 				);
-				wrap.addClass('M-containerScroll');
+				wrapper.addClass('M-containerScroll');
 			}
 
-			// 保存元素
-			var el = this.$content = wrap.find('.content');
 
-
-			$('<div class="M-containerScrollTitle"/>').text(c.title).appendTo(el);
-
-
-			this.$doms = {
-				content: wrap.find('.content'),
-				title: wrap.find('.M-containerScrollTitle')
-			};
-
+			// 内部容器 MVVM
 			if (c.view_model) {
 				if (!pubjs.MVVM) {
 					pubjs.log('the plugin mvvm is not require');
 				}
-				el.removeAttr('ms-skip');
+				container.removeAttr('ms-skip');
 				// 给vm添加命名空间
-				el.attr('ms-controller', this._.uri);
+				container.attr('ms-controller', this._.uri);
 				// 定义vm
 				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
 					util.each(c.view_model, function(vm_value, vm_field) {
@@ -594,23 +485,23 @@ define(function(require,exports) {
 				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
 			} else {
 				// 非MVVM模块禁止扫描
-				el.attr('ms-skip', 1);
+				container.attr('ms-skip', 1);
 			}
 
 			function _build() {
 				// 插入元素到目标容器
-				if (wrap && c.target){
-					wrap.appendTo(c.target);
+				if (wrapper && c.target){
+					wrapper.appendTo(c.target);
 				}
 				// 调用后续构建函数
 				if (!noAfterBuild && util.isFunc(self.afterBuild)){
 					self.afterBuild();
 				}
 				if (c.view_model) {
-					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+					pubjs.MVVM.scan(container[0], pubjs.GlobalVM);
 				}
 
-				self.syncHeight();
+				self.updateHeight();
 			}
 
 
@@ -621,7 +512,7 @@ define(function(require,exports) {
 					if (err) {
 						pubjs.log('load template [[' + c.tplFile + ']] error');
 					} else {
-						el.append(tpl.replace(lang_pattern, lang_replace));
+						container.append(tpl.replace(lang_pattern, lang_replace));
 					}
 					_build();
 					pubjs.sync(true);
@@ -629,11 +520,11 @@ define(function(require,exports) {
 				return self;
 			}else{
 				if (c.text){
-					el.text(c.text);
+					container.text(c.text);
 				}
 
 				if (c.html){
-					el.html(c.html);
+					container.html(c.html);
 				}
 				_build();
 			}

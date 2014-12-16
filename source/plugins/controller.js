@@ -175,7 +175,8 @@ define(function(require, exports){
 					if (is_loading_template()){ return;	}
 				}
 			}else {
-				app.error('Action is invalid - ' + env.module + ':' + act + '()');
+				exports.navigate('');
+				// app.error('Action is invalid - ' + env.module + ':' + act + '()');
 			}
 			if (env.module == now.module && env.action == now.action && env.param == now.param){
 				env.module = env.action = env.param = null;
