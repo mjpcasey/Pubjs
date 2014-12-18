@@ -317,6 +317,14 @@ define(function(require, exports, module){
 					"uri": req.uri,
 					"data": message.data
 				});
+				if(console.debug && console.groupCollapsed) {
+					console.groupCollapsed('The Sending message :', req.uri);
+					console.debug('type is : %s', message.type);
+					console.debug('mid is : %d', message.mid);
+					console.debug('uri is : %s', req.uri);
+					console.debug('param is :%o', message.data);
+					console.groupEnd();
+				}
 			}else {
 				triggerError(message, 602, "Remote Not Found");
 			}
@@ -344,6 +352,16 @@ define(function(require, exports, module){
 					"message": "Parse Data Error",
 					"data": message
 				});
+			}
+		}
+		if(console.debug && console.groupCollapsed) {
+			if(!message.error) {
+				console.groupCollapsed('The received message: ', message.uri);
+				console.debug('type is : %s', message.type);
+				console.debug('mid is : %d', message.rid);
+				console.debug('uri is : %s', message.uri);
+				console.debug('the return data is :%o', message.data);
+				console.groupEnd();
 			}
 		}
 
