@@ -385,6 +385,24 @@ define(function(require, ex){
 		}
 	}
 
+	// 数组或对象中是否存在某项
+	ex.exist = function () {
+		return ex.find.apply(util, arguments) !== null;
+	}
+
+	/**
+	 * 获取对象的属性名
+	 * @param  {Object} obj 对象
+	 * @return {Array}      对象的属性名构成的数组
+	 */
+	ex.keys = function (obj) {
+		var arr = [];
+		ex.each(obj, function(val, key) {
+			arr.push(key);
+		});
+		return arr;
+	}
+
 	/**
 	 * 检测数组或对象中的值或点路径
 	 * @param  {Mix} obj  待测数据
