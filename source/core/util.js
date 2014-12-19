@@ -387,7 +387,7 @@ define(function(require, ex){
 
 	// 数组或对象中是否存在某项
 	ex.exist = function () {
-		return ex.find.apply(util, arguments) !== null;
+		return ex.find.apply(ex, arguments) !== null;
 	}
 
 	/**
