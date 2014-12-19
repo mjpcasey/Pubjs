@@ -851,6 +851,15 @@ define(function(require, exports){
 				}
 			}
 
+			// 添加日期参数
+			var date = pubjs.getDate();
+			if(date){
+				util.extend(this.$sysParam, {
+					begindate: date.begindate,
+					enddate: date.enddate
+				});
+			}
+
 			this.showLoading();
 
 			var customParam = this.getParam();
@@ -1217,6 +1226,15 @@ define(function(require, exports){
 				'url': cfg.url,
 				'param': param
 			};
+			return false;
+		},
+		// 响应日期条事件
+		onDateRangeChange: function(ev){
+			var isShowing = pubjs.checkShow(this, ev.type, this.load.bind(this));
+			if(isShowing){
+				// 更新列表数据
+				this.reload();
+			}
 			return false;
 		},
 
