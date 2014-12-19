@@ -208,11 +208,11 @@ define(function(require,exports) {
 			var c = this.getConfig();
 
 			// 创建弹框中模块
-			this.createAsync('popwinItem', c.popwinItem, {
+			this.createAsync('popwinItem', c.popwinItem, util.extend({
 				target: popwin.getDOM(),
 				data: this.$data,
 				value: this.$value
-			});
+			}, c.popwinConfig));
 
 			// 更新弹框位置
 			popwin.show();
