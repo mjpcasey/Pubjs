@@ -1,0 +1,75 @@
+.M-sidebar{
+	// 外框与激活状态
+	&Layout{
+		padding: 15px;
+		border-bottom: solid 1px #DDD;
+		&Act{
+			z-index: 1100;
+			position: relative;
+			cursor: default;
+			background: #fff;
+			box-shadow: 2px 1px 2px rgba(0, 0, 0, 0.3);
+		}
+	}
+	// 子项目
+	&Item{
+		// 头部
+		&Header{
+			margin-bottom: 12px;
+			// 标题
+			&Title{
+				color: #999;
+				font-size: 13px;
+			}
+			i{
+				display: inline-block;
+				vertical-align: middle;
+			}
+		}
+		// padding: 15px;
+		cursor: pointer;
+		// border-bottom: solid 1px #DDD;
+		min-height: 60px;
+
+		span.M-sidebarItemOption{
+			width: 70px;
+			display: inline-block;
+			margin-right: 10px;
+			label{
+				max-width: 55px;
+			}
+		}
+		div.M-sidebarItemOption{
+
+		}
+		// 选项
+		&Option{
+			// width: 70px;
+			// display: inline-block;
+			// margin-right: 10px;
+			label{
+				// max-width: 55px;
+				margin-right: 5px;
+				overflow-x: hidden;
+				display: inline-block;
+				vertical-align: middle;
+				text-overflow: ellipsis;
+			}
+			i{
+				.icon;
+				.icon-btnClose;
+				display: inline-block;
+				vertical-align: middle;
+				&:hover{
+					.icon-act;
+				}
+			}
+		}
+
+	}
+	&Title{
+		color: #999;
+		font-size: 13px;
+		margin-bottom: 12px;
+	}
+}

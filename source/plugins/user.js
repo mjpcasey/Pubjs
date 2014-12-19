@@ -5,6 +5,7 @@ define(function(require, exports){
 
 	// 用户登录检查
 	var user_data = null;
+	var right_data = null;
 	var user_guest = {
 		'id': 0,
 		'type': 0
@@ -14,9 +15,55 @@ define(function(require, exports){
 	}
 	function setUser(user){
 		user_data = user;
+		if(user && user.right){
+			setRight(user.right);
+		}
 	}
 	function getUser(){
 		return user_data || user_guest;
+	}
+	function setRight(data){
+		if(util.isArray(data)){
+			var right = {};
+			util.each(data, function(v){
+				right[v.code] = v.name || true;
+			});
+			data = right;
+		}
+		right_data = data;
+	}
+	function getRight(){
+		return right_data;
+	}
+	function checkRight(right) {
+		var isAnd;
+		var valid;
+		if(right && right[0] == '&') {
+			right = right.slice(1);
+			isAnd = true;
+		}
+
+		/*
+			与的时候,valid默认是true
+			或的时候,valid默认是false
+		 */
+		valid = isAnd;
+		var rights = right.split(',');
+		util.each(rights, function(access) {
+			access = util.trim(access);
+			if(access) {
+				if(isAnd && !(valid = right_data[access])) {
+					valid = false;
+					return false;
+				}
+				else if(!isAnd && (valid = right_data[access])){
+					valid = true;
+					return false;
+				}
+			}
+		});
+
+		return valid;
 	}
 
 
@@ -129,6 +176,8 @@ define(function(require, exports){
 		pubjs.setUser = setUser;
 		pubjs.getUser = getUser;
 		pubjs.getDate = getDate;
+		pubjs.getRight = getRight;
+		pubjs.checkRight = checkRight;
 		pubjs.getDateStorage = getDateStorage;
 		callback();
 	}

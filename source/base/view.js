@@ -9,6 +9,12 @@ define(function(require,exports) {
 	 */
 	exports.jquery = $;
 
+	// 替换语言标记
+	var lang_pattern = /\{\% (.+?) \%\}/g;
+	function lang_replace(full, text){
+		return LANG(text);
+	}
+
 	function fixArgsDom(args, el){
 		args = argToArray.call(args);
 		if (util.isString(args[0])){
@@ -26,35 +32,40 @@ define(function(require,exports) {
 			var mod = el.attr('pub-mod');
 			var name = el.attr('pub-name');
 			var config = el.attr('pub-config');
+			var right = el.attr('pub-auth');
 			var mod_name = null;
-
-			// 获取模块配置
-			if (config){
-				try {
-					config = JSON.parse(config);
-				}catch(e){
-					config = null;
+			/*
+				检查权限,有就创建.
+			 */
+			if(!right || pubjs.checkRight(right)) {
+				// 获取模块配置
+				if (config){
+					try {
+						config = JSON.parse(config);
+					}catch(e){
+						config = null;
+					}
 				}
-			}
-			// 有模块名称, 判断模块是否存在
-			if (name){
-				mod_name = name.replace(/\//g, '_');
-				if (self.get(mod_name)){
-					return;
+				// 有模块名称, 判断模块是否存在
+				if (name){
+					mod_name = name.replace(/\//g, '_');
+					if (self.get(mod_name)){
+						return;
+					}
+					// 读取模块配置
+					if (!config && module_config){
+						config = util.clone(util.prop(module_config, name));
+					}
 				}
-				// 读取模块配置
-				if (!config && module_config){
-					config = util.clone(util.prop(module_config, name));
+				// 修正创建容器对象参数
+				if (!config){
+					config = {target: el};
+				}else if (!config.target){
+					config.target = el;
 				}
+				// 创建模块
+				self.createDelay(mod_name, mod, config);
 			}
-			// 修正创建容器对象参数
-			if (!config){
-				config = {target: el};
-			}else if (!config.target){
-				config.target = el;
-			}
-			// 创建模块
-			self.createDelay(mod_name, mod, config);
 		});
 		self.createDelay(true, callback || "afterBuildTemplate", param);
 	}
@@ -82,6 +93,8 @@ define(function(require,exports) {
 				'attr': null,
 				// 容器Style属性对象, 调用jQuery的css方法直接设置
 				'css': null,
+
+				'hasSidebar': false,
 				// 模板路径
 				'tplFile': ''
 			});
@@ -145,13 +158,30 @@ define(function(require,exports) {
 
 			// 保存元素
 			self.$el = el;
-			// 给vm添加命名空间
-			el.attr('ms-controller', this._.uri);
-			// 定义vm
-			self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-				util.extend(vm, c.view_model);
-			});
-			self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm is not require');
+				}
+				el.removeAttr('ms-skip');
+				// 给vm添加命名空间
+				el.attr('ms-controller', this._.uri);
+				// 定义vm
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
+							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
+						}
+					});
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描
+				el.attr('ms-skip', 1);
+			}
 
 			function _build() {
 				// 插入元素到目标容器
@@ -162,7 +192,9 @@ define(function(require,exports) {
 				if (!noAfterBuild && util.isFunc(self.afterBuild)){
 					self.afterBuild();
 				}
-				pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				if (c.view_model) {
+					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				}
 			}
 
 			// 加载模板
@@ -172,10 +204,10 @@ define(function(require,exports) {
 					if (err) {
 						pubjs.log('load template [[' + c.tplFile + ']] error');
 					} else {
-						el.append(tpl);
+						el.append(tpl.replace(lang_pattern, lang_replace));
 					}
-					pubjs.sync(true);
 					_build();
+					pubjs.sync(true);
 				});
 				return self;
 			}
@@ -350,12 +382,20 @@ define(function(require,exports) {
 		destroy:function(){
 			util.each(this.$doms, this.cbRemoveDoms);
 			var el = this.$el;
+
+			if (this.vm) {
+				this.vm.destroy();
+				this.vm = null;
+			}
+
 			this.Super("destroy");
 			if(el){
 				el.find("*").unbind();
 				el.remove();
 			}
 			this.$doms = this.$el = null;
+
+			return this;
 		},
 		/**
 		 * 删除doms元素循环回调函数
@@ -365,6 +405,26 @@ define(function(require,exports) {
 		cbRemoveDoms: function(dom){
 			if (dom.jquery){
 				dom.remove();
+			}
+		},
+		// 创建业务模块
+		createBusiness: function(name, uri, param, callback){
+			var mod = this.get(name);
+			if(!mod){
+
+				var config = $.extend({}, {
+					target: this.getDOM()
+				}, param);
+
+				this.createAsync(name, uri, config, function(mod){
+					if(util.isFunc(callback)){
+						callback(mod, false);
+					}
+				});
+			}else{
+				if(util.isFunc(callback)){
+					callback(mod, true);
+				}
 			}
 		},
 		/**
@@ -472,13 +532,30 @@ define(function(require,exports) {
 			self.$el = layout;
 			el = self.getContainer();
 
-			// 给vm添加命名空间
-			el.attr('ms-controller', this._.uri);
-			// 定义vm
-			self.$vm = pubjs.MVVM.define(this._.uri, function(vm){
-				util.extend(vm, c.view_model);
-			});
-			self.vm = pubjs.MVVM.buildVMCtrl(self.$vm, c.view_model);
+			if (c.view_model) {
+				if (!pubjs.MVVM) {
+					pubjs.log('the plugin mvvm must require');
+				}
+				el.removeAttr('ms-skip');
+				// 给vm添加命名空间
+				el.attr('ms-controller', this._.uri);
+				// 定义vm
+				var $vm = pubjs.MVVM.define(this._.uri, function(vm){
+					util.each(c.view_model, function(vm_value, vm_field) {
+						if (util.isFunc(vm_value)) {
+							vm[vm_field] = function() {
+								vm_value.apply(self, arguments);
+							}
+						} else {
+							vm[vm_field] = util.clone(vm_value);
+						}
+					});
+				});
+				self.vm = pubjs.MVVM.buildVMCtrl(this._.uri, $vm, c.view_model, self);
+			} else {
+				// 非MVVM模块禁止扫描你
+				el.attr('ms-skip', 1);
+			}
 
 			function _build() {
 				self.$ready = 'ready';
@@ -486,7 +563,9 @@ define(function(require,exports) {
 				if (self.afterBuild){
 					self.afterBuild(layout);
 				}
-				pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				if (c.view_model) {
+					pubjs.MVVM.scan(el[0], pubjs.GlobalVM);
+				}
 
 				// 调用被延迟的UI调用函数
 				var param, cs = self.$uiCalls;
@@ -503,10 +582,10 @@ define(function(require,exports) {
 					if (err) {
 						pubjs.log('load template [[' + c.tplFile + ']] error');
 					} else {
-						el.append(tpl);
+						el.append(tpl.replace(lang_pattern, lang_replace));
 					}
-					pubjs.sync(true);
 					_build();
+					pubjs.sync(true);
 				});
 			} else {
 				_build();
@@ -572,6 +651,15 @@ define(function(require,exports) {
 		hide: function(){
 			return _uiFunction.call(this, 'hide', arguments);
 		},
+		destroy: function() {
+			if (this.vm) {
+				this.vm.destroy();
+				this.vm = null;
+			}
+
+			this.Super('destroy', arguments);
+			return this;
+		},
 		/**
 		 * 从模版创建
 		 * @param  {Object} pubConfig 配置
@@ -579,7 +667,6 @@ define(function(require,exports) {
 		buildFromTemplate: _buildFromTemplate
 	});
 	exports.widget = Widget;
-
 
 	// 矩阵布局
 	var LayoutGrid = Container.extend({
@@ -1026,5 +1113,4 @@ define(function(require,exports) {
 		}
 	});
 	exports.layout = Layout;
-
 });

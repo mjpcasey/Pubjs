@@ -317,6 +317,14 @@ define(function(require, exports, module){
 					"uri": req.uri,
 					"data": message.data
 				});
+				if(console.debug && console.groupCollapsed) {
+					console.groupCollapsed('The Sending message :', req.uri);
+					console.debug('type is : %s', message.type);
+					console.debug('mid is : %d', message.mid);
+					console.debug('uri is : %s', req.uri);
+					console.debug('param is :%o', message.data);
+					console.groupEnd();
+				}
 			}else {
 				triggerError(message, 602, "Remote Not Found");
 			}
@@ -346,13 +354,23 @@ define(function(require, exports, module){
 				});
 			}
 		}
+		if(console.debug && console.groupCollapsed) {
+			if(!message.error) {
+				console.groupCollapsed('The received message: ', message.uri);
+				console.debug('type is : %s', message.type);
+				console.debug('mid is : %d', message.rid);
+				console.debug('uri is : %s', message.uri);
+				console.debug('the return data is :%o', message.data);
+				console.groupEnd();
+			}
+		}
 
 		var self = this;
 		// 触发监听的回调
 		var cb = self.$callbacks[message.rid];
 		if (cb){
 			delete self.$callbacks[message.rid];
-			cb.callback.call(cb, message.error, message.data);
+			cb.callback.call(cb, message.error, message.data, cb.param);
 		}
 
 		// 触发绑定uri的消息

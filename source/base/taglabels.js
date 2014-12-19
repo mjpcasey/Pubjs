@@ -56,6 +56,8 @@ define(function(require, exports){
 				,"dataType":1
 				// 数据节点
 				,"database":null
+				// 默认通信方式使用ajax，可选websocket
+				,"reqType": "ajax"
 				// 显示文字
 				,"txts":{
 					"title":LANG("分组：")
@@ -135,6 +137,14 @@ define(function(require, exports){
 					,"value":''
 				}
 			);
+
+			if(c.tips){
+				this.createAsync('tips', '@base/tip.desc', {
+					'target': el,
+					'data': c.tips,
+					'class':'M-tipDesc ml10'
+				});
+			}
 
 			// 标签显示外部容器
 			this.tagLabelsContainer = this.create(
@@ -292,6 +302,7 @@ define(function(require, exports){
 			}
 		}
 		,onData:function(err,data){
+			pubjs.sync(true);
 			this.busy = false;
 			var tagBox = this.tagLabelsContainer.tagsBox;
 			tagBox.removeClass("M-tagLabelsloading");
@@ -346,11 +357,22 @@ define(function(require, exports){
 			var tagBox = this.tagLabelsContainer.tagsBox;
 			tagBox.addClass("M-tagLabelsloading");
 			this.removeAllTags();
-			pubjs.data.get(
-				this.database
-				,$.extend({}, c.param, this.sysParam)
-				,this
-			);
+
+			switch(c.reqType){
+				case 'ajax':
+					pubjs.sync();
+					pubjs.data.get(
+						this.database
+						,$.extend({}, c.param, this.sysParam)
+						,this
+					);
+				break;
+				case 'websocket':
+					pubjs.sync();
+					pubjs.mc.send(this.database, $.extend({}, c.param, this.sysParam), this.onData.bind(this));
+				break;
+			}
+
 		}
 		/**
 		 * 销毁函数

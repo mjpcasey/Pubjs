@@ -316,6 +316,38 @@
 	}
 
 	&Search {
+		position: relative;
+		&Input {
+			width: 300px;
+			min-height: 30px;
+			vertical-align: middle;
+			padding: 0 5px;
+		}
+		.pr30 {
+			padding-right: 30px;
+		}
+		&Do {
+			.icon();
+			.icon-searchBtnGo;
+		}
+		&Undo {
+			cursor: pointer;
+			display: block;
+			position: absolute;
+			right: 35px;
+			display: none;
+			.icon();
+			.icon-searchBtnDel;
+		}
+
+		.uk-button {
+			margin-left: 5px;
+			width: 30px;
+			height: 30px;
+		}
+	}
+
+	&SearchOld {
 		&Input {
 			width: 300px;
 			min-height: 30px;

@@ -44,7 +44,7 @@ define(function(require, ex){
 	}
 
 	function isPlainObject(val){
-		if (OP.toString.call(val).slice(8,-1) !== 'Object' || val.nodeType || val === window){
+		if (!val || OP.toString.call(val).slice(8,-1) !== 'Object' || val.nodeType || val === window){
 			return false;
 		}
 		try {
@@ -383,6 +383,24 @@ define(function(require, ex){
 		}else {
 			return null;
 		}
+	}
+
+	// 数组或对象中是否存在某项
+	ex.exist = function () {
+		return ex.find.apply(util, arguments) !== null;
+	}
+
+	/**
+	 * 获取对象的属性名
+	 * @param  {Object} obj 对象
+	 * @return {Array}      对象的属性名构成的数组
+	 */
+	ex.keys = function (obj) {
+		var arr = [];
+		ex.each(obj, function(val, key) {
+			arr.push(key);
+		});
+		return arr;
 	}
 
 	/**
@@ -742,8 +760,8 @@ define(function(require, ex){
 			case 'w': return t.getDay() % 7;
 			case 'a': return t.getHours() < 12 ? 'am':'pm';
 			case 'A': return t.getHours() < 12 ? 'AM':'PM';
-			case 'g': return t.getHours() % 12 + 1;
-			case 'h': return fix0(t.getHours() % 12 + 1, 2);
+			case 'g': return t.getHours() % 12;
+			case 'h': return fix0(t.getHours() % 12, 2);
 			case 'G': return t.getHours();
 			case 'H': return fix0(t.getHours(), 2);
 			case 'i': return fix0(t.getMinutes(), 2);
@@ -1108,5 +1126,18 @@ define(function(require, ex){
 				o.focus();
 			}
 		}
-	}
+	};
+
+	ex.keys = function(obj, format){
+		var ret = [];
+		for(var key in obj){
+			if(obj.hasOwnProperty(key)){
+				if(format && isFunc(format)){
+					key = format(key);
+				}
+				ret.push(key);
+			}
+		}
+		return ret;
+	};
 });

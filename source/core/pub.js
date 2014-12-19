@@ -95,6 +95,7 @@ define(function(require, exports, module){
 		return Class;
 	}
 	exports.noop = noop;
+	exports.Class = noop;
 
 	// 系统日志函数
 	var con = window.console || {};
@@ -457,7 +458,7 @@ define(function(require, exports, module){
 				return false;
 			}
 			this.busy = 1;
-			var pend = sender.childs().slice; // 广播不再触发自身, 从子模块开始
+			var pend = sender.childs().slice(); // 广播不再触发自身, 从子模块开始
 			var target;
 			var evt = this.createEvent(sender, type, param);
 
@@ -838,18 +839,56 @@ define(function(require, exports, module){
 		/**
 		 * 加载静态文件
 		 * @param  {String}   url      请求文件url
+		 * @param  {Mix}      param    请求参数
 		 * @param  {Function} callback 回调函数
 		 * @param  {Object}   context  回调函数的运行域
 		 * @return {Undefined}
 		 */
-		loadFile: function(url, callback, context) {
+		loadFile: function(url, param, callback, context) {
 			url = this.resolve(url);
+			if (util.isFunc(param)) {
+				callback = param;
+				context = callback;
+				param = {};
+			}
 			context = context || window;
 			$.ajax({
 				url: url,
+				data: param,
+				type: 'GET',
 				dataType: 'text',
-				success: function(fileContent) {
-					callback.call(context, false, fileContent);
+				success: function(res) {
+					callback.call(context, false, res);
+				},
+				error: function(xhr, textStatus, err) {
+					callback.call(context, err);
+				}
+			});
+		},
+		/**
+		 * jsonp请求
+		 * @param  {String}   url      请求文件url
+		 * @param  {Mix}      param    请求参数
+		 * @param  {Function} callback 回调函数
+		 * @param  {Object}   context  回调函数的运行域
+		 * @return {Undefined}
+		 */
+		jsonp: function(url, param, callback, context) {
+			url = this.resolve(url);
+			if (util.isFunc(param)) {
+				callback = param;
+				context = callback;
+				param = {};
+			}
+			context = context || window;
+			$.ajax({
+				url: url,
+				data: param,
+				type: 'GET',
+				dataType: 'jsonp',
+				jsonp: "callback",
+				success: function(res) {
+					callback.call(context, false, res);
 				},
 				error: function(xhr, textStatus, err) {
 					callback.call(context, err);
@@ -857,8 +896,6 @@ define(function(require, exports, module){
 			});
 		}
 	};
-
-
 
 
 	var SyncCount = 0;
@@ -1556,6 +1593,7 @@ define(function(require, exports, module){
 					list[i].reset();
 				}
 			}
+			return this;
 		}
 	});
 	exports.Module = Module;
@@ -1706,5 +1744,58 @@ define(function(require, exports, module){
 		}else if (callback){
 			runPluginCallback(names, callback, context);
 		}
+	}
+
+	// 判断是否显示
+	// 全局数组
+	var doms = [];
+	var timerId;
+	exports.checkShow = function(mod, type, callback){
+		// 判断当前模块是否处于显示状态（即有宽高）
+		var el = mod.getDOM();
+		if(el.width() && el.height()){
+			return true;
+		}else{
+			var id = mod._.guid + '/'+type;
+
+			if(!util.find(doms, id, 'id')){
+				// 放入全局数组
+				doms.push({
+					id: id,			// 唯一id: 模块+消息类型
+					el: el,			// DOM元素
+					cb: callback	// 回调函数
+				});
+			}
+
+			// 定时器
+			if(!timerId){
+				timerId = setInterval(function(){
+
+					if(doms.length){
+						for (var i = 0; i < doms.length; i++) {
+							var element = doms[i];
+
+							// 循环判断数组中元素是否处于显示状态
+							if(element.el.width() && element.el.height()){
+								// 执行回调函数
+								element.cb();
+
+								// 并把它从数组中去除
+								doms.splice(i, 1);
+								i--;
+							}
+						}
+
+					}else{
+						// 若数组为空，清除定时器
+						window.clearInterval(timerId);
+						timerId = null;
+					}
+				}, 600);
+			}
+
+		}
+
+
 	}
 });
