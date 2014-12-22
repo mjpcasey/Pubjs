@@ -1746,11 +1746,10 @@ define(function(require, exports, module){
 		}
 	}
 
-	// 判断是否显示
-	// 全局数组
-	var doms = [];
-	var timerId;
-	exports.checkShow = function(mod, type, callback){
+	// 判断当前容器是否处于显示状态，
+	// 若否，放入定时器函数中，等待显示时才执行回调函数
+	var doms = [], timerId;
+	exports.checkDisplay = function(mod, type, callback){
 		// 判断当前模块是否处于显示状态（即有宽高）
 		var el = mod.getDOM();
 		if(el.width() && el.height()){
@@ -1795,7 +1794,6 @@ define(function(require, exports, module){
 			}
 
 		}
-
-
 	}
+
 });
