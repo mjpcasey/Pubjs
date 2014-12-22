@@ -223,6 +223,8 @@ define(function(require, exports){
 			config = pubjs.conf(config, {
 				'type':'text',
 				'placeholder':null,
+				'class': '',
+				'intervalText': '',
 				'width':''
 			});
 
@@ -231,8 +233,15 @@ define(function(require, exports){
 			this.Super('init', arguments);
 		},
 		afterBuild: function(){
+			var klazz = this.getConfig('class');
 			var con = $('<div class="M-commonFlexibleInputWrap"/>');
+
 			this.append(con);
+
+			if (klazz) {
+				this.addClass(klazz);
+			}
+
 
 			//构建input组
 			this.$inputGroup = $('<div class="M-commonFlexibleInput"></div>').appendTo(con);
@@ -272,9 +281,15 @@ define(function(require, exports){
 			//按钮-删除当前输入框
 			$('<span class="M-commonFlexibleInputDel">x</span>').appendTo(inputDiv);
 
+			if(c.intervalText){
+				$('<span class="mr10 intervalText"/>').html(c.intervalText).hide().appendTo(inputDiv);
+			}
+
 			this.$amount++;
 			if (this.$amount > 1){
 				this.$inputGroup.find(".M-commonFlexibleInputDel").show();
+				this.$inputGroup.find(".intervalText").show();
+				this.$inputGroup.find(".intervalText").eq(this.$amount-1).hide();
 			}
 		},
 		/**
