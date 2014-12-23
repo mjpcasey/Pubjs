@@ -22,7 +22,8 @@ define(function(require, exports){
 				'width': 0,
 				'height': 0,
 				'value': LANG('按钮'),
-				'events': 'click'
+				'events': 'click',
+				'placeholder': ''
 			});
 
 			this.Super('init', arguments);
@@ -37,6 +38,10 @@ define(function(require, exports){
 				input.attr(c.attr);
 			}
 			input.attr('type', c.type);
+
+			if(c.placeholder){
+				input.attr('placeholder', c.placeholder);
+			}
 
 			// 设置CSS和尺寸
 			if (c.css){
@@ -165,7 +170,8 @@ define(function(require, exports){
 		afterBuild: function(){
 			var self = this;
 			self.Super('afterBuild', arguments);
-			self.setPlaceholder(self.getConfig('placeholder'));
+			// @暂遗弃 placeholder使用html 5 的placeholder属性
+			// self.setPlaceholder(self.getConfig('placeholder'));
 		},
 		eventPlaceHolder: function(evt){
 			var self = this;
@@ -205,11 +211,12 @@ define(function(require, exports){
 		},
 		setValue: function(value){
 			var self = this;
-			self.$input.val(value || self.$placeholder || '');
+			self.$input.val(value || '');
+			// self.$input.val(value || self.$placeholder || '');
 			// 调用事件, 更新样式
-			if (self.$placeholder){
-				self.eventPlaceHolder();
-			}
+			// if (self.$placeholder){
+			// 	self.eventPlaceHolder();
+			// }
 			return self;
 		}
 	});
