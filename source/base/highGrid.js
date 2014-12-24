@@ -1230,7 +1230,7 @@ define(function(require, exports){
 		},
 		// 响应日期条事件
 		onDateRangeChange: function(ev){
-			var isShowing = pubjs.checkShow(this, ev.type, this.load.bind(this));
+			var isShowing = pubjs.checkDisplay(this, ev.type, this.load.bind(this));
 			if(isShowing){
 				// 更新列表数据
 				this.reload();
