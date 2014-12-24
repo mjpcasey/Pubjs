@@ -363,6 +363,12 @@ define(function(require, exports, module){
 				console.debug('the return data is :%o', message.data);
 				console.groupEnd();
 			}
+			else {
+				app.error({
+					"code": message.error.code,
+					"message": message.error.message
+				});
+			}
 		}
 
 		var self = this;
