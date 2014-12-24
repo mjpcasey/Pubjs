@@ -82,13 +82,13 @@
 .G-frameHeadLanguageEN {
   background: url(../images/language/en-us.png) no-repeat;
 }
-.G-frameHeadAdminSwitch {
+.G-frameHeadSwitch {
   float: right;
   font-size: 1.2em;
   color: #a1a1a1;
   cursor: pointer;
 }
-.G-frameHeadAdminSwitch ul {
+.G-frameHeadSwitch ul {
   height: 50px;
   line-height: 50px;
   padding: 0 20px !important;
@@ -96,16 +96,16 @@
   background: #000;
   text-align: center;
 }
-.G-frameHeadAdminSwitch ul.act {
+.G-frameHeadSwitch ul.act {
   background: #ab0000;
 }
-.G-frameHeadAdminSwitch ul.act a {
+.G-frameHeadSwitch ul.act a {
   color: #ffffff;
 }
-.G-frameHeadAdminSwitch li {
+.G-frameHeadSwitch li {
   width: 100%;
 }
-.G-frameHeadAdminSwitch li a {
+.G-frameHeadSwitch li a {
   line-height: 50px;
   font-size: 13px;
   text-decoration: none;
@@ -113,24 +113,24 @@
   display: inline-block;
   height: 50px;
 }
-.G-frameHeadAdminSwitch li a:hover {
+.G-frameHeadSwitch li a:hover {
   color: #ffffff;
 }
-.G-frameHeadAdminSwitch li a i {
+.G-frameHeadSwitch li a i {
   margin: 0 4px;
   line-height: 50px;
   height: 50px;
 }
-.G-frameHeadAdminSwitch li.act {
+.G-frameHeadSwitch li.act {
   display: none;
 }
-.G-frameHeadAdminSwitch li.act_hide {
+.G-frameHeadSwitch li.act_hide {
   display: none;
 }
-.G-frameHeadAdminSwitch li.admin i {
+.G-frameHeadSwitch li.admin i {
   float: right;
 }
-.G-frameHeadAdminSwitch li.list i {
+.G-frameHeadSwitch li.list i {
   float: left;
 }
 .G-frameBody {
