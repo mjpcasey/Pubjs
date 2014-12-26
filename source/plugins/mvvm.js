@@ -31,10 +31,12 @@ define(function(require, exports){
 						vm[k] = util.extend(true, [], v);
 					} else if (util.isPlainObject(v)) {
 						vm[k] = util.extend(true, {}, v);
+					} else if (util.isFunc(v)) {
+						vm[k] = v.bind(this.module);
 					} else {
 						vm[k] = v;
 					}
-				});
+				}, this);
 				return vm;
 			},
 			/**
