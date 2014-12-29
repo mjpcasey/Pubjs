@@ -302,6 +302,7 @@ define(function(require, exports){
 			}
 		}
 		,onData:function(err,data){
+			pubjs.sync(true);
 			this.busy = false;
 			var tagBox = this.tagLabelsContainer.tagsBox;
 			tagBox.removeClass("M-tagLabelsloading");
@@ -359,6 +360,7 @@ define(function(require, exports){
 
 			switch(c.reqType){
 				case 'ajax':
+					pubjs.sync();
 					pubjs.data.get(
 						this.database
 						,$.extend({}, c.param, this.sysParam)
@@ -366,6 +368,7 @@ define(function(require, exports){
 					);
 				break;
 				case 'websocket':
+					pubjs.sync();
 					pubjs.mc.send(this.database, $.extend({}, c.param, this.sysParam), this.onData.bind(this));
 				break;
 			}

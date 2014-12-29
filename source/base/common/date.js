@@ -1938,7 +1938,9 @@ define(function(require, exports){
 				// 不根据参照物自动计算，改为固定在选择容器的下方出现
 				'pos':'bL',
 				'width': 200,
-				'noLimit': LANG('不限')
+				'noLimit': LANG('不限'),
+
+				"broadcast": true // 是否全局广播
 			});
 
 			if (!STORE){
@@ -1951,7 +1953,6 @@ define(function(require, exports){
 				begin: util.date('Y-m-d', STORE.getBegin()),
 				end: util.date('Y-m-d', STORE.getEnd())
 			});
-
 		},
 		afterBuild: function(){
 			var self = this;
@@ -2010,7 +2011,13 @@ define(function(require, exports){
 		},
 		onSelectDateRange: function(ev){
 			this.setData(ev.param);
-			this.fire('dateRangeChange', ev.param);
+			// 全局广播
+			if(this.getConfig('broadcast')){
+				pubjs.core.cast('dateRangeChange', ev.param);
+			}else{
+				this.fire('dateRangeChange', ev.param);
+			}
+
 			return false;
 		},
 		setup: function(config){
@@ -2039,12 +2046,16 @@ define(function(require, exports){
 					end: c.end
 				};
 			}
-
 		},
 		getLastWeekDay: function() {
 			var dayList = [LANG('日'), LANG('一'), LANG('二'), LANG('三'), LANG('四'), LANG('五'), LANG('六')];
 			var day  = new Date().getDay();
 			return LANG("上周") + dayList[day];
+		},
+		onDateRangeChange: function(ev){
+			// 更新日期条显示时间
+			this.setData(ev.param);
+			return false;
 		}
 	});
 	exports.dateRangeNew = DateRangeNew;

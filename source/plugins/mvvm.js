@@ -10,7 +10,6 @@ define(function(require, exports){
 		pubjs,
 		MVVM = null,
 		util = require('util'),
-		globalVMConf = require('globalVMConf'),
 		avalon = require('@libs/avalon/avalon.min.js');
 
 	function defineVMCtrl() {
@@ -32,10 +31,12 @@ define(function(require, exports){
 						vm[k] = util.extend(true, [], v);
 					} else if (util.isPlainObject(v)) {
 						vm[k] = util.extend(true, {}, v);
+					} else if (util.isFunc(v)) {
+						vm[k] = v.bind(this.module);
 					} else {
 						vm[k] = v;
 					}
-				});
+				}, this);
 				return vm;
 			},
 			/**
@@ -160,6 +161,9 @@ define(function(require, exports){
 			define : function(id, factory) {
 				return avalon.define(id, factory);
 			},
+			defineGlobal: function(view_model){
+				return defineGlobalVM(view_model);
+			},
 			scan : function(elem, vmodel) {
 				return avalon.scan(elem, vmodel);
 			},
@@ -172,6 +176,9 @@ define(function(require, exports){
 		return MVVM;
 	}
 	function defineGlobalVM(globalVM){
+		if (pubjs.GlobalVM){
+			return 1; // 已定义
+		}
 		pubjs.GlobalVM = avalon.define(MVVM.globalVMDefineName, function(vm){
 			if ( globalVM ) {
 				for (var i in globalVM){
@@ -181,6 +188,7 @@ define(function(require, exports){
 				}
 			}
 		});
+		return 0;
 	}
 
 	exports.plugin_init = function(context, callback){
@@ -189,7 +197,6 @@ define(function(require, exports){
 
 			defineVMCtrl();
 			pubjs.MVVM = initMVVM();
-			defineGlobalVM(globalVMConf);
 			callback();
 		}
 	}

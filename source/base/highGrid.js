@@ -851,6 +851,15 @@ define(function(require, exports){
 				}
 			}
 
+			// 添加日期参数
+			var date = pubjs.getDate();
+			if(date){
+				util.extend(this.$sysParam, {
+					begindate: date.begindate,
+					enddate: date.enddate
+				});
+			}
+
 			this.showLoading();
 
 			var customParam = this.getParam();
@@ -1219,6 +1228,15 @@ define(function(require, exports){
 			};
 			return false;
 		},
+		// 响应日期条事件
+		onDateRangeChange: function(ev){
+			var isShowing = pubjs.checkDisplay(this, ev.type, this.load.bind(this));
+			if(isShowing){
+				// 更新列表数据
+				this.reload();
+			}
+			return false;
+		},
 
 		/** ---------------- 内部函数 ---------------- **/
 		// 获取过滤后的要显示的指标集
@@ -1232,14 +1250,20 @@ define(function(require, exports){
 			var name;
 			var arr = [];
 			for (var i = 0; i < metrics.length; i++) {
-				// 支持"{组名}"过滤
-				var abbr = metrics[i].match(/{(.+)}/);
-				if(abbr){
-					name = c.tab[abbr[1]];
-					if(util.isObject(name)){
-						arr = arr.concat(name.cols);
+				if(util.isString(metrics[i])){
+					// 支持"{组名}"过滤
+					var abbr = metrics[i].match(/{(.+)}/);
+					if(abbr){
+						name = c.tab[abbr[1]];
+						if(util.isObject(name)){
+							arr = arr.concat(name.cols);
+						}
+					}else{
+						arr.push(metrics[i]);
 					}
+
 				}else{
+					// 对象
 					arr.push(metrics[i]);
 				}
 			}
@@ -1487,11 +1511,15 @@ define(function(require, exports){
 			var name;
 
 			for (var i = 0; i < metrics.length; i++) {
-				var abbr = metrics[i].match(/{(.+)}/)
-				if(abbr){
-					name = tab[abbr[1]];
-					if(util.isObject(name)){
-						arr = arr.concat(name.cols);
+				if(util.isString(metrics[i])){
+					var abbr = metrics[i].match(/{(.+)}/)
+					if(abbr){
+						name = tab[abbr[1]];
+						if(util.isObject(name)){
+							arr = arr.concat(name.cols);
+						}
+					}else{
+						arr.push(metrics[i]);
 					}
 				}else{
 					arr.push(metrics[i]);
@@ -1684,7 +1712,9 @@ define(function(require, exports){
 			var item;
 			for (var i = 0; i < inputs.length; i++) {
 				item = $(inputs[i]);
-				var checked = util.find(value, item.attr('data-name'));
+				// value 中可能是对象也可能是字符串
+				var checked = util.find(value, item.attr('data-name')) || util.find(value, item.attr('data-name'), 'name');
+				// var checked = util.find(value, item.attr('data-name'));
 				item.prop('checked', Boolean(checked));
 			}
 		},

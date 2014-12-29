@@ -1745,4 +1745,55 @@ define(function(require, exports, module){
 			runPluginCallback(names, callback, context);
 		}
 	}
+
+	// 判断当前容器是否处于显示状态，
+	// 若否，放入定时器函数中，等待显示时才执行回调函数
+	var doms = [], timerId;
+	exports.checkDisplay = function(mod, type, callback){
+		// 判断当前模块是否处于显示状态（即有宽高）
+		var el = mod.getDOM();
+		if(el.width() && el.height()){
+			return true;
+		}else{
+			var id = mod._.guid + '/'+type;
+
+			if(!util.find(doms, id, 'id')){
+				// 放入全局数组
+				doms.push({
+					id: id,			// 唯一id: 模块+消息类型
+					el: el,			// DOM元素
+					cb: callback	// 回调函数
+				});
+			}
+
+			// 定时器
+			if(!timerId){
+				timerId = setInterval(function(){
+
+					if(doms.length){
+						for (var i = 0; i < doms.length; i++) {
+							var element = doms[i];
+
+							// 循环判断数组中元素是否处于显示状态
+							if(element.el.width() && element.el.height()){
+								// 执行回调函数
+								element.cb();
+
+								// 并把它从数组中去除
+								doms.splice(i, 1);
+								i--;
+							}
+						}
+
+					}else{
+						// 若数组为空，清除定时器
+						window.clearInterval(timerId);
+						timerId = null;
+					}
+				}, 600);
+			}
+
+		}
+	}
+
 });
