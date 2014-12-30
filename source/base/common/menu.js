@@ -18,6 +18,8 @@ define(function( require, exports ){
 				'offsetLeft': 0,		// 左侧偏移量
 				'space': 5,				// 弹出菜单与触发元素的间距
 				'line_space': 5,		// 分割线与选项的间距
+				'hasGroup': false,		// 是否进行菜单分组
+				'groupKey': 'group',	// 菜单分组字段依据
 				'pageX': 0,				// 自定义菜单横坐标
 				'pageY': 0,				// 自定义菜单纵坐标
 				'options': null,		// 自定义选项<数组形式>
@@ -105,7 +107,7 @@ define(function( require, exports ){
 		 */
 		setValue: function( sets ) {
 			var self = this;
-			var C = self.getConfig('multi');
+			var C = self.getConfig();
 			var options = this.$doms.options;
 			if( !util.isArray( sets ) || sets.length === 0 || !sets[0] ) {
 				return;
@@ -121,7 +123,7 @@ define(function( require, exports ){
 				// 单选情况下的设置
 				else {
 					options
-					.find('a[data-id='+ item.id +']')
+					.find('a[data-id='+ item[C.key] +']')
 					.parent('.option')
 					.addClass('act');
 				}
@@ -170,6 +172,22 @@ define(function( require, exports ){
 		},
 
 		/**
+		 * [groupDataFormat 分组数据格式化]
+		 * @param  {[Array]} data [需要格式化的选项数组]
+		 */
+		groupDataFormat: function( data ) {
+			var C = this.getConfig();
+			var key = C.key, groupKey = C.groupKey, retArr = [];
+			util.each( data, function( item, idx ) {
+				retArr.push( item );
+				if( item[key] === groupKey ) {
+					retArr.push('-');
+				}
+			});
+			return retArr;
+		},
+
+		/**
 		 * [createPanel 创建菜单选项面板]
 		 * @param  {[Array]} options [需要构建的选项数组]
 		 */
@@ -185,6 +203,9 @@ define(function( require, exports ){
 			self.$el.addClass('M-Menu');
 			self.$doms.options = $('<ul class="M-MenuOptions"/>').appendTo( self.$el );
 			// 创建选项
+			if( C.hasGroup ) {
+				opts = this.groupDataFormat( opts );
+			}
 			if( util.isArray( opts ) ) {
 				util.each( opts, self.buildItems, self );
 			}
@@ -227,28 +248,35 @@ define(function( require, exports ){
 			}
 			// 正常选项
 			else {
-				anchor = $('<a href="#" data-id="'+ item[C.key] +'"/>');
-				if( util.isFunc( C.option_render ) ) {
-					lyt = C.option_render( idx, item, anchor ) || '';
+				// 标题
+				if( item[C.key] === C.groupKey ) {
+					li.removeClass('option').addClass('option-title').text( item[C.name] );
 				}
+				// 选项
 				else {
-					lyt = item[C.name];
+					anchor = $('<a href="#" data-id="'+ item[C.key] +'"/>');
+					if( util.isFunc( C.option_render ) ) {
+						lyt = C.option_render( idx, item, anchor ) || '';
+					}
+					else {
+						lyt = item[C.name];
+					}
+					// 如果为多选则加上选择按钮
+					if( C.multi ) {
+						lyt = '<i class="M-MenuCheckBox"></i>' + lyt;
+					}
+					anchor.html( lyt );
+					anchor.appendTo( li );
+					// 含有子项，添加箭头
+					if( item[C.skey] ) {
+						li.addClass('hasSub')
+						.attr( 'sub-id', self.$count++ )
+						.append('<b class="M-MenuOptionsMore"/>');
+						// 缓存子菜单
+						self.$subArr.push( item[C.skey] );
+					}
+					self.$itemSum++;
 				}
-				// 如果为多选则加上选择按钮
-				if( C.multi ) {
-					lyt = '<i class="M-MenuCheckBox"></i>' + lyt;
-				}
-				anchor.html( lyt );
-				anchor.appendTo( li );
-				// 含有子项，添加箭头
-				if( item[C.skey] ) {
-					li.addClass('hasSub')
-					.attr( 'sub-id', self.$count++ )
-					.append('<b class="M-MenuOptionsMore"/>');
-					// 缓存子菜单
-					self.$subArr.push( item[C.skey] );
-				}
-				self.$itemSum++;
 			}
 			// 选项插入到ul中
 			li.appendTo( self.$doms.options );
@@ -331,7 +359,7 @@ define(function( require, exports ){
 			var pos = self.getSrcPosition( elm );
 			var size = self.getSrcSize( elm );
 			//var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].clientHeight;
-			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].offsetWidth;
+			var ih = document[document.compatMode === "CSS1Compat" ? "documentElement" : "body"].offsetHeight;
 			// 保留高度
 			var remain = 0;
 			// 菜单总高度
@@ -376,7 +404,7 @@ define(function( require, exports ){
 			self.$el.css({'left': mLeft + C.offsetLeft - 1, 'top': mTop + C.offsetTop});
 
 			// 高度超出可视区使用滚动条
-			if( menuHeight > remain && remain !== 0 ) {
+			if( C.scroll_height || ( menuHeight > remain && remain !== 0 ) ) {
 				if( C.scroll_height ) {
 					remain = C.scroll_height;
 				}
@@ -535,15 +563,12 @@ define(function( require, exports ){
 			var self = this;
 			var val = input === undefined ? '' : $(input).val().trim();
 			self.searching( val );
-			// var C = self.getConfig();
-			// var opts = C.options;
-			// var res = val === '' ? opts : self.filterOptions( val, opts );
-			// // 先清空选项 再创建
-			// self.$doms.options.empty();
-			// util.each( res, self.buildItems, self );
-			// self.renderItems();
 		},
 
+		/**
+		 * [searching 搜索]
+		 * @param  {[type]} val   [搜索词]
+		 */
 		searching: function( val ) {
 			var self = this;
 			var C = self.getConfig();
@@ -705,10 +730,16 @@ define(function( require, exports ){
 			evt.stopPropagation();
 			elm = $(elm);
 			// 有子菜单的不处理
-			if (elm.hasClass('hasSub')) { return;}
+			if ( elm.hasClass('hasSub') ) {
+				return false;
+			}
 			var self = this;
 			var elma = $(elm).find('a');
 			var id = elma.attr('data-id');
+			// 是标题的不处理
+			if( id === this.getConfig('groupKey') ) {
+				return false;
+			}
 			var fid = {
 				elm: elm,
 				key: id,
