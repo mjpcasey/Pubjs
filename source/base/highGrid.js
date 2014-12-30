@@ -12,6 +12,15 @@ define(function(require, exports){
 	// var format = labels.format;
 	labels = labels.labels;
 
+
+	/**
+	 * 参数说明 -@todo
+	 * @cols					主列（左侧）定义，
+	 * @metrics					副列（右侧），通常是指标列
+	 *		@render					渲染函数，支持字符串和函数
+	 *		@headerRender			标题渲染函数
+	 */
+
 	var HighGrid = view.container.extend({
 		init: function(config, parent){
 			config = pubjs.conf(config, {
@@ -50,12 +59,14 @@ define(function(require, exports){
 
 				'pager': null,			// 分页模块配置信息
 
-				'gridName': '',
+				'gridName': '',			// 本地缓存标识符，用于指标自定义分组
 
 				'style': {
 					'selected': 'M-HighGridListRowSelected',	// 选中样式
 					'highlight': 'M-HighGridListRowHighlight'	// 高亮样式
-				}
+				},
+
+				'wrapperClass': 'G-frameBodyContainer'			// 参照物标识符，计算高宽时使用
 			});
 
 			this.$data = config.get('data');
@@ -108,7 +119,6 @@ define(function(require, exports){
 					'target': con,
 					'grid': this
 				});
-
 			}
 			// 刷新控件
 			if (c.hasRefresh){
@@ -185,20 +195,21 @@ define(function(require, exports){
 			this.buildTableContent().appendTo(doms.content);
 
 			// 创建滚动条
-			var scrollerV = this.create('scrollerV', common.scroller, {
+			this.create('scrollerV', common.scroller, {
 				dir: 'V',
 				pad: false, // 取消滚动条间隔，使之浮在内容的上面
 				target: doms.content,
 				content:  doms.content.find('table')
 			});
-			var scrollerH = this.create('scrollerH', common.scroller, {
+			this.create('scrollerH', common.scroller, {
 				dir: 'H',
-				'size': 4,
+				size: 4,
 				pad: false,
 				wheel: false,
 				target: doms.content,
 				content:  doms.content.find('table')
 			});
+
 
 			// 分页模块
 			if(c.hasPager && c.url){
@@ -233,8 +244,7 @@ define(function(require, exports){
 			this.calculate();
 
 			// 更新滚动条
-			scrollerV.update();
-			scrollerH.update();
+			this.updateScroller();
 		},
 		buildTableCorner: function(){
 			var c = this.getConfig()
@@ -257,24 +267,27 @@ define(function(require, exports){
 			].join(''));
 
 			var td = [];
-			var el;
-			var html;
+			var el, html, column;
 			for (var i = 0; i < cols.length; i++) {
+				column = cols[i];
+
+				column = this.extendColConfig(column);
+
 				// 选择列
-				if(cols[i].type == 'select'){
+				if(column.type == 'select'){
 					html = '<input type="checkbox" />';
 				}
 
 				// 序号列
-				if(cols[i].type == 'id'){
-					cols[i].text = cols[i].text || LANG('序号');
+				if(column.type == 'id'){
+					column.text = column.text || LANG('序号');
 				}
 
 				el = this.buildTd({
-					'text': cols[i].text,
+					'text': column.text,
 					'html': html,
-					'sort': cols[i].sort || false,
-					'name': cols[i].name
+					'sort': column.sort || false,
+					'name': column.field || column.name
 				})
 				td.push(el);
 
@@ -302,7 +315,7 @@ define(function(require, exports){
 			var amount = [];
 			var elTitle, elAmount;
 			var metric;
-			var name, value;
+			var name;
 			for (var i = 0; i < metrics.length; i++) {
 				metric = metrics[i];
 
@@ -317,10 +330,24 @@ define(function(require, exports){
 						metric.sort = true; // 只是给字符串的情况，默认是可排序的
 					}
 				}
+
+				// 渲染函数
+				render = metric.headerRender;
+				var value;
+				if(render){
+					if (util.isFunc(render)) {
+						value = render(i, metric.text, metrics[i], metric);
+					}
+					if(util.isString(render)&& util.isFunc(this[render])){
+						value = this[render](i, metric.text, metrics[i], data);
+					}
+				}
+
 				elTitle = this.buildTd({
 					'text': metric.text || '-',
 					'sort': metric.sort || false,
-					'name': metric.name
+					'name': metric.name,
+					'html': value || ''
 				});
 				title.push(elTitle);
 
@@ -394,6 +421,8 @@ define(function(require, exports){
 					for (var ii = 0; ii < cols.length; ii++) {
 						column = cols[ii];
 
+						column = this.extendColConfig(column);
+
 						isIndexCol = column.type == 'index';
 
 						switch(column.type){
@@ -419,8 +448,17 @@ define(function(require, exports){
 							break;
 						}
 
+						var value = data[column.field || column.name];
+
 						if(column.render){
-							html = this[column.render](ii, data[column.name], data, column);
+							// 函数
+							if(util.isFunc(column.render)){
+								html = column.render.call(this, ii, value, data, column);
+							}
+							// 字符串
+							if(util.isString(column.render)){
+								html = this[column.render].call(this, ii, value, data, column);
+							}
 						}
 						if(column.width){
 							width = column.width;
@@ -429,10 +467,11 @@ define(function(require, exports){
 							className += ' '+ column.align;
 						}
 
+
 						if(isIndexCol){
 							width = width || 150;
 							className += ' '+ 'uk-text-truncate tl';
-							title = data[column.name];
+							title = value;
 							type = 'index';
 						}
 						td = this.buildTd({
@@ -441,7 +480,7 @@ define(function(require, exports){
 							'width': width,
 							'title': title,
 							'class': className,
-							'text': data[column.name],
+							'text': value,
 							'dataType': hasDataType ? column.type : null
 						});
 						tr.append(td);
@@ -490,14 +529,18 @@ define(function(require, exports){
 							metric = this.getMetricFromTab(metric);
 							// 从tab参数中读取配置
 							if( !util.isString(metric)){
-								value = data[i][metric.name];
+								value = data[i][metric.field||metric.name];
 							}else{
 								// 从 labels.js中读取配置
 								value = data[i][metric];
 								metric = labels.get(metric);
+								// 修正
+								if(metric.field && !value){
+									value = data[i][metric.field];
+								}
 							}
 						}else{
-							value = data[i][metric.name];
+							value = data[i][metric.field||metric.name];
 						}
 
 						// 渲染函数
@@ -608,6 +651,38 @@ define(function(require, exports){
 			}
 			return tr;
 		},
+		// 扩展默认列属性
+		extendColConfig: function(col){
+			if (util.isString(col)){
+				col = {'name': col};
+			}
+			col = $.extend(
+				{
+					type: 'col',	// 列类型: col, id, index, select
+					name: null,
+					field: null,
+					text: null,
+					align: null,
+					width: 0,
+					format: null,
+					render: null
+				},
+				labels.get(col.name, 'type_'+col.type),
+				col
+			);
+
+			return col;
+		},
+		// 更新滚动条
+		updateScroller: function(){
+			var mod = this.$;
+			if(mod && mod.scrollerV){
+				mod.scrollerV.update();
+			}
+			if(mod && mod.scrollerV){
+				mod.scrollerH.update();
+			}
+		},
 		// 获取列表左上角top坐标值
 		getGridOffset: function(){
 			var el = this.$el.get(0);
@@ -644,6 +719,14 @@ define(function(require, exports){
 					space,			// 间距
 					elT, elD, elL, elR;	// DOM对象
 
+				// 同步高度-头部
+				elL = wrap.find('.M-HighGridListCornerTitle');
+				elR = wrap.find('.M-HighGridListHeaderTitle');
+				max = this._getMax(elL.height(), elR.height());
+				elL.height(max);
+				elR.height(max);
+
+
 				// 同步高度-汇总模块
 				elL = wrap.find('.M-HighGridListCornerAmount');
 				elR = wrap.find('.M-HighGridListHeaderAmount');
@@ -660,7 +743,7 @@ define(function(require, exports){
 
 				// 以浏览器高度作为表格的高度
 				var offset = this.$el.get(0).offsetTop;
-				var outsideWapper = this.$el.parents('.G-frameBodyContainer');
+				var outsideWapper = this.$el.parents('.'+c.wrapperClass);
 				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
 				// var extras = 20;	// 下边据
 				var extras = 0;
@@ -1147,8 +1230,7 @@ define(function(require, exports){
 
 			// 跳出JS执行线程，让浏览器线程先渲染
 			setTimeout(function(){
-				self.$.scrollerV.update();
-				self.$.scrollerH.update();
+				self.updateScroller();
 			}, 0);
 
 			// 再同步宽度 @todo
@@ -1158,15 +1240,13 @@ define(function(require, exports){
 		// 主菜单状态变动响应事件
 		onMenuToggle: function(ev){
 			this.calculate(true);
-			this.$.scrollerH.update();
-			this.$.scrollerV.update();
+			this.updateScroller();
 			return false;
 		},
 		// 右侧工具栏状态变动响应事件
 		onToolsToggle: function(ev){
 			this.calculate(true);
-			this.$.scrollerH.update();
-			this.$.scrollerV.update();
+			this.updateScroller();
 			return false;
 		},
 		// 响应指标组切换事件
@@ -1180,8 +1260,7 @@ define(function(require, exports){
 		onTabChange: function(ev){
 			this.calculate(true);
 			if(this.$){
-				this.$.scrollerH.update();
-				this.$.scrollerV.update();
+				this.updateScroller();
 			}
 			return false;
 		},
