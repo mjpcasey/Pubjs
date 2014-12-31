@@ -401,7 +401,9 @@ define(function(require, exports){
 		,reset:function(){
 			var c = this.getConfig();
 			this.selectedData = {};
-			this.tagLabelsInput.$input.val("");
+			if (this.tagLabelsInput) {
+				this.tagLabelsInput.$input.val("");
+			}
 			this.tagLabelsContainer.tagsBox.find("span").removeClass(c.tagContainer.tagAct);
 		}
 		/**
@@ -561,6 +563,7 @@ define(function(require, exports){
 		 * @return {Undefined}      无返回值
 		 */
 		,onData:function(err,data){
+			pubjs.sync(true);
 			var c = this.getConfig();
 
 			var tagBox = this.tagLabelsContainer.tagsBox;
