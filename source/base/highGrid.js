@@ -83,7 +83,7 @@ define(function(require, exports){
 
 			// 若无metrics 参数，则以tab参数("tab/组名/cols")下的并集作为默认值
 			var c = config.get();
-			var tab = c.tab;
+			var tab = c.tab || pubjs.config('default_tab_cols');
 			var metrics = [];
 			if(c.hasTab && (!c.metrics || !c.metrics.length)){
 				for (var e in tab) {
@@ -332,14 +332,14 @@ define(function(require, exports){
 				}
 
 				// 渲染函数
-				render = metric.headerRender;
-				var value;
+				var render = metric.headerRender;
+				var renderedValue;
 				if(render){
 					if (util.isFunc(render)) {
-						value = render(i, metric.text, metrics[i], metric);
+						renderedValue = render(i, metric.text, metrics[i], metric);
 					}
 					if(util.isString(render)&& util.isFunc(this[render])){
-						value = this[render](i, metric.text, metrics[i], data);
+						renderedValue = this[render](i, metric.text, metrics[i], data);
 					}
 				}
 
@@ -347,12 +347,13 @@ define(function(require, exports){
 					'text': metric.text || '-',
 					'sort': metric.sort || false,
 					'name': metric.name,
-					'html': value || ''
+					'html': renderedValue || ''
 				});
 				title.push(elTitle);
 
 				// 总计模块
 				if(c.hasAmount){
+					var value;
 					// 有数据
 					if(data){
 
@@ -1321,6 +1322,7 @@ define(function(require, exports){
 		// 获取过滤后的要显示的指标集
 		getMetrics: function(){
 			var c = this.getConfig();
+			var tab = c.tab || pubjs.config('default_tab_cols');
 
 			// 若无default_metrics 参数，则以 metrics 值作为默认值
 			var defMetrics = c.default_metrics;
@@ -1333,7 +1335,7 @@ define(function(require, exports){
 					// 支持"{组名}"过滤
 					var abbr = metrics[i].match(/{(.+)}/);
 					if(abbr){
-						name = c.tab[abbr[1]];
+						name = tab[abbr[1]];
 						if(util.isObject(name)){
 							arr = arr.concat(name.cols);
 						}
@@ -1496,7 +1498,10 @@ define(function(require, exports){
 			var ul = $('<ul></ul>');
 			$('<li data-name="default" class="'+c.style.tabItem+' '+c.style.tabActive+'">'+LANG('默认')+'<i class="uk-icon-caret-down"/></li>').appendTo(ul);
 			for (var i in data){
-				$('<li class="'+c.style.tabItem+'"/>').attr('data-name', i).text(data[i].text).appendTo(ul);
+				// 去除为null的情况
+				if(data[i]){
+					$('<li class="'+c.style.tabItem+'"/>').attr('data-name', i).text(data[i].text).appendTo(ul);
+				}
 			}
 			this.append(ul);
 
@@ -1508,7 +1513,7 @@ define(function(require, exports){
 		getTabData: function(){
 			// 优先级覆盖
 			var tabGrid = this.getConfig('tab');	// grid本身配置的tab参数
-			var tabGlobal = pubjs.config('default_tab_cols/group');// config.js文件中配置的全局tab参数
+			var tabGlobal = pubjs.config('default_tab_cols');// config.js文件中配置的全局tab参数
 			var data = tabGrid ? tabGrid : tabGlobal;
 
 			var filter = this.getConfig('metrics'); // 可显示的列
@@ -1538,6 +1543,9 @@ define(function(require, exports){
 									obj[name].cols.push(cols[i]);
 								}
 							}
+						}
+						if(!obj[name].cols.length){
+							obj[name] = null;
 						}
 					}
 				}
@@ -1698,7 +1706,7 @@ define(function(require, exports){
 
 			var td, cols, metric;
 			for (var e in data) {
-				if(e != 'default'){
+				if(e != 'default' && data[e]){
 					td = $('<td/>').appendTo(popwin.find('table tr'));
 					cols = data[e].cols;
 					$('<strong>'+data[e].text+'</strong>').appendTo(td);
