@@ -19,6 +19,12 @@ define(function(require, exports){
 	 * @metrics					副列（右侧），通常是指标列
 	 *		@render					渲染函数，支持字符串和函数
 	 *		@headerRender			标题渲染函数
+	 * @tab						tab 配置，如果没有就使用缺省配置；
+	 *		{
+	 *			"组名": true,			// 只传true时，以缺省配置补全
+	 *			"组名":{Object 具体配置}
+	 *		}
+	 *
 	 */
 
 	var HighGrid = view.container.extend({
@@ -80,19 +86,51 @@ define(function(require, exports){
 			this.$sysParam = {};						// 系统参数
 			this.$customParam = config.get('param');	// 自定义参数
 
+			// 初始化 tab 参数配置
+			this.initTabConfig(config);
 
+			// 初始化 metrics 参数配置
+			this.initMetricsConfig(config);
+
+			this.Super('init', arguments);
+		},
+		// 初始化tab参数配置
+		initTabConfig: function(config){
+
+			var c = config.get();
+			var customValue = c.tab;
+			var defaultValue = pubjs.config('default_tab_cols');
+
+			// 如果没有tab参数，使用缺省值代替
+			if(!customValue || !util.isObject(customValue)){
+				config.set('tab', defaultValue);
+			}
+			// 有tab参数，针对每组进行补全（即没有传具体组配置时，以缺省值补全）
+			else{
+				var tab = {};
+				for (var i in customValue) {
+					//
+					if(customValue[i] === true){
+						tab[i] = defaultValue[i];
+					}else{
+						tab[i] = customValue[i];
+					}
+				}
+				config.set('tab', tab);
+			}
+		},
+		// 初始化 metrics 参数配置
+		initMetricsConfig: function(config){
 			// 若无metrics 参数，则以tab参数("tab/组名/cols")下的并集作为默认值
 			var c = config.get();
-			var tab = c.tab || pubjs.config('default_tab_cols');
-			var metrics = [];
 			if(c.hasTab && (!c.metrics || !c.metrics.length)){
+				var metrics = [];
+				var tab = c.tab;
 				for (var e in tab) {
 					metrics = metrics.concat(tab[e].cols);
 				}
 				config.set('metrics', metrics);
 			}
-
-			this.Super('init', arguments);
 		},
 		/** ---------------- 创建 ---------------- **/
 		afterBuild: function(){
