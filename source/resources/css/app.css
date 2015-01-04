@@ -170,6 +170,9 @@ label input {
 .tr {
   text-align: right;
 }
+.vAlign_m {
+  vertical-align: middle;
+}
 .lh30 {
   line-height: 30px;
 }
