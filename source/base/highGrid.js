@@ -17,6 +17,7 @@ define(function(require, exports){
 	 * 参数说明 -@todo
 	 * @cols					主列（左侧）定义，
 	 * @metrics					副列（右侧），通常是指标列
+	 *		@sort					默认是为true
 	 *		@render					渲染函数，支持字符串和函数
 	 *		@headerRender			标题渲染函数
 	 * @tab						tab 配置，如果没有就使用缺省配置；
@@ -1072,7 +1073,7 @@ define(function(require, exports){
 
 			this.$sort = name + (dom.hasClass('desc') ? '|1' : '|-1');
 
-			this.reload(null, {sort: this.$sort})
+			this.reload({sort: this.$sort});
 
 			return false;
 		},
