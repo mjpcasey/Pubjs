@@ -2165,10 +2165,15 @@ label input {
 .M-MenuOptions .option-line {
   display: block;
   width: 100%;
-  margin: 5px 0;
   height: 0;
   overflow: hidden;
   border-bottom: 1px solid #EEE;
+}
+.M-MenuOptions .option-title {
+  height: 10px;
+  padding: 5px;
+  color: #aaa;
+  cursor: default;
 }
 .M-MenuOptionsMore {
   position: absolute;
