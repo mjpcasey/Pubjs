@@ -27,7 +27,6 @@ define(function(require, exports){
 	 *		}
 	 *
 	 */
-
 	var HighGrid = view.container.extend({
 		init: function(config, parent){
 			config = pubjs.conf(config, {
@@ -176,7 +175,7 @@ define(function(require, exports){
 
 			// 切换对比栏
 			if (c.hasSwitch){
-				var gridSwitch = $('<div class="mr10 fl M-HighGridSwitch"><em/></div>').appendTo(con);
+				var gridSwitch = $('<div class="mr10 fl M-HighGridSwitch" title="'+LANG('对比报表')+'"><em/></div>').appendTo(con);
 				this.uiBind(gridSwitch, 'click', 'eventSwitch');
 			}
 
@@ -1047,8 +1046,25 @@ define(function(require, exports){
 			this.setConfig('param', cParam);
 			return this;
 		},
-		getParam: function(){
-			return this.$customParam;
+		getParam: function(all){
+			if(all){
+				var c = this.getConfig();
+				var ud;
+				var param = util.extend(
+					{},
+					c.param,
+					this.$sysParam,
+					this.$customParam,
+					{'page':ud, 'order':ud}
+				);
+				if (c.sub_exname){
+					param.subex_name = c.sub_exname;
+				}
+
+				return param;
+			}else{
+				return this.$customParam;
+			}
 		},
 		showLoading: function(){
 			var el = this.getDOM();
@@ -1324,21 +1340,11 @@ define(function(require, exports){
 		 * @return {Bool}     返回false拦截事件冒泡
 		 */
 		onExcelExport: function(ev){
-			var c = this.getConfig();
-			var ud;
-			var param = util.extend(
-				{},
-				c.param,
-				this.$sysParam,
-				this.$customParam,
-				{'page':ud, 'order':ud}
-			);
-			if (c.sub_exname){
-				param.subex_name = c.sub_exname;
-			}
+			var param = this.getParam(true);
 			delete param.format;
+
 			ev.returnValue = {
-				'type': c.gridName,
+				'type': this.getConfig('gridName'),
 				'param': param
 			};
 			return false;
@@ -1438,7 +1444,7 @@ define(function(require, exports){
 			}
 
 			this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
-			this.append('<button class="uk-button refNormal"><em /></button>');
+			this.append('<button title="'+LANG('刷新报表')+'" class="uk-button refNormal"><em /></button>');
 
 			var doms = this.$doms = {
 				check: el.find('.M-HighGridRefreshAuto'),
@@ -2086,17 +2092,16 @@ define(function(require, exports){
 		init: function(config, parent){
 			config = pubjs.conf(config, {
 				'data': null,
-				'name': LANG('下载'),
+				'title': LANG('导出报表'),
 				"url": '/api/dsp/export/',
 				'class': 'M-HighGridExport fl mr10'
 			});
 			this.Super('init', arguments);
 		},
 		afterBuild: function(){
-			var c = this.getConfig();
-			var btn = $('<button class="uk-button" />').text(c.name);
-			this.append(btn);
-			this.uiBind(btn, 'click', 'eventButtonClick');
+			var el = this.getDOM();
+			this.append($('<em title="'+this.getConfig('title')+'"/>'));
+			this.uiBind(el, 'click', 'eventButtonClick');
 		},
 		eventButtonClick: function(ev){
 			this.fire('excelExport',this.getConfig('data'),'afterFire');
@@ -2112,4 +2117,5 @@ define(function(require, exports){
 		}
 	});
 	exports.excelExport = ExcelExport;
+
 });
