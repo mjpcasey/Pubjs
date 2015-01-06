@@ -1234,7 +1234,6 @@ define(function(require, exports){
 			}
 			return false;
 		},
-
 		/**
 		 * 显示/隐藏 指定列
 		 * @param  {String} name    列名
@@ -1243,7 +1242,12 @@ define(function(require, exports){
 		 */
 		toggleColumn: function(name, bool, type){
 			var doms = this.$doms;
-			if(!doms){}
+
+			if(!doms){
+				pubjs.error('调用错误，HighGrid还未构建完成');
+				return false;
+			}
+
 			var display = bool ? 'show': 'hide';
 			var isMain = !type || type == 'main';
 			var head = isMain ? doms.corner: doms.header;
@@ -1267,13 +1271,13 @@ define(function(require, exports){
 					for (var i = 0; i < bodyElm.length; i++) {
 						$(bodyElm[i]).find('td').eq(index)[display]();
 					}
-				}else{
-					// 无数据
 				}
 			}else{
-				// 无此列
+				pubjs.error('参数错误，查找不到名称为'+name+'的列');
+				return false;
 			}
 
+			// 重新计算
 			this.calculate();
 		},
 		/** ---------------- 响应 ---------------- **/
