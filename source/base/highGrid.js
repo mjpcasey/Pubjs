@@ -27,7 +27,6 @@ define(function(require, exports){
 	 *		}
 	 *
 	 */
-
 	var HighGrid = view.container.extend({
 		init: function(config, parent){
 			config = pubjs.conf(config, {
@@ -51,7 +50,7 @@ define(function(require, exports){
 				'hasAmount': true,		// 是否有总计模块
 				'hasPager': true,		// 是否有分页模块
 				'hasSubGrid': true,		// 是否显示子表格
-				// 'hasExport': true,		// 是否有导出模块
+				'hasExport': true,		// 是否有导出模块
 				'hasSwitch': true,		// 是否有切换到对比表格
 				'hasBatch': false,		// 是否有批量操作
 
@@ -152,8 +151,6 @@ define(function(require, exports){
 
 			// 批量操作
 			if(c.hasBatch){
-				// var gridBatch = $('<div class="mr10 M-HighGridBatch fl"><span>'+LANG('批量操作')+'</span><i class="uk-icon-caret-down"/></div>').appendTo(con);
-				// this.uiBind(gridBatch, 'click', 'eventBatch');
 				this.create('batch', Batch, {
 					'target': con,
 					'grid': this
@@ -170,17 +167,15 @@ define(function(require, exports){
 
 			// 导出控件
 			if (c.hasExport){
-				// var gridExport = $('<div class="mr10 fl M-HighGridExport"><em/></div>').appendTo(con);
-				// this.uiBind(gridExport, 'click', 'eventExport');
 				this.createAsync(
-					'excel', '@base/common/base.excelExport',
+					'excel', '@base/highGrid.excelExport',
 					util.extend(c.excelExport, {'target': con})
 				);
 			}
 
 			// 切换对比栏
 			if (c.hasSwitch){
-				var gridSwitch = $('<div class="mr10 fl M-HighGridSwitch"><em/></div>').appendTo(con);
+				var gridSwitch = $('<div class="mr10 fl M-HighGridSwitch" title="'+LANG('对比报表')+'"><em/></div>').appendTo(con);
 				this.uiBind(gridSwitch, 'click', 'eventSwitch');
 			}
 
@@ -1053,8 +1048,25 @@ define(function(require, exports){
 			this.setConfig('param', cParam);
 			return this;
 		},
-		getParam: function(){
-			return this.$customParam;
+		getParam: function(all){
+			if(all){
+				var c = this.getConfig();
+				var ud;
+				var param = util.extend(
+					{},
+					c.param,
+					this.$sysParam,
+					this.$customParam,
+					{'page':ud, 'order':ud}
+				);
+				if (c.sub_exname){
+					param.subex_name = c.sub_exname;
+				}
+
+				return param;
+			}else{
+				return this.$customParam;
+			}
 		},
 		showLoading: function(){
 			var el = this.getDOM();
@@ -1224,6 +1236,48 @@ define(function(require, exports){
 			}
 			return false;
 		},
+
+		/**
+		 * 显示/隐藏 指定列
+		 * @param  {String} name    列名
+		 * @param  {Boolean} bool 显示还是隐藏，默认是隐藏
+		 * @param  {String} type    主列还是副列，默认是主列
+		 */
+		toggleColumn: function(name, bool, type){
+			var doms = this.$doms;
+			if(!doms){}
+			var display = bool ? 'show': 'hide';
+			var isMain = !type || type == 'main';
+			var head = isMain ? doms.corner: doms.header;
+			var body = isMain ? doms.sidebar: doms.content;
+
+			// 头部
+			var headElms = head.find('tr:first td');
+			var elm = head.find('tr td[data-name="'+name+'"]');
+			if(elm && elm.length){
+				elm[display]();
+				var index = headElms.index(elm);
+
+				// 汇总栏隐藏
+				if(!isMain && this.getConfig('hasAmount')){
+					var amountElm = head.find('tr').eq(1).find('td');
+					amountElm.eq(index)[display]();
+				}
+
+				var bodyElm = body.find('tr');
+				if(bodyElm && bodyElm.length){
+					for (var i = 0; i < bodyElm.length; i++) {
+						$(bodyElm[i]).find('td').eq(index)[display]();
+					}
+				}else{
+					// 无数据
+				}
+			}else{
+				// 无此列
+			}
+
+			this.calculate();
+		},
 		/** ---------------- 响应 ---------------- **/
 		// 滚动条响应事件
 		onScroll: function(ev){
@@ -1330,21 +1384,11 @@ define(function(require, exports){
 		 * @return {Bool}     返回false拦截事件冒泡
 		 */
 		onExcelExport: function(ev){
-			var cfg = this.getConfig();
-			var ud;
-			var param = util.extend(
-				{},
-				cfg.param,
-				this.$sys_param,
-				this.getParam(),
-				{'page':ud, 'order':ud}
-			);
-			if (cfg.sub_exname){
-				param.subex_name = cfg.sub_exname;
-			}
+			var param = this.getParam(true);
 			delete param.format;
+
 			ev.returnValue = {
-				'url': cfg.url,
+				'type': this.getConfig('gridName'),
 				'param': param
 			};
 			return false;
@@ -1425,7 +1469,7 @@ define(function(require, exports){
 				'target': null,
 				'refresh_time': 10,		// 刷新间隔
 				'refresh_auto': 0,		// 自动刷新中
-				'class': 'M-HighGridRefresh fl pr10'
+				'class': 'M-HighGridRefresh fl mr10'
 			});
 
 			// 自动刷新Timeout ID
@@ -1444,7 +1488,7 @@ define(function(require, exports){
 			}
 
 			this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
-			this.append('<button class="uk-button refNormal"><em /></button>');
+			this.append('<button title="'+LANG('刷新报表')+'" class="uk-button refNormal"><em /></button>');
 
 			var doms = this.$doms = {
 				check: el.find('.M-HighGridRefreshAuto'),
@@ -2086,4 +2130,36 @@ define(function(require, exports){
 		}
 	});
 	exports.menu = Menu;
+
+	// 报表导出
+	var ExcelExport = common.excelExport.extend({
+		init: function(config, parent){
+			config = pubjs.conf(config, {
+				'data': null,
+				'title': LANG('导出报表'),
+				"url": '/api/dsp/export/',
+				'class': 'M-HighGridExport fl mr10'
+			});
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			var el = this.getDOM();
+			this.append($('<em title="'+this.getConfig('title')+'"/>'));
+			this.uiBind(el, 'click', 'eventButtonClick');
+		},
+		eventButtonClick: function(ev){
+			this.fire('excelExport',this.getConfig('data'),'afterFire');
+			return false;
+		},
+		afterFire: function(ev){
+			var data = ev.returnValue;
+
+			if (ev.count > 0 && data){
+				var url = this.getConfig('url')+data.type;
+				window.location.href = pubjs.data.resolve(url, data.param);
+			}
+		}
+	});
+	exports.excelExport = ExcelExport;
+
 });
