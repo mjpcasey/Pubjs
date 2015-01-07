@@ -484,16 +484,29 @@ define(function(require, exports){
 
 						var value = data[column.field || column.name];
 
-						if(column.render){
+						var render = column.render;
+						if(render){
+							var renderMethod;
+
 							// 函数
-							if(util.isFunc(column.render)){
-								html = column.render.call(this, ii, value, data, column);
+							if(util.isFunc(render)){
+								renderMethod = render;
 							}
 							// 字符串
-							if(util.isString(column.render) && util.isFunc(this[column.render])){
-								html = this[column.render].call(this, ii, value, data, column);
+							else if(util.isString(render)){
+								// 自定义函数
+								if(util.isFunc(this[render])){
+									renderMethod = this[render];
+								}
+								// 从label.js文件中获取渲染函数
+								else{
+									renderMethod = labels[render]
+								}
 							}
+
+							html = renderMethod.call(this, ii, value, data, column);
 						}
+
 						if(column.width){
 							width = column.width;
 						}
@@ -1200,7 +1213,7 @@ define(function(require, exports){
 			el.find('tr[data-id="'+id+'"]').addClass('M-HighGridListRowHover');
 
 			// 子表格
-			if(c.subs){
+			if(c.hasSubGrid && c.subs){
 				if(this.$subgridId != id){
 					// 销毁旧模块
 					var mod = this.get('subgrid');
