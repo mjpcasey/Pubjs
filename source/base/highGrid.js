@@ -42,10 +42,6 @@ define(function(require, exports){
 				'auto_load': true,		// 自动加载数据
 				'eventDataLoad': false, // 是否冒泡数据已加载完成事件
 
-				'hasRefresh': true,		// 刷新控件
-				'refresh_time': 10,		// 刷新间隔
-				'refresh_auto': 0,		// 自动刷新中
-
 				'hasSelect':false,		// 是否显示多选列
 				'hasAmount': true,		// 是否有总计模块
 				'hasPager': true,		// 是否有分页模块
@@ -53,9 +49,13 @@ define(function(require, exports){
 				'hasExport': true,		// 是否有导出模块
 				'hasSwitch': true,		// 是否有切换到对比表格
 				'hasBatch': false,		// 是否有批量操作
+				'hasTab': true,			// 是否显示指标分组模块
+				'hasRefresh': true,		// 刷新控件
+
+				'refresh_time': 10,		// 刷新间隔
+				'refresh_auto': 0,		// 自动刷新中
 
 				'metrics': [],			// 要显示的指标列，支持'{组名}'的形式过滤; 若不填，默认为tab参数中的cols的并集
-				'hasTab': true,			// 是否显示指标分组模块
 				'tab': null,			// 指标分组配置信息；{'组名':{"text":"String", "cols":[]}}
 				'default_metrics': [],	// 指标分组中属于默认组的指标，支持'{组名}'的形式过滤; 若不填，默认为metrics参数的值
 				// 'default_sort': true,	// 默认栏目排序
@@ -96,7 +96,6 @@ define(function(require, exports){
 		},
 		// 初始化tab参数配置
 		initTabConfig: function(config){
-
 			var c = config.get();
 			var customValue = c.tab;
 			var defaultValue = pubjs.config('default_tab_cols');
@@ -491,7 +490,7 @@ define(function(require, exports){
 								html = column.render.call(this, ii, value, data, column);
 							}
 							// 字符串
-							if(util.isString(column.render)){
+							if(util.isString(column.render) && util.isFunc(this[column.render])){
 								html = this[column.render].call(this, ii, value, data, column);
 							}
 						}
@@ -581,12 +580,25 @@ define(function(require, exports){
 						// 渲染函数
 						render = metric.render;
 						if(render){
-							if (util.isFunc(render)) {
-								value = render(i, value, data[i], metric);
+							var renderMethod;
+
+							// 函数
+							if(util.isFunc(render)){
+								renderMethod = render;
 							}
-							if(util.isString(render)&& util.isFunc(this[render])){
-								value = this[render](i, value, data[i], metric);
+							// 字符串
+							else if(util.isString(render)){
+								// 自定义函数
+								if(util.isFunc(this[render])){
+									renderMethod = this[render];
+								}
+								// 从label.js文件中获取渲染函数
+								else{
+									renderMethod = labels[render]
+								}
 							}
+
+							value = renderMethod(i, value, data[i], metric);
 						}
 
 						// 格式化函数
@@ -836,9 +848,13 @@ define(function(require, exports){
 
 					space = elT.outerWidth() - elT.width();
 					max = this._getMax(elT.width(), elD.width());
-					sum = sum + max + space;
 					elT.width(max);
 					elD.width(max);
+
+					// 不计算被隐藏的列
+					if(elT.css('display') == 'none' && elD.css('display') == 'none'){max = 0; space = 0;}
+
+					sum = sum + max + space;
 				}
 				// 更新表格宽度值，使每一列能以计算值呈现出来
 				header.find('table').width(sum);
@@ -1236,7 +1252,6 @@ define(function(require, exports){
 			}
 			return false;
 		},
-
 		/**
 		 * 显示/隐藏 指定列
 		 * @param  {String} name    列名
@@ -1245,38 +1260,55 @@ define(function(require, exports){
 		 */
 		toggleColumn: function(name, bool, type){
 			var doms = this.$doms;
-			if(!doms){}
+			var c = this.getConfig();
 			var display = bool ? 'show': 'hide';
 			var isMain = !type || type == 'main';
 			var head = isMain ? doms.corner: doms.header;
 			var body = isMain ? doms.sidebar: doms.content;
+			var headElms = head.find('tr:first td'); // 头部
 
-			// 头部
-			var headElms = head.find('tr:first td');
-			var elm = head.find('tr td[data-name="'+name+'"]');
-			if(elm && elm.length){
-				elm[display]();
-				var index = headElms.index(elm);
-
-				// 汇总栏隐藏
-				if(!isMain && this.getConfig('hasAmount')){
-					var amountElm = head.find('tr').eq(1).find('td');
-					amountElm.eq(index)[display]();
-				}
-
-				var bodyElm = body.find('tr');
-				if(bodyElm && bodyElm.length){
-					for (var i = 0; i < bodyElm.length; i++) {
-						$(bodyElm[i]).find('td').eq(index)[display]();
-					}
-				}else{
-					// 无数据
-				}
-			}else{
-				// 无此列
+			if(!doms){
+				pubjs.error('调用错误，HighGrid还未构建完成');
+				return false;
 			}
 
-			this.calculate();
+			// 字符串
+			if(util.isString(name)){
+				_toggleColumn(name);
+			}
+			// 数组
+			if(util.isArray(name)){
+				for (var i = 0; i < name.length; i++) {
+					_toggleColumn(name[i]);
+				}
+			}
+
+			function _toggleColumn(name){
+				var elm = head.find('tr td[data-name="'+name+'"]');
+				if(elm && elm.length){
+					elm[display]();
+					var index = headElms.index(elm);
+
+					// 汇总栏隐藏
+					if(!isMain && c.hasAmount){
+						var amountElm = head.find('tr').eq(1).find('td');
+						amountElm.eq(index)[display]();
+					}
+
+					var bodyElm = body.find('tr');
+					if(bodyElm && bodyElm.length){
+						for (var i = 0; i < bodyElm.length; i++) {
+							$(bodyElm[i]).find('td').eq(index)[display]();
+						}
+					}
+				}else{
+					pubjs.error('参数错误，查找不到名称为'+name+'的列');
+					return false;
+				}
+			}
+
+			// 重新计算
+			this.calculate(true);
 		},
 		/** ---------------- 响应 ---------------- **/
 		// 滚动条响应事件
