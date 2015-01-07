@@ -979,8 +979,10 @@ define(function(require, exports){
 			if(date){
 				util.extend(this.$sysParam, {
 					begindate: date.begindate,
-					enddate: date.enddate
+					enddate: date.enddate,
+					stastic_all_time: date.stastic_all_time || 0
 				});
+
 			}
 
 			this.showLoading();
