@@ -598,7 +598,7 @@ define(function(require, exports){
 								}
 							}
 
-							value = renderMethod(i, value, data[i], metric);
+							value = renderMethod.call(this, i, value, data[i], metric);
 						}
 
 						// 格式化函数
