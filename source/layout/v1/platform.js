@@ -80,6 +80,7 @@ define(function(require,exports){
 				'logo': $('.G-frameHeadLogo', body),
 				'head': $('.G-frameHead', body),
 				'toolbar': $('.G-frameHeadToolbar', body),
+				'adminSwitch': $('.G-frameHeadAdminSwitch', body),
 				'body': $('.G-frameBody', body),
 				'titleCon': $('.G-frameBodyTitle', body),
 				'title': $('.G-frameBodyTitleText', body),
@@ -155,7 +156,9 @@ define(function(require,exports){
 				if(this.$.menu){
 					this.$.menu.updateMenu(mod, act);
 				}
-				// self.updateMenu(mod, act);
+				if(this.$.adminSwitch){
+					this.$.adminSwitch.updateAdminSwitch(mod, act);
+				}
 			}else {
 				self.$delayUpdate = [mod, act];
 			}

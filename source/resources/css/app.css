@@ -2005,7 +2005,7 @@ label input {
   float: left;
   width: 217px;
   padding-left: 2px;
-  margin: 0 15px 15px;
+  margin: 0 10px 10px;
 }
 .M-datePickerNew .date-container a,
 .M-datePickerNew .date-container b,
@@ -2062,7 +2062,9 @@ label input {
   color: #444;
   text-decoration: none;
   font-weight: normal;
-  margin: 4px 0;
+  margin: 0 0;
+  -moz-transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
 }
 .M-datePickerNew .date-cal a {
   cursor: pointer;
@@ -2109,7 +2111,7 @@ label input {
   font-size: 20px;
   position: absolute;
   right: 5px;
-  top: 5px;
+  top: 7px;
   color: #444;
   background-image: url("../images/icons.png?1210");
   background-repeat: no-repeat;

@@ -970,8 +970,10 @@ define(function(require, exports){
 			if(date){
 				util.extend(this.$sysParam, {
 					begindate: date.begindate,
-					enddate: date.enddate
+					enddate: date.enddate,
+					stastic_all_time: date.stastic_all_time || 0
 				});
+
 			}
 
 			this.showLoading();
@@ -1229,6 +1231,48 @@ define(function(require, exports){
 				subgrid.toggleActive((ev.type == 'mouseenter'));
 			}
 			return false;
+		},
+
+		/**
+		 * 显示/隐藏 指定列
+		 * @param  {String} name    列名
+		 * @param  {Boolean} bool 显示还是隐藏，默认是隐藏
+		 * @param  {String} type    主列还是副列，默认是主列
+		 */
+		toggleColumn: function(name, bool, type){
+			var doms = this.$doms;
+			if(!doms){}
+			var display = bool ? 'show': 'hide';
+			var isMain = !type || type == 'main';
+			var head = isMain ? doms.corner: doms.header;
+			var body = isMain ? doms.sidebar: doms.content;
+
+			// 头部
+			var headElms = head.find('tr:first td');
+			var elm = head.find('tr td[data-name="'+name+'"]');
+			if(elm && elm.length){
+				elm[display]();
+				var index = headElms.index(elm);
+
+				// 汇总栏隐藏
+				if(!isMain && this.getConfig('hasAmount')){
+					var amountElm = head.find('tr').eq(1).find('td');
+					amountElm.eq(index)[display]();
+				}
+
+				var bodyElm = body.find('tr');
+				if(bodyElm && bodyElm.length){
+					for (var i = 0; i < bodyElm.length; i++) {
+						$(bodyElm[i]).find('td').eq(index)[display]();
+					}
+				}else{
+					// 无数据
+				}
+			}else{
+				// 无此列
+			}
+
+			this.calculate();
 		},
 		/** ---------------- 响应 ---------------- **/
 		// 滚动条响应事件
