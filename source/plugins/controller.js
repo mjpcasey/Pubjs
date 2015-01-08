@@ -151,7 +151,7 @@ define(function(require, exports){
 			app.error('Module is missing - ' + env.module + ':' + act + '()');
 		}else {
 			var now = {
-				name: env.module + app.util.ucFirst(env.action),
+				name: env.module.replace(/\//g, '') + app.util.ucFirst(env.action),
 				module: env.module,
 				action: env.action,
 				param: env.param,
