@@ -1687,17 +1687,26 @@ define(function(require, exports){
 
 					// 更新Cookie
 					STORE.setTime(begin, end);
+					// 设置是否不限
+					if ((type === 0 || type === 1)) {
+						STORE.setMode(type);
+					}
 				}
 			}
 		},
 		// 日历选择时间段事件
 		onDateRangeChange: function(ev){
+			console.log(ev);
 			var date, begin, end;
-			date = util.toDate(ev.param.begin);
-			begin = Math.floor(date.getTime() / 1000);
-			date = util.toDate(ev.param.end);
-			end = Math.floor(date.getTime() / 1000);
-			this.setDate(begin, end, 1);
+			if(ev.param.begin || ev.param.end){
+				date = util.toDate(ev.param.begin);
+				begin = Math.floor(date.getTime() / 1000);
+				date = util.toDate(ev.param.end);
+				end = Math.floor(date.getTime() / 1000);
+				this.setDate(begin, end, 1);
+			}else{
+				this.setDate(begin, end, 0);
+			}
 			return false;
 		}
 	});

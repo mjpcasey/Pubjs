@@ -170,6 +170,9 @@ label input {
 .tr {
   text-align: right;
 }
+.vAlign_m {
+  vertical-align: middle;
+}
 .lh30 {
   line-height: 30px;
 }
@@ -2002,7 +2005,7 @@ label input {
   float: left;
   width: 217px;
   padding-left: 2px;
-  margin: 0 15px 15px;
+  margin: 0 10px 10px;
 }
 .M-datePickerNew .date-container a,
 .M-datePickerNew .date-container b,
@@ -2059,7 +2062,9 @@ label input {
   color: #444;
   text-decoration: none;
   font-weight: normal;
-  margin: 4px 0;
+  margin: 0 0;
+  -moz-transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
+  transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
 }
 .M-datePickerNew .date-cal a {
   cursor: pointer;
@@ -2106,7 +2111,7 @@ label input {
   font-size: 20px;
   position: absolute;
   right: 5px;
-  top: 5px;
+  top: 7px;
   color: #444;
   background-image: url("../images/icons.png?1210");
   background-repeat: no-repeat;
@@ -2165,10 +2170,15 @@ label input {
 .M-MenuOptions .option-line {
   display: block;
   width: 100%;
-  margin: 5px 0;
   height: 0;
   overflow: hidden;
   border-bottom: 1px solid #EEE;
+}
+.M-MenuOptions .option-title {
+  height: 10px;
+  padding: 5px;
+  color: #aaa;
+  cursor: default;
 }
 .M-MenuOptionsMore {
   position: absolute;

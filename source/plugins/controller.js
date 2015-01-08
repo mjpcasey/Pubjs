@@ -6,6 +6,9 @@ define(function(require, exports){
 		URL = Loc.href,
 		app = null,
 		tpl = null,
+		routers = [
+			/^[^#]+#([^\/?]+)?(?:\/([^\/?]+))?(?:\/([^?]+))?(?:\?(.+))?$/
+		],
 		ready = 0;
 
 	// 定义路由操作状态
@@ -38,16 +41,30 @@ define(function(require, exports){
 	// 监听Hash变化事件
 	function hashChanged(){
 		URL = Loc.href;
-		var hash = Loc.hash.replace(/^[#\/\!]+/, '');
-		var search = hash.split('?');
-		var param = search.shift().split('/');
-
-		var module = param.shift();
-		var action = param.shift();
-		param  = param.join('/');
-		search = search.join('?');
-
-		run(module, action, param, search);
+		var res;
+		for (var i=0; i<routers.length; i++){
+			if (typeof routers[i] == 'function'){
+				res = routers[i](URL);
+			}else if (routers[i] instanceof RegExp){
+				res = routers[i].exec(URL);
+				if (res){
+					res = {
+						'module': res[1],
+						'action': res[2],
+						'param': res[3],
+						'search': res[4]
+					};
+				}
+			}
+			if (res){
+				break;
+			}
+		}
+		if (res){
+			run(res.module, res.action, res.param, res.search);
+		}else {
+			run();
+		}
 	}
 
 	var tpl_file_name;
@@ -245,6 +262,21 @@ define(function(require, exports){
 			// 强制运行一次
 			hashChanged();
 		}
+	}
+
+	exports.setRouter = function(rules, append){
+		if (append === true){
+			if (rules instanceof Array){
+				routers.unshift.apply(routers, rules);
+			}else {
+				routers.unshift(rules);
+			}
+		}else if (rules instanceof Array){
+			routers = rules;
+		}else {
+			routers.unshift(rules);
+		}
+		return this;
 	}
 
 	exports.plugin_init = function(pubjs, callback){
