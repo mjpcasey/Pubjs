@@ -500,7 +500,7 @@ define(function(require, exports){
 								}
 								// 从label.js文件中获取渲染函数
 								else{
-									renderMethod = labels[render]
+									renderMethod = labels[render] || function(){};
 								}
 							}
 

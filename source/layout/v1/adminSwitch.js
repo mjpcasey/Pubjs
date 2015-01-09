@@ -72,7 +72,7 @@ define(function(require,exports){
 		},
 		// 更新管理后台切换样式
 		updateAdminSwitch: function(module){
-			var bool = (module == 'admin');
+			var bool = (module.indexOf('admin/') == 0);
 			var el = this.getDOM();
 			el.find('ul').toggleClass('act', bool)
 				.find('li').addClass('act')
