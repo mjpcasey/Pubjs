@@ -18,7 +18,7 @@ define(function(require, exports){
 				'search': true, // 是否有过滤框
 				'search_atonce': false, // 立即搜索
 				'search_callback': null, // 过滤回调函数
-				'height': 30, // 显示框高度
+				'height': 28, // 显示框高度
 				'width': 200, // 显示框框度
 				'option_height': 200, // 弹出选项窗口高度
 				'option_width': 0,  // 弹出选项窗口宽度
@@ -60,7 +60,7 @@ define(function(require, exports){
 			var con = doms.resultCon = $('<div />').appendTo(el);
 			self.addClass('M-commonDropdown uk-button-dropdown');
 			doms.result = $('<div class="result"/>').height(c.height).css('line-height', c.height+'px').appendTo(con);
-			doms.arrow = $('<div class="arrow"><i class="uk-icon-caret-down" /></div>').appendTo(con);
+			doms.arrow = $('<div class="arrow"><i/></div>').height(c.height).css('line-height', c.height+'px').appendTo(con);
 			el.width(c.width).height(c.height);
 
 			self.uiBind(con, 'click', 'eventTrigger');

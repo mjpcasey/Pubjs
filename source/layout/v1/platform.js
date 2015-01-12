@@ -44,7 +44,7 @@ define(function(require,exports){
 									'<a href="/"><img border="0"/></a>',
 								'</div>',
 								'<ul class="G-frameHeadMenu"/>',
-								'<div class="G-frameHeadAdminSwitch" />',
+								'<div class="G-frameHeadSwitch" />',
 								'<div class="G-frameHeadToolbar"/>',
 								'<div class="G-frameHeadLanguage">',
 									'<a href="#i18n/zhCN" title="中文" class="G-frameHeadLanguageCN"/>',
