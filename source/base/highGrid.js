@@ -500,11 +500,11 @@ define(function(require, exports){
 								}
 								// 从label.js文件中获取渲染函数
 								else{
-									renderMethod = labels[render] || function(){};
+									renderMethod = labels[render] || false;
 								}
 							}
 
-							html = renderMethod.call(this, ii, value, data, column);
+							html = renderMethod && renderMethod.call(this, ii, value, data, column);
 						}
 
 						if(column.width){
@@ -1280,22 +1280,6 @@ define(function(require, exports){
 			var body = isMain ? doms.sidebar: doms.content;
 			var headElms = head.find('tr:first td'); // 头部
 
-			if(!doms){
-				pubjs.error('调用错误，HighGrid还未构建完成');
-				return false;
-			}
-
-			// 字符串
-			if(util.isString(name)){
-				_toggleColumn(name);
-			}
-			// 数组
-			if(util.isArray(name)){
-				for (var i = 0; i < name.length; i++) {
-					_toggleColumn(name[i]);
-				}
-			}
-
 			function _toggleColumn(name){
 				var elm = head.find('tr td[data-name="'+name+'"]');
 				if(elm && elm.length){
@@ -1317,6 +1301,22 @@ define(function(require, exports){
 				}else{
 					pubjs.error('参数错误，查找不到名称为'+name+'的列');
 					return false;
+				}
+			}
+
+			if(!doms){
+				pubjs.error('调用错误，HighGrid还未构建完成');
+				return false;
+			}
+
+			// 字符串
+			if(util.isString(name)){
+				_toggleColumn(name);
+			}
+			// 数组
+			if(util.isArray(name)){
+				for (var i = 0; i < name.length; i++) {
+					_toggleColumn(name[i]);
 				}
 			}
 
@@ -1999,11 +1999,20 @@ define(function(require, exports){
 					sub = c.subs[i];
 
 					if (util.isString(sub)){
-						lab = labels.get('highgrid_' + sub);
-						if (!lab){
+
+						// 命名兼容：highgrid_ 和 grid_
+						var nameAsHighgrid = 'highgrid_' + sub;
+						var nameAsGrid = 'grid_' + sub;
+
+						if(labels.has(nameAsHighgrid)){
+							lab = labels.get(nameAsHighgrid);
+						}else if( labels.has(nameAsGrid) ){
+							lab = labels.get(nameAsGrid);
+						}else{
 							pubjs.error('SubGrid Config Not Found - ' + sub);
 							continue;
 						}
+
 						sub = util.extend({'type':sub}, lab);
 					}else {
 						pubjs.error('SubGrid Config Not Found - ', sub);
