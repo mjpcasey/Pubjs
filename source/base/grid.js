@@ -872,6 +872,10 @@ define(function(require, exports){
 		unsetRowHighlight: function(id){
 			this.$.list.unsetRowHighlight(id);
 		}
+		,showColumn: function(cols){
+			this.$.list.showColumn(cols);
+			return this;
+		}
 		/**
 		 * 根据id数组设定表格选中行
 		 * @param  {Array} ids id数组

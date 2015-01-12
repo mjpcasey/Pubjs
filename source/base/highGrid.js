@@ -12,6 +12,21 @@ define(function(require, exports){
 	// var format = labels.format;
 	labels = labels.labels;
 
+
+	/**
+	 * 参数说明 -@todo
+	 * @cols					主列（左侧）定义，
+	 * @metrics					副列（右侧），通常是指标列
+	 *		@sort					默认是为true
+	 *		@render					渲染函数，支持字符串和函数
+	 *		@headerRender			标题渲染函数
+	 * @tab						tab 配置，如果没有就使用缺省配置；
+	 *		{
+	 *			"组名": true,			// 只传true时，以缺省配置补全
+	 *			"组名":{Object 具体配置}
+	 *		}
+	 *
+	 */
 	var HighGrid = view.container.extend({
 		init: function(config, parent){
 			config = pubjs.conf(config, {
@@ -35,7 +50,7 @@ define(function(require, exports){
 				'hasAmount': true,		// 是否有总计模块
 				'hasPager': true,		// 是否有分页模块
 				'hasSubGrid': true,		// 是否显示子表格
-				// 'hasExport': true,		// 是否有导出模块
+				'hasExport': true,		// 是否有导出模块
 				'hasSwitch': true,		// 是否有切换到对比表格
 				'hasBatch': false,		// 是否有批量操作
 
@@ -50,12 +65,14 @@ define(function(require, exports){
 
 				'pager': null,			// 分页模块配置信息
 
-				'gridName': '',
+				'gridName': '',			// 本地缓存标识符，用于指标自定义分组
 
 				'style': {
 					'selected': 'M-HighGridListRowSelected',	// 选中样式
 					'highlight': 'M-HighGridListRowHighlight'	// 高亮样式
-				}
+				},
+
+				'wrapperClass': 'G-frameBodyContainer'			// 参照物标识符，计算高宽时使用
 			});
 
 			this.$data = config.get('data');
@@ -69,19 +86,51 @@ define(function(require, exports){
 			this.$sysParam = {};						// 系统参数
 			this.$customParam = config.get('param');	// 自定义参数
 
+			// 初始化 tab 参数配置
+			this.initTabConfig(config);
 
+			// 初始化 metrics 参数配置
+			this.initMetricsConfig(config);
+
+			this.Super('init', arguments);
+		},
+		// 初始化tab参数配置
+		initTabConfig: function(config){
+
+			var c = config.get();
+			var customValue = c.tab;
+			var defaultValue = pubjs.config('default_tab_cols');
+
+			// 如果没有tab参数，使用缺省值代替
+			if(!customValue || !util.isObject(customValue)){
+				config.set('tab', defaultValue);
+			}
+			// 有tab参数，针对每组进行补全（即没有传具体组配置时，以缺省值补全）
+			else{
+				var tab = {};
+				for (var i in customValue) {
+					//
+					if(customValue[i] === true){
+						tab[i] = defaultValue[i];
+					}else{
+						tab[i] = customValue[i];
+					}
+				}
+				config.set('tab', tab);
+			}
+		},
+		// 初始化 metrics 参数配置
+		initMetricsConfig: function(config){
 			// 若无metrics 参数，则以tab参数("tab/组名/cols")下的并集作为默认值
 			var c = config.get();
-			var tab = c.tab;
-			var metrics = [];
 			if(c.hasTab && (!c.metrics || !c.metrics.length)){
+				var metrics = [];
+				var tab = c.tab;
 				for (var e in tab) {
 					metrics = metrics.concat(tab[e].cols);
 				}
 				config.set('metrics', metrics);
 			}
-
-			this.Super('init', arguments);
 		},
 		/** ---------------- 创建 ---------------- **/
 		afterBuild: function(){
@@ -102,13 +151,10 @@ define(function(require, exports){
 
 			// 批量操作
 			if(c.hasBatch){
-				// var gridBatch = $('<div class="mr10 M-HighGridBatch fl"><span>'+LANG('批量操作')+'</span><i class="uk-icon-caret-down"/></div>').appendTo(con);
-				// this.uiBind(gridBatch, 'click', 'eventBatch');
 				this.create('batch', Batch, {
 					'target': con,
 					'grid': this
 				});
-
 			}
 			// 刷新控件
 			if (c.hasRefresh){
@@ -121,17 +167,15 @@ define(function(require, exports){
 
 			// 导出控件
 			if (c.hasExport){
-				// var gridExport = $('<div class="mr10 fl M-HighGridExport"><em/></div>').appendTo(con);
-				// this.uiBind(gridExport, 'click', 'eventExport');
 				this.createAsync(
-					'excel', '@base/common/base.excelExport',
+					'excel', '@base/highGrid.excelExport',
 					util.extend(c.excelExport, {'target': con})
 				);
 			}
 
 			// 切换对比栏
 			if (c.hasSwitch){
-				var gridSwitch = $('<div class="mr10 fl M-HighGridSwitch"><em/></div>').appendTo(con);
+				var gridSwitch = $('<div class="mr10 fl M-HighGridSwitch" title="'+LANG('对比报表')+'"><em/></div>').appendTo(con);
 				this.uiBind(gridSwitch, 'click', 'eventSwitch');
 			}
 
@@ -185,20 +229,21 @@ define(function(require, exports){
 			this.buildTableContent().appendTo(doms.content);
 
 			// 创建滚动条
-			var scrollerV = this.create('scrollerV', common.scroller, {
+			this.create('scrollerV', common.scroller, {
 				dir: 'V',
 				pad: false, // 取消滚动条间隔，使之浮在内容的上面
 				target: doms.content,
 				content:  doms.content.find('table')
 			});
-			var scrollerH = this.create('scrollerH', common.scroller, {
+			this.create('scrollerH', common.scroller, {
 				dir: 'H',
-				'size': 4,
+				size: 4,
 				pad: false,
 				wheel: false,
 				target: doms.content,
 				content:  doms.content.find('table')
 			});
+
 
 			// 分页模块
 			if(c.hasPager && c.url){
@@ -233,8 +278,7 @@ define(function(require, exports){
 			this.calculate();
 
 			// 更新滚动条
-			scrollerV.update();
-			scrollerH.update();
+			this.updateScroller();
 		},
 		buildTableCorner: function(){
 			var c = this.getConfig()
@@ -257,24 +301,27 @@ define(function(require, exports){
 			].join(''));
 
 			var td = [];
-			var el;
-			var html;
+			var el, html, column;
 			for (var i = 0; i < cols.length; i++) {
+				column = cols[i];
+
+				column = this.extendColConfig(column);
+
 				// 选择列
-				if(cols[i].type == 'select'){
+				if(column.type == 'select'){
 					html = '<input type="checkbox" />';
 				}
 
 				// 序号列
-				if(cols[i].type == 'id'){
-					cols[i].text = cols[i].text || LANG('序号');
+				if(column.type == 'id'){
+					column.text = column.text || LANG('序号');
 				}
 
 				el = this.buildTd({
-					'text': cols[i].text,
+					'text': column.text,
 					'html': html,
-					'sort': cols[i].sort || false,
-					'name': cols[i].name
+					'sort': column.sort || false,
+					'name': column.field || column.name
 				})
 				td.push(el);
 
@@ -302,7 +349,7 @@ define(function(require, exports){
 			var amount = [];
 			var elTitle, elAmount;
 			var metric;
-			var name, value;
+			var name;
 			for (var i = 0; i < metrics.length; i++) {
 				metric = metrics[i];
 
@@ -317,15 +364,30 @@ define(function(require, exports){
 						metric.sort = true; // 只是给字符串的情况，默认是可排序的
 					}
 				}
+
+				// 渲染函数
+				var render = metric.headerRender;
+				var renderedValue;
+				if(render){
+					if (util.isFunc(render)) {
+						renderedValue = render(i, metric.text, metrics[i], metric);
+					}
+					if(util.isString(render)&& util.isFunc(this[render])){
+						renderedValue = this[render](i, metric.text, metrics[i], data);
+					}
+				}
+
 				elTitle = this.buildTd({
 					'text': metric.text || '-',
 					'sort': metric.sort || false,
-					'name': metric.name
+					'name': metric.name,
+					'html': renderedValue || ''
 				});
 				title.push(elTitle);
 
 				// 总计模块
 				if(c.hasAmount){
+					var value;
 					// 有数据
 					if(data){
 
@@ -394,6 +456,8 @@ define(function(require, exports){
 					for (var ii = 0; ii < cols.length; ii++) {
 						column = cols[ii];
 
+						column = this.extendColConfig(column);
+
 						isIndexCol = column.type == 'index';
 
 						switch(column.type){
@@ -419,8 +483,17 @@ define(function(require, exports){
 							break;
 						}
 
+						var value = data[column.field || column.name];
+
 						if(column.render){
-							html = this[column.render](ii, data[column.name], data, column);
+							// 函数
+							if(util.isFunc(column.render)){
+								html = column.render.call(this, ii, value, data, column);
+							}
+							// 字符串
+							if(util.isString(column.render)){
+								html = this[column.render].call(this, ii, value, data, column);
+							}
 						}
 						if(column.width){
 							width = column.width;
@@ -429,10 +502,11 @@ define(function(require, exports){
 							className += ' '+ column.align;
 						}
 
+
 						if(isIndexCol){
 							width = width || 150;
 							className += ' '+ 'uk-text-truncate tl';
-							title = data[column.name];
+							title = value;
 							type = 'index';
 						}
 						td = this.buildTd({
@@ -441,7 +515,7 @@ define(function(require, exports){
 							'width': width,
 							'title': title,
 							'class': className,
-							'text': data[column.name],
+							'text': value,
 							'dataType': hasDataType ? column.type : null
 						});
 						tr.append(td);
@@ -490,14 +564,18 @@ define(function(require, exports){
 							metric = this.getMetricFromTab(metric);
 							// 从tab参数中读取配置
 							if( !util.isString(metric)){
-								value = data[i][metric.name];
+								value = data[i][metric.field||metric.name];
 							}else{
 								// 从 labels.js中读取配置
 								value = data[i][metric];
 								metric = labels.get(metric);
+								// 修正
+								if(metric.field && !value){
+									value = data[i][metric.field];
+								}
 							}
 						}else{
-							value = data[i][metric.name];
+							value = data[i][metric.field||metric.name];
 						}
 
 						// 渲染函数
@@ -608,6 +686,38 @@ define(function(require, exports){
 			}
 			return tr;
 		},
+		// 扩展默认列属性
+		extendColConfig: function(col){
+			if (util.isString(col)){
+				col = {'name': col};
+			}
+			col = $.extend(
+				{
+					type: 'col',	// 列类型: col, id, index, select
+					name: null,
+					field: null,
+					text: null,
+					align: null,
+					width: 0,
+					format: null,
+					render: null
+				},
+				labels.get(col.name, 'type_'+col.type),
+				col
+			);
+
+			return col;
+		},
+		// 更新滚动条
+		updateScroller: function(){
+			var mod = this.$;
+			if(mod && mod.scrollerV){
+				mod.scrollerV.update();
+			}
+			if(mod && mod.scrollerV){
+				mod.scrollerH.update();
+			}
+		},
 		// 获取列表左上角top坐标值
 		getGridOffset: function(){
 			var el = this.$el.get(0);
@@ -644,6 +754,14 @@ define(function(require, exports){
 					space,			// 间距
 					elT, elD, elL, elR;	// DOM对象
 
+				// 同步高度-头部
+				elL = wrap.find('.M-HighGridListCornerTitle');
+				elR = wrap.find('.M-HighGridListHeaderTitle');
+				max = this._getMax(elL.height(), elR.height());
+				elL.height(max);
+				elR.height(max);
+
+
 				// 同步高度-汇总模块
 				elL = wrap.find('.M-HighGridListCornerAmount');
 				elR = wrap.find('.M-HighGridListHeaderAmount');
@@ -660,7 +778,7 @@ define(function(require, exports){
 
 				// 以浏览器高度作为表格的高度
 				var offset = this.$el.get(0).offsetTop;
-				var outsideWapper = this.$el.parents('.G-frameBodyContainer');
+				var outsideWapper = this.$el.parents('.'+c.wrapperClass);
 				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
 				// var extras = 20;	// 下边据
 				var extras = 0;
@@ -856,8 +974,10 @@ define(function(require, exports){
 			if(date){
 				util.extend(this.$sysParam, {
 					begindate: date.begindate,
-					enddate: date.enddate
+					enddate: date.enddate,
+					stastic_all_time: date.stastic_all_time || 0
 				});
+
 			}
 
 			this.showLoading();
@@ -928,8 +1048,25 @@ define(function(require, exports){
 			this.setConfig('param', cParam);
 			return this;
 		},
-		getParam: function(){
-			return this.$customParam;
+		getParam: function(all){
+			if(all){
+				var c = this.getConfig();
+				var ud;
+				var param = util.extend(
+					{},
+					c.param,
+					this.$sysParam,
+					this.$customParam,
+					{'page':ud, 'order':ud}
+				);
+				if (c.sub_exname){
+					param.subex_name = c.sub_exname;
+				}
+
+				return param;
+			}else{
+				return this.$customParam;
+			}
 		},
 		showLoading: function(){
 			var el = this.getDOM();
@@ -950,7 +1087,7 @@ define(function(require, exports){
 
 			this.$sort = name + (dom.hasClass('desc') ? '|1' : '|-1');
 
-			this.reload(null, {sort: this.$sort})
+			this.reload({sort: this.$sort});
 
 			return false;
 		},
@@ -1099,6 +1236,48 @@ define(function(require, exports){
 			}
 			return false;
 		},
+
+		/**
+		 * 显示/隐藏 指定列
+		 * @param  {String} name    列名
+		 * @param  {Boolean} bool 显示还是隐藏，默认是隐藏
+		 * @param  {String} type    主列还是副列，默认是主列
+		 */
+		toggleColumn: function(name, bool, type){
+			var doms = this.$doms;
+			if(!doms){}
+			var display = bool ? 'show': 'hide';
+			var isMain = !type || type == 'main';
+			var head = isMain ? doms.corner: doms.header;
+			var body = isMain ? doms.sidebar: doms.content;
+
+			// 头部
+			var headElms = head.find('tr:first td');
+			var elm = head.find('tr td[data-name="'+name+'"]');
+			if(elm && elm.length){
+				elm[display]();
+				var index = headElms.index(elm);
+
+				// 汇总栏隐藏
+				if(!isMain && this.getConfig('hasAmount')){
+					var amountElm = head.find('tr').eq(1).find('td');
+					amountElm.eq(index)[display]();
+				}
+
+				var bodyElm = body.find('tr');
+				if(bodyElm && bodyElm.length){
+					for (var i = 0; i < bodyElm.length; i++) {
+						$(bodyElm[i]).find('td').eq(index)[display]();
+					}
+				}else{
+					// 无数据
+				}
+			}else{
+				// 无此列
+			}
+
+			this.calculate();
+		},
 		/** ---------------- 响应 ---------------- **/
 		// 滚动条响应事件
 		onScroll: function(ev){
@@ -1147,8 +1326,7 @@ define(function(require, exports){
 
 			// 跳出JS执行线程，让浏览器线程先渲染
 			setTimeout(function(){
-				self.$.scrollerV.update();
-				self.$.scrollerH.update();
+				self.updateScroller();
 			}, 0);
 
 			// 再同步宽度 @todo
@@ -1158,15 +1336,13 @@ define(function(require, exports){
 		// 主菜单状态变动响应事件
 		onMenuToggle: function(ev){
 			this.calculate(true);
-			this.$.scrollerH.update();
-			this.$.scrollerV.update();
+			this.updateScroller();
 			return false;
 		},
 		// 右侧工具栏状态变动响应事件
 		onToolsToggle: function(ev){
 			this.calculate(true);
-			this.$.scrollerH.update();
-			this.$.scrollerV.update();
+			this.updateScroller();
 			return false;
 		},
 		// 响应指标组切换事件
@@ -1180,8 +1356,7 @@ define(function(require, exports){
 		onTabChange: function(ev){
 			this.calculate(true);
 			if(this.$){
-				this.$.scrollerH.update();
-				this.$.scrollerV.update();
+				this.updateScroller();
 			}
 			return false;
 		},
@@ -1209,21 +1384,11 @@ define(function(require, exports){
 		 * @return {Bool}     返回false拦截事件冒泡
 		 */
 		onExcelExport: function(ev){
-			var cfg = this.getConfig();
-			var ud;
-			var param = util.extend(
-				{},
-				cfg.param,
-				this.$sys_param,
-				this.getParam(),
-				{'page':ud, 'order':ud}
-			);
-			if (cfg.sub_exname){
-				param.subex_name = cfg.sub_exname;
-			}
+			var param = this.getParam(true);
 			delete param.format;
+
 			ev.returnValue = {
-				'url': cfg.url,
+				'type': this.getConfig('gridName'),
 				'param': param
 			};
 			return false;
@@ -1242,6 +1407,7 @@ define(function(require, exports){
 		// 获取过滤后的要显示的指标集
 		getMetrics: function(){
 			var c = this.getConfig();
+			var tab = c.tab || pubjs.config('default_tab_cols');
 
 			// 若无default_metrics 参数，则以 metrics 值作为默认值
 			var defMetrics = c.default_metrics;
@@ -1254,7 +1420,7 @@ define(function(require, exports){
 					// 支持"{组名}"过滤
 					var abbr = metrics[i].match(/{(.+)}/);
 					if(abbr){
-						name = c.tab[abbr[1]];
+						name = tab[abbr[1]];
 						if(util.isObject(name)){
 							arr = arr.concat(name.cols);
 						}
@@ -1303,7 +1469,7 @@ define(function(require, exports){
 				'target': null,
 				'refresh_time': 10,		// 刷新间隔
 				'refresh_auto': 0,		// 自动刷新中
-				'class': 'M-HighGridRefresh fl pr10'
+				'class': 'M-HighGridRefresh fl mr10'
 			});
 
 			// 自动刷新Timeout ID
@@ -1322,7 +1488,7 @@ define(function(require, exports){
 			}
 
 			this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
-			this.append('<button class="uk-button refNormal"><em /></button>');
+			this.append('<button title="'+LANG('刷新报表')+'" class="uk-button refNormal"><em /></button>');
 
 			var doms = this.$doms = {
 				check: el.find('.M-HighGridRefreshAuto'),
@@ -1417,7 +1583,10 @@ define(function(require, exports){
 			var ul = $('<ul></ul>');
 			$('<li data-name="default" class="'+c.style.tabItem+' '+c.style.tabActive+'">'+LANG('默认')+'<i class="uk-icon-caret-down"/></li>').appendTo(ul);
 			for (var i in data){
-				$('<li class="'+c.style.tabItem+'"/>').attr('data-name', i).text(data[i].text).appendTo(ul);
+				// 去除为null的情况
+				if(data[i]){
+					$('<li class="'+c.style.tabItem+'"/>').attr('data-name', i).text(data[i].text).appendTo(ul);
+				}
 			}
 			this.append(ul);
 
@@ -1429,7 +1598,7 @@ define(function(require, exports){
 		getTabData: function(){
 			// 优先级覆盖
 			var tabGrid = this.getConfig('tab');	// grid本身配置的tab参数
-			var tabGlobal = pubjs.config('default_tab_cols/group');// config.js文件中配置的全局tab参数
+			var tabGlobal = pubjs.config('default_tab_cols');// config.js文件中配置的全局tab参数
 			var data = tabGrid ? tabGrid : tabGlobal;
 
 			var filter = this.getConfig('metrics'); // 可显示的列
@@ -1459,6 +1628,9 @@ define(function(require, exports){
 									obj[name].cols.push(cols[i]);
 								}
 							}
+						}
+						if(!obj[name].cols.length){
+							obj[name] = null;
 						}
 					}
 				}
@@ -1619,7 +1791,7 @@ define(function(require, exports){
 
 			var td, cols, metric;
 			for (var e in data) {
-				if(e != 'default'){
+				if(e != 'default' && data[e]){
 					td = $('<td/>').appendTo(popwin.find('table tr'));
 					cols = data[e].cols;
 					$('<strong>'+data[e].text+'</strong>').appendTo(td);
@@ -1958,4 +2130,36 @@ define(function(require, exports){
 		}
 	});
 	exports.menu = Menu;
+
+	// 报表导出
+	var ExcelExport = common.excelExport.extend({
+		init: function(config, parent){
+			config = pubjs.conf(config, {
+				'data': null,
+				'title': LANG('导出报表'),
+				"url": '/api/dsp/export/',
+				'class': 'M-HighGridExport fl mr10'
+			});
+			this.Super('init', arguments);
+		},
+		afterBuild: function(){
+			var el = this.getDOM();
+			this.append($('<em title="'+this.getConfig('title')+'"/>'));
+			this.uiBind(el, 'click', 'eventButtonClick');
+		},
+		eventButtonClick: function(ev){
+			this.fire('excelExport',this.getConfig('data'),'afterFire');
+			return false;
+		},
+		afterFire: function(ev){
+			var data = ev.returnValue;
+
+			if (ev.count > 0 && data){
+				var url = this.getConfig('url')+data.type;
+				window.location.href = pubjs.data.resolve(url, data.param);
+			}
+		}
+	});
+	exports.excelExport = ExcelExport;
+
 });

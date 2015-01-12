@@ -165,7 +165,11 @@ define(function(require, exports){
 			}
 			return date;
 		}else{
-			return {"stastic_all_time":1};
+			return {
+				'stastic_all_time':1,
+				'begindate': null,
+				'enddate': null
+			};
 		}
 	}
 	exports.getDate = getDate;

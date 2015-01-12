@@ -284,6 +284,7 @@ define(function(require, exports){
 				if (el.css('position') == 'fixed'){
 					self.css({
 						'top': '50%',
+						'left': '50%',
 						'marginLeft': (-el.outerWidth() / 2) + 'px',
 						'marginTop': (-el.outerHeight() / 2) + 'px'
 					})
@@ -292,6 +293,7 @@ define(function(require, exports){
 					var sh = Math.max(DOC_ELEMENT.scrollTop, BODY_ELEMENT.scrollTop);
 					self.css({
 						'top': parseInt(sh + h, 10),
+						'left': '50%',
 						'marginLeft': (-el.outerWidth() / 2) + 'px'
 					});
 				}
