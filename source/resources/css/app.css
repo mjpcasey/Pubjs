@@ -475,24 +475,26 @@ label input {
   display: inline-block;
   cursor: pointer;
   position: relative;
-  border: 1px solid #CCC;
+  border: 1px solid #E3E3E3;
   border-radius: 0px;
   vertical-align: middle;
-  background: white;
-  background: -webkit-gradient(linear, 0 41%, 100% 0, from(#ffffff), to(#f7f7f7));
-  background: -webkit-linear-gradient(top, #ffffff, #f7f7f7);
-  background: -moz-linear-gradient(top, #ffffff, #f7f7f7);
-  background: -ms-linear-gradient(top, #ffffff, #f7f7f7);
-  background: -o-linear-gradient(top, #ffffff, #f7f7f7);
-  background: linear-gradient(top, #ffffff, #f7f7f7);
-  filter: "progid:DXImageTransform.Microsoft.Gradient(StartColorStr='#ffffff', EndColorStr='#f7f7f7', GradientType=0)";
-  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#f7f7f7', GradientType=0))";
+  background: #EEEEEE;
 }
 .M-commonDropdown .arrow {
   position: absolute;
-  top: 50%;
+  top: 0;
   right: 5px;
-  margin-top: -8px;
+}
+.M-commonDropdown .arrow i {
+  display: inline-block;
+  margin: 0 6px -2px;
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  content: " ";
+  border-width: 4px;
+  border-color: #9b9b9b transparent transparent transparent;
+  border-style: solid;
 }
 .M-commonDropdown .result {
   margin: 0 24px 0 8px;
@@ -509,7 +511,7 @@ label input {
   position: absolute;
   border-radius: 3px;
   border: 1px solid #CCC;
-  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
+  box-shadow: 2px 3px 9px #CCC;
 }
 .M-commonDropdown .list .search {
   padding: 5px;

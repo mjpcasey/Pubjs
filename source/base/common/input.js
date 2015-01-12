@@ -675,7 +675,10 @@ define(function(require, exports){
 			util.each(items, function(item, index){
 				var label = $('<label title="'+item[c.name]+'"/>').text(item[c.name]).appendTo(con);
 				var input = $('<input type="'+type+'"/>').prependTo(label);
-				input.attr('name', name).attr('value', index);
+				input.attr('name', name).attr({
+					'value': index,
+					'data-id': item[c.key]
+				});
 			});
 
 			if (self.$value !== null){

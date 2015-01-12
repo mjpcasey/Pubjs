@@ -34,24 +34,31 @@
 		display: inline-block;
 		cursor: pointer;
 		position: relative;
-		border: 1px solid #CCC;
+		border: 1px solid #E3E3E3;
 		border-radius: 0px;
 		vertical-align: middle;
-		background: white;
-		background: -webkit-gradient(linear, 0 41%, 100% 0, from(white), to(#F7F7F7));
-		background: -webkit-linear-gradient(top, white, #F7F7F7);
-		background: -moz-linear-gradient(top, white, #F7F7F7);
-		background: -ms-linear-gradient(top, white, #F7F7F7);
-		background: -o-linear-gradient(top, white, #F7F7F7);
-		background: linear-gradient(top, white, #F7F7F7);
-		filter: "progid:DXImageTransform.Microsoft.Gradient(StartColorStr='#ffffff', EndColorStr='#f7f7f7', GradientType=0)";
-		-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#f7f7f7', GradientType=0))";
+		background: #EEEEEE;
+		//background: white;
+		// background: -webkit-gradient(linear, 0 41%, 100% 0, from(white), to(#F7F7F7));
+		// background: -webkit-linear-gradient(top, white, #F7F7F7);
+		// background: -moz-linear-gradient(top, white, #F7F7F7);
+		// background: -ms-linear-gradient(top, white, #F7F7F7);
+		// background: -o-linear-gradient(top, white, #F7F7F7);
+		// background: linear-gradient(top, white, #F7F7F7);
+		// filter: "progid:DXImageTransform.Microsoft.Gradient(StartColorStr='#ffffff', EndColorStr='#f7f7f7', GradientType=0)";
+		// -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#ffffff', EndColorStr='#f7f7f7', GradientType=0))";
 
 		.arrow {
 			position: absolute;
-			top: 50%;
+			//top: 50%;
+			//margin-top: -8px;
+			top: 0;
 			right: 5px;
-			margin-top: -8px;
+			i {
+				display: inline-block;
+				margin: 0 6px -2px;
+				#lib >.triangle(4px,#9B9B9B transparent transparent transparent);
+			}
 		}
 
 		.result {
@@ -70,7 +77,8 @@
 			position: absolute;
 			border-radius: 3px;
 			border: 1px solid #CCC;
-			box-shadow: rgba(0,0,0,0.2) 0 2px 3px;
+			//box-shadow: rgba(0,0,0,0.2) 0 2px 3px;
+			box-shadow: 2px 3px 9px #CCC;
 			.search {
 				padding: 5px;
 				border-bottom: 1px solid #CCC;
