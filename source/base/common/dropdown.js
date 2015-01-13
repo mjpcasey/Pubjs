@@ -946,7 +946,9 @@ define(function(require, exports){
 			var self = this;
 			self.Super('hideOption', arguments);
 			if (!self.$show_option){
-				self.$doms.subOption.children().hide();
+				if (self.$doms.subOption) {
+					self.$doms.subOption.children().hide();
+				}
 				self.$subs_sels.splice(0, self.$subs_sels.length);
 			}
 			return self;
@@ -1005,11 +1007,11 @@ define(function(require, exports){
 			var sels = self.$subs_sels;
 			var opts = self.$options;
 			var data = [], index = [], opt = [];
-			var id, c;
+			var id, c = {};
 
 			for (id=0; id<lv; id++){
 				if (sels.length <= id){ return; }
-				c = subs[sels[id]];
+				c = subs[sels[id]] || {};
 				opt.push(opts[c.index]);
 				index.push(c.index);
 				data.push(c.id);

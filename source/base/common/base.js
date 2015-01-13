@@ -1329,6 +1329,31 @@ define(function(require, exports){
 			}
 			return tabs[name].body;
 		},
+		reset: function() {
+			var i, mod;
+			for(var i in this.getConfig('list')){
+				mod = this.get(i);
+				if(mod && util.isFunc(mod.reset)){
+					mod.reset();
+				}
+			}
+			return this;
+		},
+		setData: function(data, name) {
+			var i, mod;
+			this.$data = data;
+			if (name) {
+				mod = this.get(name);
+				if (mod && util.isFunc(mod.setData)) {
+					mod.setData(data);
+				}
+			} else {
+				util.each(this.getConfig('list'), function(item, name) {
+					this.setData(data, name);
+				}, this);
+			}
+			return this;
+		},
 		setParam: function(param){
 			this.$param = param;
 			var mod;
