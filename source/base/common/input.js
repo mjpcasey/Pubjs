@@ -609,7 +609,9 @@ define(function(require, exports){
 				// 是否显示搜索框
 				'search': false,
 				// 限制高度出现滚动条
-				'height': 0
+				'height': 0,
+				// 新建后马上广播事件
+				'autoChange': true
 			});
 
 			var self = this;
@@ -774,6 +776,9 @@ define(function(require, exports){
 				// 更新状态
 				con.find('input').prop('checked', false);
 				con.find('input[value="'+self.$index+'"]').prop('checked', true);
+				if(self.getConfig('autoChange')){
+					con.find('input[value="'+self.$index+'"]').change();
+				}
 			}
 			return self;
 		},
