@@ -115,15 +115,9 @@ z[12,12,0,0]			{addToSubgrid}			addToSubgrid.png			# 附加到子表格
 
 z[21,11,0,0]			{subgridArrow}			subgridArrow.png
 z[16,16,0,0]			{subgrid}				subgrid.png
-z[22,22,0,0]			{sweety}				sweety.png
-z[22,22,0,0]			{campaign}				campaign.png
 z[22,22,0,0]			{period}				period.png
 z[22,22,0,0]			{client}				client.png
-z[22,22,0,0]			{product}				product.png
-z[22,22,0,0]			{frequency}				frequency.png
-z[22,22,0,0]			{whisky}				whisky.png
 z[22,22,0,0]			{geo}					geo.png
-z[22,22,0,0]			{mediaAndAd}			mediaAndAd.png
 
 z[6,8,0,0]				{arrowUp}				arrowUp.png
 z[6,8,0,0]				{arrowDown}				arrowDown.png

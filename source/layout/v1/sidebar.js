@@ -12,10 +12,10 @@ define(function(require,exports) {
 				'class': 'M-sidebar',
 				/**
 				 * 子模块:
-				 * 	1、数组形式
-				 * 		[{name: 'xxx', uri:'xxx', config:'xxx'}];
-				 * 	2、对象形式
-				 * 		{name: uri}
+				 *	1、数组形式
+				 *		[{name: 'xxx', uri:'xxx', config:'xxx'}];
+				 *	2、对象形式
+				 *		{name: uri}
 				 */
 				'items': []
 			});
