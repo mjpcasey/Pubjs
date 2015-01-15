@@ -1752,7 +1752,7 @@ define(function(require, exports, module){
 	exports.checkDisplay = function(mod, type, callback){
 		// 判断当前模块是否处于显示状态（即有宽高）
 		var el = mod.getDOM();
-		if(el.width() && el.height()){
+		if(el.is(':visible')){
 			return true;
 		}else{
 			var id = mod._.guid + '/'+type;
@@ -1775,7 +1775,7 @@ define(function(require, exports, module){
 							var element = doms[i];
 
 							// 循环判断数组中元素是否处于显示状态
-							if(element.el.width() && element.el.height()){
+							if(element.el.is(':visible')){
 								// 执行回调函数
 								element.cb();
 
