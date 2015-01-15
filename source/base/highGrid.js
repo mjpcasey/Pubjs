@@ -51,6 +51,7 @@ define(function(require, exports){
 				'hasBatch': false,		// 是否有批量操作功能
 				'hasExport': true,		// 是否有导出控件
 				'hasRefresh': true,		// 是否有刷新控件
+				'hasAutoRefresh': false,// 是否有自动刷新控件
 				'hasAmount': true,		// 是否有总计模块
 				'hasPager': true,		// 是否有分页模块
 				'hasSubGrid': true,		// 是否有子表格模块
@@ -160,6 +161,7 @@ define(function(require, exports){
 			if (c.hasRefresh){
 				this.create('refresh', Refresh, {
 					'target': con,
+					'hasAuto': c.hasAutoRefresh,
 					'refreshTime': c.refreshTime,
 					'refreshAuto': c.refreshAuto
 				});
@@ -204,7 +206,6 @@ define(function(require, exports){
 			}else{
 				this.buildTable(); // 开始构建表格
 			}
-
 		},
 		buildTable: function(){
 			var c = this.getConfig();
@@ -1559,6 +1560,7 @@ define(function(require, exports){
 		init: function(config, parent){
 			config = pubjs.conf(config, {
 				'target': null,
+				'hasAuto': false,
 				'refreshTime': 10,		// 刷新间隔
 				'refreshAuto': 0,		// 自动刷新中
 				'class': 'M-HighGridRefresh fl mr10'
@@ -1578,8 +1580,9 @@ define(function(require, exports){
 			if (c.refreshAuto){
 				c.refreshAuto = (pubjs.storage(c.refresh_id) !== '0');
 			}
-
-			this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
+			if(c.hasAuto){
+				this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
+			}
 			this.append('<button title="'+LANG('刷新报表')+'" class="uk-button refNormal"><em /></button>');
 
 			var doms = this.$doms = {
