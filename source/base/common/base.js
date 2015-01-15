@@ -1285,6 +1285,9 @@ define(function(require, exports){
 					if(c.param) {
 						cfg.param = c.param;
 					}
+					if(c.config){
+						util.extend(cfg, c.config);
+					}
 					if(this.$param){
 						cfg.param = this.$param;
 					}

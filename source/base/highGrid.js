@@ -1205,14 +1205,12 @@ define(function(require, exports){
 				}
 			}
 		},
-		// 表格导出
-		eventExport: function(ev){
-			console.log('downloading')
-			return false;
-		},
 		// 表格切换
 		eventSwitch: function(ev){
-			console.log('switch to panel')
+			var c = this.getConfig();
+			pubjs.showSubgrid({
+				type: c.gridName
+			});
 			return false;
 		},
 		// 批量操作
@@ -1473,7 +1471,7 @@ define(function(require, exports){
 			var currentParam = {};
 			currentParam[key] = data._id;
 
-			var condition = this.getConfig('param/conditions')|| [];
+			var condition = this.getConfig('param/condition')|| [];
 			condition.push(currentParam);
 
 			/**
@@ -1489,7 +1487,7 @@ define(function(require, exports){
 				type: type,
 				title: data.Name+ '/' +ev.param.text,
 				param: {
-					'conditions': condition
+					'condition': condition
 				}
 			});
 
