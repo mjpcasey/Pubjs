@@ -1239,6 +1239,7 @@ define(function(require, exports){
 			doms.body.find('input').prop('checked', false);
 			doms.body.find('.M-commonSLCSubCount').hide();
 			this.$selected = null;
+			return this;
 		},
 		/**
 		 * 获取选中的区域数据

@@ -405,6 +405,7 @@ define(function(require, exports){
 				this.tagLabelsInput.$input.val("");
 			}
 			this.tagLabelsContainer.tagsBox.find("span").removeClass(c.tagContainer.tagAct);
+			return this;
 		}
 		/**
 		 * 检测总体高度与行高
