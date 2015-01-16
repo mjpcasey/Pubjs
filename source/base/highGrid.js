@@ -12,7 +12,6 @@ define(function(require, exports){
 	// var format = labels.format;
 	labels = labels.labels;
 
-
 	/**
 	 *	参数说明 -@todo
 	 *		@cols					主列（左侧）定义，
@@ -1514,7 +1513,11 @@ define(function(require, exports){
 			var currentParam = {};
 			currentParam[key] = data._id;
 
+			// 转JSON格式，是为了顾及子表格的导出功能，报表导出接口不是websocket的
 			var condition = this.getConfig('param/condition')|| [];
+			if(util.isString(condition)){
+				condition = JSON.parse(condition);
+			}
 			condition.push(currentParam);
 
 			/**
@@ -1530,7 +1533,7 @@ define(function(require, exports){
 				type: type,
 				title: data.Name+ '/' +ev.param.text,
 				param: {
-					'condition': condition
+					'condition': JSON.stringify(condition)
 				}
 			});
 
