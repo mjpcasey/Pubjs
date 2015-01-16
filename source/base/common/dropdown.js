@@ -629,7 +629,11 @@ define(function(require, exports){
 		// 获取选中的数据
 		getData: function(detail){
 			var self = this;
-			if (!detail){ return self.$data; }
+			var data = self.$data;
+			if (!detail){
+				// 返回拷贝数据，避免被污染
+				return data ? util.extend([], data) : data;
+			}
 
 			var idx, c = self.getConfig();
 			var opts = self.$options;
@@ -678,7 +682,7 @@ define(function(require, exports){
 			if (options){
 				self.$options = options;
 			}
-			self.$data = select;
+			self.$origin = self.$data = select;
 			self.$subs_sels = [];
 			self.updateSelected();
 			self.showResult();
