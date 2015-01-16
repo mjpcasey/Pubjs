@@ -1347,6 +1347,24 @@ define(function(require, exports){
 
 			// 重新计算
 			this.calculate(true);
+			this.updateScroller();
+		},
+		// 显隐指标分组指定栏
+		toggleTabColumn: function(name, bool){
+			var tab = this.$.tab;
+
+			// 字符串
+			if(util.isString(name)){
+				tab.toggleItem(name, bool);
+				return;
+			}
+			// 数组
+			if(util.isArray(name)){
+				for (var i = 0; i < name.length; i++) {
+					tab.toggleItem(name[i], bool);
+				}
+				return;
+			}
 		},
 		/** ---------------- 响应 ---------------- **/
 		// 滚动条响应事件
@@ -1689,6 +1707,10 @@ define(function(require, exports){
 				}
 			});
 
+			// 为了面板组的toggle功能
+			this.$tab = config.get('tab');
+			this.$current = util.clone(this.$tab);
+
 			this.Super('init', arguments);
 		},
 		afterBuild: function(){
@@ -1830,7 +1852,7 @@ define(function(require, exports){
 				// 创建popwin
 				this.create('tabPanel', TabPanel, {
 					'gridName': c.gridName,
-					'tab': c.tab,
+					'tab': this.$current,
 					'default_metrics': metrics,
 					'position':{
 						'mode': 'bottom, right',
@@ -1846,6 +1868,26 @@ define(function(require, exports){
 				}
 			}
 			return false;
+		},
+		// 显示隐藏选项卡
+		toggleItem: function(name, show){
+			var el = this.$el.find('li[data-name='+name+']');
+			if(!show ){
+				el.addClass('M-HighGridTabHide');
+			}else{
+				el.removeClass('M-HighGridTabHide');
+			}
+			this.updateTabConfig(name, show);
+		},
+		// 更新配置，使得面板模块跟随显隐指定的列
+		updateTabConfig: function(name, show){
+			var metrics = this.$tab[name];
+
+			if(show){
+				this.$current[name] = metrics;
+			}else{
+				this.$current[name] = null;
+			}
 		},
 		// 响应面板隐藏事件
 		onPanelHide: function(ev){
@@ -1910,7 +1952,7 @@ define(function(require, exports){
 			var td, cols, metric;
 			for (var e in data) {
 				if(e != 'default' && data[e]){
-					td = $('<td/>').appendTo(popwin.find('table tr'));
+					td = $('<td data-name="'+e+'"/>').appendTo(popwin.find('table tr'));
 					cols = data[e].cols;
 					$('<strong>'+data[e].text+'</strong>').appendTo(td);
 					for (var i = 0; i < cols.length; i++) {
