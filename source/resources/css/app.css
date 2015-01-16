@@ -3048,6 +3048,9 @@ li .M-autoComplete-text:hover .M-autoComplete-matchText {
   padding: 3px 0;
   margin: 0 0 0 14px;
 }
+.M-HighGridTabHide {
+  display: none;
+}
 .M-HighGridSubgrid {
   z-index: 3;
   opacity: 0.2;
