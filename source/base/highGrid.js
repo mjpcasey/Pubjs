@@ -16,7 +16,7 @@ define(function(require, exports){
 	/**
 	 *	参数说明 -@todo
 	 *		@cols					主列（左侧）定义，
-	 *			@metrics				副列（右侧），通常是指标列
+	 *		@metrics				副列（右侧），通常是指标列
 	 *			@sort					默认是为true
 	 *			@render					渲染函数，支持字符串和函数
 	 *			@headerRender			标题渲染函数
@@ -28,6 +28,13 @@ define(function(require, exports){
 	 *		@操作列
 	 *				支持cols中设置，也支持参数hasMenu
 	 *				cols{ type: 'op'}}
+	 *		@$sysParam:
+	 *			metrics
+	 *			page
+	 *			limit
+	 *			begindate、enddate
+	 *			stastic_all_time
+	 *
 	 */
 	var HighGrid = view.container.extend({
 		init: function(config, parent){
@@ -67,7 +74,7 @@ define(function(require, exports){
 				'refreshTime': 10,		// 刷新间隔
 				'refreshAuto': 0,		// 自动刷新中
 				'pager': null,			// 分页模块配置信息
-				'gridName': '',			// 本地缓存标识符，用于指标自定义分组
+				'gridName': '',			// 本地缓存标识符，用于自定义默认指标、报表导出
 
 				'style': {
 					'selected': 'M-HighGridListRowSelected',	// 选中样式
@@ -1022,10 +1029,14 @@ define(function(require, exports){
 					enddate: date.enddate,
 					stastic_all_time: date.stastic_all_time || 0
 				});
-
 			}
 
 			this.showLoading();
+
+			// 发送指标参数
+			if(!this.$sysParam.metrics){
+				this.$sysParam.metrics = this.getMetrics();
+			}
 
 			var customParam = this.getParam();
 			var param = util.extend({}, this.$sysParam, customParam);
@@ -1408,7 +1419,21 @@ define(function(require, exports){
 		onMetricsTabChange: function(ev){
 			var data = ev.param;
 			this.setConfig('metrics', data);
-			this.setData(this.$data);
+
+			/**
+			 * 说明
+			 *	原来的方式：
+			 *		一开始就已得到全部的指标，根据显示指标来创建指标列，不需要重新拉取数据；
+			 *		this.setData(this.$data);
+			 *	现在修改为：
+			 *		发送要显示的指标参数给后端，得到想要的指标，然后创建。
+			 *	暂时存在的问题：
+			 *		SSP的后端没配合这种处理，切指标组时候相当于做了无用的load操作
+			 */
+
+			this.$sysParam.metrics = data;
+			this.load();
+
 			return false;
 		},
 		// 响应选项卡事件
