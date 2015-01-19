@@ -1508,8 +1508,16 @@ define(function(require, exports){
 			var data = ev.param.data;
 			var type = ev.param.type;
 
+
 			var c = this.getConfig();
 			var key = c.subField || c.gridName;
+
+			// @todo 后端要求命名以_id结尾
+			var subgridConfig = pubjs.config('subgrid_field');
+			if(subgridConfig[key]){
+				key = subgridConfig[key] || (key +'_id');
+			}
+
 			var currentParam = {};
 			currentParam[key] = data._id;
 
