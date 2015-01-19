@@ -855,3 +855,62 @@
   top: 0;
   left: 0;
 }
+.M-switchAccountPanel {
+  width: 480px;
+}
+.M-switchAccountPanel .M-accountSearch {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  position: relative;
+  background-color: #eee;
+  padding: 8px 20px;
+}
+.M-switchAccountPanel .M-accountSearch .wrapper {
+  position: relative;
+}
+.M-switchAccountPanel .M-accountSearch .M-accountInput {
+  padding: 5px 22px 5px 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+.M-switchAccountPanel .M-accountSearch em {
+  position: absolute;
+  z-index: 30;
+  line-height: 20px;
+  right: 0px;
+  bottom: 5px;
+  height: 20px;
+  font-size: 20px;
+  font-style: normal;
+}
+.M-switchAccountPanel .M-accountBoxContainer {
+  height: 150px;
+  overflow: hidden;
+}
+.M-switchAccountPanel .M-accountBox {
+  padding: 0;
+}
+.M-switchAccountPanel .M-accountBox strong {
+  font-weight: 800;
+}
+.M-switchAccountPanel .M-accountBox .M-accountBoxItem {
+  cursor: pointer;
+  padding-left: 20px;
+  height: 48px;
+  border-bottom: 1px solid #ccc;
+}
+.M-switchAccountPanel .M-accountBox .M-accountBoxItem:last-child {
+  border-bottom: none;
+}
+.M-switchAccountPanel .M-accountBox .M-accountBoxItem:hover {
+  background: #f5f5f5;
+}
+.M-switchAccountPanel .M-accountBox .M-accountBoxItem p {
+  line-height: 200%;
+  font-size: 13px;
+  margin: 0;
+  padding: 0;
+}
+.M-switchAccountPanel .M-accountBox .M-accountBoxItem span {
+  color: #9c9c9c;
+}
