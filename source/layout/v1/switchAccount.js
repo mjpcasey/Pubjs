@@ -132,7 +132,7 @@ define(function(require,exports){
 				return '\\' + str;
 			});
 
-			//设定 hide 字段
+			//设定 hide 字段，hide字段决定是否显示，renderHtml渲染
 			account.hide = false;//先设置为全部可显示
 
 			var regS = new RegExp(keyword , "gi");

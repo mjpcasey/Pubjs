@@ -855,9 +855,6 @@
   top: 0;
   left: 0;
 }
-.M-switchAccountPanel {
-  width: 480px;
-}
 .M-switchAccountPanel .M-accountSearch {
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
