@@ -111,29 +111,20 @@ define(function(require,exports){
 			this.setData({keyword:''});
 		},
 		eventSelectAccount:function(account){
-			console.log(account);
+			
 			this.switchAccount(account);
 		},
 		accountFilter:function(keyword){
 			//优化搜索提示
 			var list = this.vm.$.accountList;
-			if (!keyword) {
-				for(var i in list){
-					list[i].hide = false;
-					this.renderAccount(list[i],'');
-				}
-			} else {
-				for (var i = 0; i < list.length; i++) {
-					this.renderAccount(list[i],keyword);
-				}
+			for (var i = 0; i < list.length; i++) {
+				this.renderAccount(list[i],keyword);
 			}
 			this.setData({accountList:list});
 		
 		},
 
 		renderAccount:function(account,keyword){
-			
-			//特殊符号 加转义
 			keyword = keyword || '';
 		
 			//处理关键字中正则的特殊字符
@@ -142,6 +133,7 @@ define(function(require,exports){
 			});
 
 			//设定 hide 字段
+			account.hide = false;//先设置为全部可显示
 
 			var regS = new RegExp(keyword , "gi");
 			function wrapTag(str,keyword){
