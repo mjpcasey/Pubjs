@@ -13,11 +13,11 @@ define(function(require,exports){
 					'keyword':'',
 					'accountList':[],
 					'accountListShow':[],
-					renderItem:this.renderAccount,
 					evOnInput:this.eventOnInput,
 					evSelectAccount:this.eventSelectAccount,
 					evClearInput:this.eventClearInput,
 				},
+				//TODO:需要配置
 				'urlSwitchAccount':'',
 
 			});
@@ -86,8 +86,7 @@ define(function(require,exports){
 				self.accountFilter(newval);
 
 			});
-			// this.vm.
-
+		
 		},
 
 		load:function(){
@@ -121,12 +120,11 @@ define(function(require,exports){
 			if (!keyword) {
 				for(var i in list){
 					list[i].hide = false;
-					list[i].renderHtml = this.renderAccount(list[i],'');
+					this.renderAccount(list[i],'');
 				}
 			} else {
 				for (var i = 0; i < list.length; i++) {
-					list[i].hide = list[i].name.indexOf(keyword) < 0 && list[i].email.indexOf(keyword) < 0;
-					list[i].renderHtml = this.renderAccount(list[i],keyword);
+					this.renderAccount(list[i],keyword);
 				}
 			}
 			this.setData({accountList:list});
@@ -137,17 +135,23 @@ define(function(require,exports){
 			
 			//特殊符号 加转义
 			keyword = keyword || '';
-			var oldKeyword = keyword;
+		
 			//处理关键字中正则的特殊字符
 			keyword = keyword.replace(/(\*|\.|\?|\+|\$|\^|\[|\]|\(|\)|\{|\}|\||\\|\/)/g, function(str){
 				return '\\' + str;
 			});
 
+			//设定 hide 字段
+
 			var regS = new RegExp(keyword , "gi");
-			var name = keyword && account.name ? account.name.replace(regS,'<strong>' + oldKeyword + '</strong>'):account.name,
-				email = keyword && account.email ? account.email.replace(regS,'<strong>' + oldKeyword + '</strong>'): account.email;
-			return  '<p>' + name + '</p>' + email;
-					
+			function wrapTag(str,keyword){
+				return keyword && str ? str.replace(regS,function(str){return '<strong>' + str + '</strong>';}):str;
+			}
+			if (regS.test(account.name) || regS.test(account.email)) {
+				  account.renderHtml = '<p>' + wrapTag(account.name,keyword) + '</p>' + wrapTag(account.email,keyword);
+			} else {
+				account.hide = true;
+			}		
 		},
 		switchAccount:function(account){
 			//请求后台切换账号
