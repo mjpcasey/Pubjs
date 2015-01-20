@@ -202,12 +202,14 @@ define(function(require, exports){
 				this.setConfig('metrics', custom ? custom.split(',') : this.getMetrics());
 			}
 
-			if (!c.data && c.auto_load && c.url){
-				// 如果当前模块是隐藏状态，放入队列，等显示时候再加载数据 --eg:选项卡情况
-				var isShowing = pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
-				if(isShowing){
-					// 更新列表数据
-					this.reload();
+			if (!c.data){
+				if (c.auto_load && c.url) {
+					// 如果当前模块是隐藏状态，放入队列，等显示时候再加载数据 --eg:选项卡情况
+					var isShowing = pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
+					if(isShowing){
+						// 更新列表数据
+						this.reload();
+					}
 				}
 			}else{
 				this.buildTable(); // 开始构建表格
