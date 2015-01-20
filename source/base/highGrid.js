@@ -12,7 +12,6 @@ define(function(require, exports){
 	// var format = labels.format;
 	labels = labels.labels;
 
-
 	/**
 	 *	参数说明 -@todo
 	 *		@cols					主列（左侧）定义，
@@ -203,12 +202,14 @@ define(function(require, exports){
 				this.setConfig('metrics', custom ? custom.split(',') : this.getMetrics());
 			}
 
-			if (!c.data && c.auto_load && c.url){
-				// 如果当前模块是隐藏状态，放入队列，等显示时候再加载数据 --eg:选项卡情况
-				var isShowing = pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
-				if(isShowing){
-					// 更新列表数据
-					this.reload();
+			if (!c.data){
+				if (c.auto_load && c.url) {
+					// 如果当前模块是隐藏状态，放入队列，等显示时候再加载数据 --eg:选项卡情况
+					var isShowing = pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
+					if(isShowing){
+						// 更新列表数据
+						this.reload();
+					}
 				}
 			}else{
 				this.buildTable(); // 开始构建表格
@@ -1509,12 +1510,24 @@ define(function(require, exports){
 			var data = ev.param.data;
 			var type = ev.param.type;
 
+
 			var c = this.getConfig();
 			var key = c.subField || c.gridName;
+
+			// @todo 后端要求命名以_id结尾
+			var subgridConfig = pubjs.config('subgrid_field');
+			if(subgridConfig[key]){
+				key = subgridConfig[key] || (key +'_id');
+			}
+
 			var currentParam = {};
 			currentParam[key] = data._id;
 
+			// 转JSON格式，是为了顾及子表格的导出功能，报表导出接口不是websocket的
 			var condition = this.getConfig('param/condition')|| [];
+			if(util.isString(condition)){
+				condition = JSON.parse(condition);
+			}
 			condition.push(currentParam);
 
 			/**
@@ -1530,7 +1543,7 @@ define(function(require, exports){
 				type: type,
 				title: data.Name+ '/' +ev.param.text,
 				param: {
-					'condition': condition
+					'condition': JSON.stringify(condition)
 				}
 			});
 
