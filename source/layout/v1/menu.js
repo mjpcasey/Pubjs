@@ -108,7 +108,7 @@ define(function(require,exports){
 				var index = -1, level = 0;
 				util.each(self.$menus, function(item, idx){
 					var arr = item.link.split(/[#\/]+/, 3);
-					if (arr[1] == module){
+					if (arr[1] == module || arr.slice(1, 3).join('/') == module){
 						if (level < 2){
 							level = 2;
 							index = idx;

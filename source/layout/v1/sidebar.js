@@ -9,8 +9,15 @@ define(function(require,exports) {
 	var Sidebar = view.container.extend({
 		init:function(config){
 			config = pubjs.conf(config, {
-				'items': [], // 子模块： 1 数组形式[{name: 'xxx', uri:'xxx'}, {...}]; 2 对象形式{name: uri}
-				'class': 'M-sidebar'
+				'class': 'M-sidebar',
+				/**
+				 * 子模块:
+				 *	1、数组形式
+				 *		[{name: 'xxx', uri:'xxx', config:'xxx'}];
+				 *	2、对象形式
+				 *		{name: uri}
+				 */
+				'items': []
 			});
 
 			this.$module = null; // 当前激活子模块
@@ -56,9 +63,13 @@ define(function(require,exports) {
 				for (i = 0; i < items.length; i++) {
 					name = items[i]['name'];
 					elm = $('<div class="M-sidebarLayout"/>').appendTo(container);
-					this.createDelay(name, items[i]['uri'], {
-						target: elm
-					});
+					this.createDelay(name, items[i]['uri'],
+						util.extend(
+							{},
+							items[i]['config'],
+							{'target': elm}
+						)
+					);
 
 					this.$items[name] = {
 						el: elm,
@@ -178,7 +189,8 @@ define(function(require,exports) {
 			config = pubjs.conf(config, {
 				'class': 'M-sidebarItem',
 				'width': 500,
-				'popwinItem': '' // 创建在弹框里的项目
+				'popwinItem': '',	// 创建在弹框里的项目
+				'popwinConfig': ''	// 弹框项目配置项
 			});
 
 			this.$data = [];		// 数据项

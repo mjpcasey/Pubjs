@@ -112,14 +112,23 @@ define(function(require, exports){
 			},
 			/**
 			 * 监听VM中的字段
-			 * @param  {String}          uri     要监听的字段属性链
+			 * @param  {String|Array}    uri     为字符串时是要监听的字段属性链，为数组时是要监听的一组值
 			 * @param  {Function|String} func    回调方法
 			 * @param  {Object}          context 回调作用域（默认为当前module）
 			 */
 			watch: function(uri, func, context) {
-				var name,
-					parent = this.$,
-					ns = (''+uri).split('/');
+				var ns,
+					name,
+					parent = this.$;
+
+				if (util.isArray(uri)) {
+					util.each(uri, function(item) {
+						this.watch(item, func, context);
+					}, this);
+					return;
+				}
+
+				ns = (''+uri).split('/');
 
 				while (ns.length){
 					name = ns.shift();

@@ -8,19 +8,27 @@ define(function(require, exports){
 	var menu = require('@base/common/menu');
 	var labels = require('@sys_labels').labels;
 
-
 	/**
-	 * 参数说明 -@todo
-	 * @cols					主列（左侧）定义，
-	 * @metrics					副列（右侧），通常是指标列
-	 *		@sort					默认是为true
-	 *		@render					渲染函数，支持字符串和函数
-	 *		@headerRender			标题渲染函数
-	 * @tab						tab 配置，如果没有就使用缺省配置；
-	 *		{
-	 *			"组名": true,			// 只传true时，以缺省配置补全
-	 *			"组名":{Object 具体配置}
-	 *		}
+	 *	参数说明 -@todo
+	 *		@cols					主列（左侧）定义，
+	 *		@metrics				副列（右侧），通常是指标列
+	 *			@sort					默认是为true
+	 *			@render					渲染函数，支持字符串和函数
+	 *			@headerRender			标题渲染函数
+	 *		@tab						tab 配置，如果没有就使用缺省配置；
+	 *			{
+	 *				"组名": true,			// 只传true时，以缺省配置补全
+	 *				"组名":{Object 具体配置}
+	 *			}
+	 *		@操作列
+	 *				支持cols中设置，也支持参数hasMenu
+	 *				cols{ type: 'op'}}
+	 *		@$sysParam:
+	 *			metrics
+	 *			page
+	 *			limit
+	 *			begindate、enddate
+	 *			stastic_all_time
 	 *
 	 */
 	var HighGrid = view.container.extend({
@@ -28,40 +36,40 @@ define(function(require, exports){
 			config = pubjs.conf(config, {
 				'target': parent,
 				'class': 'M-HighGrid',
+
 				'cols': [],				// 列定义,type:op,index,id
-				'data': null,			// 静态数据
-				'key': pubjs.config('grid/key')||'_id',
+				'metrics': [],			// 要显示的指标列，支持'{组名}'的形式过滤; 若不填，默认为tab参数中的cols的并集
+				'tab': null,			// 指标分组配置信息；{'组名':{"text":"String", "cols":[]}}
+				'subs': null,			// 子表格配置，eg: ['campaign', 'sweety']
 				'url': null,			// 远程数据地址
 				'param': {},			// 远程数据请求参数
-				"reqMethod":"get",		// 数据获取方式
-				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
-				'auto_load': true,		// 自动加载数据
-				'eventDataLoad': false, // 是否冒泡数据已加载完成事件
-
-				'hasRefresh': true,		// 刷新控件
-				'refresh_time': 10,		// 刷新间隔
-				'refresh_auto': 0,		// 自动刷新中
-
-				'hasSelect':false,		// 是否显示多选列
-				'hasAmount': true,		// 是否有总计模块
-				'hasPager': true,		// 是否有分页模块
-				'hasSubGrid': true,		// 是否显示子表格
-				'hasExport': true,		// 是否有导出模块
-				'hasSwitch': true,		// 是否有切换到对比表格
-				'hasBatch': false,		// 是否有批量操作
-
-				'metrics': [],			// 要显示的指标列，支持'{组名}'的形式过滤; 若不填，默认为tab参数中的cols的并集
-				'hasTab': true,			// 是否显示指标分组模块
-				'tab': null,			// 指标分组配置信息；{'组名':{"text":"String", "cols":[]}}
+				'data': null,			// 静态数据
 				'default_metrics': [],	// 指标分组中属于默认组的指标，支持'{组名}'的形式过滤; 若不填，默认为metrics参数的值
 				// 'default_sort': true,	// 默认栏目排序
 
-				'subs': null,			// 子表格配置，eg: ['campaign', 'sweety']
-				'subFilter': null,
+				'hasSelect':false,		// 是否有多选列
+				'hasMenu': false,		// 是否有操作列
+				'hasSwitch': false,		// 是否有"切换到对比表格"功能
+				'hasBatch': false,		// 是否有批量操作功能
+				'hasExport': true,		// 是否有导出控件
+				'hasRefresh': true,		// 是否有刷新控件
+				'hasAutoRefresh': false,// 是否有自动刷新控件
+				'hasAmount': true,		// 是否有总计模块
+				'hasPager': true,		// 是否有分页模块
+				'hasSubGrid': true,		// 是否有子表格模块
+				'hasTab': true,			// 是否有指标分组模块
 
+				'key': pubjs.config('grid/key')||'_id',
+				"reqMethod":"get",		// 数据获取方式
+				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
+				'subFilter': null,		// 子表格过滤函数
+				'subField': '',			// 用于子表格作为父行的标识，如果没有设置此值，缺省使用gridName作为父行标识
+				'auto_load': true,		// 自动加载数据
+				'eventDataLoad': false, // 是否冒泡数据已加载完成事件
+				'refreshTime': 10,		// 刷新间隔
+				'refreshAuto': 0,		// 自动刷新中
 				'pager': null,			// 分页模块配置信息
-
-				'gridName': '',			// 本地缓存标识符，用于指标自定义分组
+				'gridName': '',			// 本地缓存标识符，用于自定义默认指标、报表导出
 
 				'style': {
 					'selected': 'M-HighGridListRowSelected',	// 选中样式
@@ -92,7 +100,6 @@ define(function(require, exports){
 		},
 		// 初始化tab参数配置
 		initTabConfig: function(config){
-
 			var c = config.get();
 			var customValue = c.tab;
 			var defaultValue = pubjs.config('default_tab_cols');
@@ -156,8 +163,9 @@ define(function(require, exports){
 			if (c.hasRefresh){
 				this.create('refresh', Refresh, {
 					'target': con,
-					'refresh_time': c.refresh_time,
-					'refresh_auto': c.refresh_auto
+					'hasAuto': c.hasAutoRefresh,
+					'refreshTime': c.refreshTime,
+					'refreshAuto': c.refreshAuto
 				});
 			}
 
@@ -191,7 +199,12 @@ define(function(require, exports){
 			}
 
 			if (!c.data && c.auto_load && c.url){
-				this.load(); // 加载数据
+				// 如果当前模块是隐藏状态，放入队列，等显示时候再加载数据 --eg:选项卡情况
+				var isShowing = pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
+				if(isShowing){
+					// 更新列表数据
+					this.reload();
+				}
 			}else{
 				this.buildTable(); // 开始构建表格
 			}
@@ -285,6 +298,13 @@ define(function(require, exports){
 			var repeat = util.find(c.cols, 'select', 'type');
 			if(c.hasSelect && !repeat){
 				cols.unshift({"type":"select","name":"sel"});
+			}
+
+			// 自动根据hasMenu参数插入操作列
+			// 如果已有自定义的op，则不会重复添加
+			repeat = util.find(c.cols, 'op', 'type');
+			if(c.hasMenu && !repeat){
+				cols.unshift({"type":"op","name":"op"});
 			}
 
 			var dom = $([
@@ -467,6 +487,7 @@ define(function(require, exports){
 								className += ' tc';
 								hasDataType = true;
 							break;
+							// @todo 换成hasMenu方式
 							case 'op':			// 操作列
 								className += ' tc';
 								hasDataType = true;
@@ -481,16 +502,29 @@ define(function(require, exports){
 
 						var value = data[column.field || column.name];
 
-						if(column.render){
+						var render = column.render;
+						if(render){
+							var renderMethod;
+
 							// 函数
-							if(util.isFunc(column.render)){
-								html = column.render.call(this, ii, value, data, column);
+							if(util.isFunc(render)){
+								renderMethod = render;
 							}
 							// 字符串
-							if(util.isString(column.render)){
-								html = this[column.render].call(this, ii, value, data, column);
+							else if(util.isString(render)){
+								// 自定义函数
+								if(util.isFunc(this[render])){
+									renderMethod = this[render];
+								}
+								// 从label.js文件中获取渲染函数
+								else{
+									renderMethod = labels[render] || false;
+								}
 							}
+
+							html = renderMethod && renderMethod.call(this, ii, value, data, column);
 						}
+
 						if(column.width){
 							width = column.width;
 						}
@@ -577,12 +611,25 @@ define(function(require, exports){
 						// 渲染函数
 						render = metric.render;
 						if(render){
-							if (util.isFunc(render)) {
-								value = render(i, value, data[i], metric);
+							var renderMethod;
+
+							// 函数
+							if(util.isFunc(render)){
+								renderMethod = render;
 							}
-							if(util.isString(render)&& util.isFunc(this[render])){
-								value = this[render](i, value, data[i], metric);
+							// 字符串
+							else if(util.isString(render)){
+								// 自定义函数
+								if(util.isFunc(this[render])){
+									renderMethod = this[render];
+								}
+								// 从label.js文件中获取渲染函数
+								else{
+									renderMethod = labels[render]
+								}
 							}
+
+							value = renderMethod.call(this, i, value, data[i], metric);
 						}
 
 						// 格式化函数
@@ -832,9 +879,13 @@ define(function(require, exports){
 
 					space = elT.outerWidth() - elT.width();
 					max = this._getMax(elT.width(), elD.width());
-					sum = sum + max + space;
 					elT.width(max);
 					elD.width(max);
+
+					// 不计算被隐藏的列
+					if(elT.css('display') == 'none' && elD.css('display') == 'none'){max = 0; space = 0;}
+
+					sum = sum + max + space;
 				}
 				// 更新表格宽度值，使每一列能以计算值呈现出来
 				header.find('table').width(sum);
@@ -973,10 +1024,14 @@ define(function(require, exports){
 					enddate: date.enddate,
 					stastic_all_time: date.stastic_all_time || 0
 				});
-
 			}
 
 			this.showLoading();
+
+			// 发送指标参数
+			if(!this.$sysParam.metrics){
+				this.$sysParam.metrics = this.getMetrics();
+			}
 
 			var customParam = this.getParam();
 			var param = util.extend({}, this.$sysParam, customParam);
@@ -1002,7 +1057,7 @@ define(function(require, exports){
 			var mod = this.get('refresh');
 			if (mod){
 				mod.$doms.button.prop('disabled', false).removeClass('refing');
-				if (mod.getConfig('refresh_auto')){
+				if (mod.getConfig('refreshAuto')){
 					mod._toggleRefresh(1);
 					// 自动拉取时, 错误不更新不提示错误
 					if (err){ return; }
@@ -1156,14 +1211,12 @@ define(function(require, exports){
 				}
 			}
 		},
-		// 表格导出
-		eventExport: function(ev){
-			console.log('downloading')
-			return false;
-		},
 		// 表格切换
 		eventSwitch: function(ev){
-			console.log('switch to panel')
+			var c = this.getConfig();
+			pubjs.showSubgrid({
+				type: c.gridName
+			});
 			return false;
 		},
 		// 批量操作
@@ -1180,7 +1233,7 @@ define(function(require, exports){
 			el.find('tr[data-id="'+id+'"]').addClass('M-HighGridListRowHover');
 
 			// 子表格
-			if(c.subs){
+			if(c.hasSubGrid && c.subs){
 				if(this.$subgridId != id){
 					// 销毁旧模块
 					var mod = this.get('subgrid');
@@ -1232,7 +1285,6 @@ define(function(require, exports){
 			}
 			return false;
 		},
-
 		/**
 		 * 显示/隐藏 指定列
 		 * @param  {String} name    列名
@@ -1241,38 +1293,73 @@ define(function(require, exports){
 		 */
 		toggleColumn: function(name, bool, type){
 			var doms = this.$doms;
-			if(!doms){}
+			var c = this.getConfig();
 			var display = bool ? 'show': 'hide';
 			var isMain = !type || type == 'main';
 			var head = isMain ? doms.corner: doms.header;
 			var body = isMain ? doms.sidebar: doms.content;
+			var headElms = head.find('tr:first td'); // 头部
 
-			// 头部
-			var headElms = head.find('tr:first td');
-			var elm = head.find('tr td[data-name="'+name+'"]');
-			if(elm && elm.length){
-				elm[display]();
-				var index = headElms.index(elm);
+			function _toggleColumn(name){
+				var elm = head.find('tr td[data-name="'+name+'"]');
+				if(elm && elm.length){
+					elm[display]();
+					var index = headElms.index(elm);
 
-				// 汇总栏隐藏
-				if(!isMain && this.getConfig('hasAmount')){
-					var amountElm = head.find('tr').eq(1).find('td');
-					amountElm.eq(index)[display]();
-				}
+					// 汇总栏隐藏
+					if(!isMain && c.hasAmount){
+						var amountElm = head.find('tr').eq(1).find('td');
+						amountElm.eq(index)[display]();
+					}
 
-				var bodyElm = body.find('tr');
-				if(bodyElm && bodyElm.length){
-					for (var i = 0; i < bodyElm.length; i++) {
-						$(bodyElm[i]).find('td').eq(index)[display]();
+					var bodyElm = body.find('tr');
+					if(bodyElm && bodyElm.length){
+						for (var i = 0; i < bodyElm.length; i++) {
+							$(bodyElm[i]).find('td').eq(index)[display]();
+						}
 					}
 				}else{
-					// 无数据
+					pubjs.error('参数错误，查找不到名称为'+name+'的列');
+					return false;
 				}
-			}else{
-				// 无此列
 			}
 
-			this.calculate();
+			if(!doms){
+				pubjs.error('调用错误，HighGrid还未构建完成');
+				return false;
+			}
+
+			// 字符串
+			if(util.isString(name)){
+				_toggleColumn(name);
+			}
+			// 数组
+			if(util.isArray(name)){
+				for (var i = 0; i < name.length; i++) {
+					_toggleColumn(name[i]);
+				}
+			}
+
+			// 重新计算
+			this.calculate(true);
+			this.updateScroller();
+		},
+		// 显隐指标分组指定栏
+		toggleTabColumn: function(name, bool){
+			var tab = this.$.tab;
+
+			// 字符串
+			if(util.isString(name)){
+				tab.toggleItem(name, bool);
+				return;
+			}
+			// 数组
+			if(util.isArray(name)){
+				for (var i = 0; i < name.length; i++) {
+					tab.toggleItem(name[i], bool);
+				}
+				return;
+			}
 		},
 		/** ---------------- 响应 ---------------- **/
 		// 滚动条响应事件
@@ -1345,7 +1432,21 @@ define(function(require, exports){
 		onMetricsTabChange: function(ev){
 			var data = ev.param;
 			this.setConfig('metrics', data);
-			this.setData(this.$data);
+
+			/**
+			 * 说明
+			 *	原来的方式：
+			 *		一开始就已得到全部的指标，根据显示指标来创建指标列，不需要重新拉取数据；
+			 *		this.setData(this.$data);
+			 *	现在修改为：
+			 *		发送要显示的指标参数给后端，得到想要的指标，然后创建。
+			 *	暂时存在的问题：
+			 *		SSP的后端没配合这种处理，切指标组时候相当于做了无用的load操作
+			 */
+
+			this.$sysParam.metrics = data;
+			this.load();
+
 			return false;
 		},
 		// 响应选项卡事件
@@ -1396,6 +1497,50 @@ define(function(require, exports){
 				// 更新列表数据
 				this.reload();
 			}
+			return false;
+		},
+		// 子表格图标点击事件
+		onSubgridIconClick: function(ev){
+			var data = ev.param.data;
+			var type = ev.param.type;
+
+
+			var c = this.getConfig();
+			var key = c.subField || c.gridName;
+
+			// @todo 后端要求命名以_id结尾
+			var subgridConfig = pubjs.config('subgrid_field');
+			if(subgridConfig[key]){
+				key = subgridConfig[key] || (key +'_id');
+			}
+
+			var currentParam = {};
+			currentParam[key] = data._id;
+
+			// 转JSON格式，是为了顾及子表格的导出功能，报表导出接口不是websocket的
+			var condition = this.getConfig('param/condition')|| [];
+			if(util.isString(condition)){
+				condition = JSON.parse(condition);
+			}
+			condition.push(currentParam);
+
+			/**
+			 * config 说明
+			 * @property {String}   type            subgrid类型  在config app/subgrid中配置
+			 * @property {String}   name     [可选] 模块名称(传入相同名称在多次调用时不会创建新的模块)
+			 * @property {Object}   param    [可选] 模块参数
+			 * @property {String}   title    [可选] 菜单标题  可在subgrid配置中获取
+			 * @property {Object}   config   [可选] 模块配置
+			 * @property {Function} callback [可选] 模块回调
+			 */
+			pubjs.showSubgrid({
+				type: type,
+				title: data.Name+ '/' +ev.param.text,
+				param: {
+					'condition': JSON.stringify(condition)
+				}
+			});
+
 			return false;
 		},
 
@@ -1463,13 +1608,14 @@ define(function(require, exports){
 		init: function(config, parent){
 			config = pubjs.conf(config, {
 				'target': null,
-				'refresh_time': 10,		// 刷新间隔
-				'refresh_auto': 0,		// 自动刷新中
+				'hasAuto': false,
+				'refreshTime': 10,		// 刷新间隔
+				'refreshAuto': 0,		// 自动刷新中
 				'class': 'M-HighGridRefresh fl mr10'
 			});
 
 			// 自动刷新Timeout ID
-			this.$refresh_timeid = 0;
+			this.$refreshTimeId = 0;
 
 			this.Super('init', arguments);
 		},
@@ -1479,11 +1625,12 @@ define(function(require, exports){
 
 			// 读取记录的配置
 			c.refresh_id = 'grid_refresh' + this._.uri;
-			if (c.refresh_auto){
-				c.refresh_auto = (pubjs.storage(c.refresh_id) !== '0');
+			if (c.refreshAuto){
+				c.refreshAuto = (pubjs.storage(c.refresh_id) !== '0');
 			}
-
-			this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
+			if(c.hasAuto){
+				this.append('<span data-type="0" class="M-HighGridRefreshAuto" ><i></i>'+LANG("自动刷新")+'</span>');
+			}
 			this.append('<button title="'+LANG('刷新报表')+'" class="uk-button refNormal"><em /></button>');
 
 			var doms = this.$doms = {
@@ -1491,7 +1638,7 @@ define(function(require, exports){
 				button: el.find('button')
 			};
 			this.refreshCallBack = this.refreshCallBack.bind(this);
-			if (c.refresh_auto){
+			if (c.refreshAuto){
 				doms.check.find('i').addClass('act');
 				doms.check.attr('data-type', 1);
 			}
@@ -1499,7 +1646,7 @@ define(function(require, exports){
 			this.uiBind(doms.button, 'click', 'eventRefreshManual');
 		},
 		eventRefreshMode: function(evt, elm){
-			this.setConfig('refresh_auto', +$(elm).attr("data-type"));
+			this.setConfig('refreshAuto', +$(elm).attr("data-type"));
 			this.toggleRefresh();
 		},
 		eventRefreshManual: function(ev){
@@ -1510,11 +1657,11 @@ define(function(require, exports){
 			var self = this;
 			var c = self.getConfig();
 			if (mode === undefined){
-				mode = !c.refresh_auto;
+				mode = !c.refreshAuto;
 			}else {
 				mode = !!mode;
 			}
-			c.refresh_auto = mode;
+			c.refreshAuto = mode;
 			self._toggleRefresh(mode);
 			self.$doms.check
 				.attr("data-type",mode?1:0);
@@ -1527,23 +1674,23 @@ define(function(require, exports){
 			if (this.getDOM().width() > 0){
 				this.fire('refreshAuto');
 			}else {
-				this.$refresh_timeid = 0;
+				this.$refreshTimeId = 0;
 				this._toggleRefresh(1);
 			}
 		},
 		_toggleRefresh: function(mode){
 			var self = this;
 			if (mode){
-				if (!self.$refresh_timeid){
-					self.$refresh_timeid = setTimeout(
+				if (!self.$refreshTimeId){
+					self.$refreshTimeId = setTimeout(
 						self.refreshCallBack,
-						self.getConfig().refresh_time * 1000
+						self.getConfig().refreshTime * 1000
 					);
 				}
 			}else {
-				if (self.$refresh_timeid){
-					clearTimeout(self.$refresh_timeid);
-					self.$refresh_timeid = 0;
+				if (self.$refreshTimeId){
+					clearTimeout(self.$refreshTimeId);
+					self.$refreshTimeId = 0;
 				}
 			}
 			return self;
@@ -1566,6 +1713,10 @@ define(function(require, exports){
 					'tabActive': 'M-HighGridTabActive'			// 指标分组激活样式
 				}
 			});
+
+			// 为了面板组的toggle功能
+			this.$tab = config.get('tab');
+			this.$current = util.clone(this.$tab);
 
 			this.Super('init', arguments);
 		},
@@ -1708,7 +1859,7 @@ define(function(require, exports){
 				// 创建popwin
 				this.create('tabPanel', TabPanel, {
 					'gridName': c.gridName,
-					'tab': c.tab,
+					'tab': this.$current,
 					'default_metrics': metrics,
 					'position':{
 						'mode': 'bottom, right',
@@ -1724,6 +1875,26 @@ define(function(require, exports){
 				}
 			}
 			return false;
+		},
+		// 显示隐藏选项卡
+		toggleItem: function(name, show){
+			var el = this.$el.find('li[data-name='+name+']');
+			if(!show ){
+				el.addClass('M-HighGridTabHide');
+			}else{
+				el.removeClass('M-HighGridTabHide');
+			}
+			this.updateTabConfig(name, show);
+		},
+		// 更新配置，使得面板模块跟随显隐指定的列
+		updateTabConfig: function(name, show){
+			var metrics = this.$tab[name];
+
+			if(show){
+				this.$current[name] = metrics;
+			}else{
+				this.$current[name] = null;
+			}
 		},
 		// 响应面板隐藏事件
 		onPanelHide: function(ev){
@@ -1788,7 +1959,7 @@ define(function(require, exports){
 			var td, cols, metric;
 			for (var e in data) {
 				if(e != 'default' && data[e]){
-					td = $('<td/>').appendTo(popwin.find('table tr'));
+					td = $('<td data-name="'+e+'"/>').appendTo(popwin.find('table tr'));
 					cols = data[e].cols;
 					$('<strong>'+data[e].text+'</strong>').appendTo(td);
 					for (var i = 0; i < cols.length; i++) {
@@ -1950,11 +2121,20 @@ define(function(require, exports){
 					sub = c.subs[i];
 
 					if (util.isString(sub)){
-						lab = labels.get('highgrid_' + sub);
-						if (!lab){
+
+						// 命名兼容：highgrid_ 和 grid_
+						var nameAsHighgrid = 'highgrid_' + sub;
+						var nameAsGrid = 'grid_' + sub;
+
+						if(labels.has(nameAsHighgrid)){
+							lab = labels.get(nameAsHighgrid);
+						}else if( labels.has(nameAsGrid) ){
+							lab = labels.get(nameAsGrid);
+						}else{
 							pubjs.error('SubGrid Config Not Found - ' + sub);
 							continue;
 						}
+
 						sub = util.extend({'type':sub}, lab);
 					}else {
 						pubjs.error('SubGrid Config Not Found - ', sub);
@@ -1990,21 +2170,15 @@ define(function(require, exports){
 			this.uiBind(el, 'mouseenter', 'eventIconMouseenter');
 			this.uiBind(el, 'mouseleave', 'eventIconMouseleave');
 		},
-		/**
-		 * config 说明
-		 * @property {String}   type            subgrid类型  在config app/subgrid中配置
-		 * @property {String}   name     [可选] 模块名称(传入相同名称在多次调用时不会创建新的模块)
-		 * @property {Object}   param    [可选] 模块参数
-		 * @property {String}   title    [可选] 菜单标题  可在subgrid配置中获取
-		 * @property {Object}   config   [可选] 模块配置
-		 * @property {Function} callback [可选] 模块回调
-		 */
 		eventSubItemClick: function(ev){
 			var data = this.getConfig('data');
-			pubjs.showSubgrid({
+
+			this.fire('subgridIconClick', {
 				type: ev.data.type,
-				title: data.Name+ '/' +ev.data.text
+				text: ev.data.text,
+				data:data
 			});
+
 			return false;
 		},
 		eventIconMouseenter: function(ev, dom){

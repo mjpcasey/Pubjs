@@ -629,7 +629,11 @@ define(function(require, exports){
 		// 获取选中的数据
 		getData: function(detail){
 			var self = this;
-			if (!detail){ return self.$data; }
+			var data = self.$data;
+			if (!detail){
+				// 返回拷贝数据，避免被污染
+				return data ? util.extend([], data) : data;
+			}
 
 			var idx, c = self.getConfig();
 			var opts = self.$options;
@@ -678,7 +682,7 @@ define(function(require, exports){
 			if (options){
 				self.$options = options;
 			}
-			self.$data = select;
+			self.$origin = self.$data = select;
 			self.$subs_sels = [];
 			self.updateSelected();
 			self.showResult();
@@ -946,7 +950,9 @@ define(function(require, exports){
 			var self = this;
 			self.Super('hideOption', arguments);
 			if (!self.$show_option){
-				self.$doms.subOption.children().hide();
+				if (self.$doms.subOption) {
+					self.$doms.subOption.children().hide();
+				}
 				self.$subs_sels.splice(0, self.$subs_sels.length);
 			}
 			return self;
@@ -1005,11 +1011,11 @@ define(function(require, exports){
 			var sels = self.$subs_sels;
 			var opts = self.$options;
 			var data = [], index = [], opt = [];
-			var id, c;
+			var id, c = {};
 
 			for (id=0; id<lv; id++){
 				if (sels.length <= id){ return; }
-				c = subs[sels[id]];
+				c = subs[sels[id]] || {};
 				opt.push(opts[c.index]);
 				index.push(c.index);
 				data.push(c.id);

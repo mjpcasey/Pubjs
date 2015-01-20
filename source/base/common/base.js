@@ -1285,6 +1285,9 @@ define(function(require, exports){
 					if(c.param) {
 						cfg.param = c.param;
 					}
+					if(c.config){
+						util.extend(cfg, c.config);
+					}
 					if(this.$param){
 						cfg.param = this.$param;
 					}
@@ -1328,6 +1331,32 @@ define(function(require, exports){
 				name = this.$first;
 			}
 			return tabs[name].body;
+		},
+		reset: function() {
+			var list = this.getConfig('list');
+			var mod;
+			for(var i in list){
+				mod = this.get(i);
+				if(mod && util.isFunc(mod.reset)){
+					mod.reset();
+				}
+			}
+			return this;
+		},
+		setData: function(data, name) {
+			var mod;
+			this.$data = data;
+			if (name) {
+				mod = this.get(name);
+				if (mod && util.isFunc(mod.setData)) {
+					mod.setData(data);
+				}
+			} else {
+				util.each(this.getConfig('list'), function(item, name) {
+					this.setData(data, name);
+				}, this);
+			}
+			return this;
 		},
 		setParam: function(param){
 			this.$param = param;

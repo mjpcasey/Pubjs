@@ -259,10 +259,10 @@ define(function(require,exports){
 			var businessType = subgridConfig.type;
 			var cont = self.getItem(name);
 
-			if (util.isString(subgridConfig.title)) {
-				title = subgridConfig.title;
-			} else if (util.isFunc(subgridConfig.title)) {
+			if(util.isFunc(subgridConfig.title)){
 				title = subgridConfig.title.call(null, opts, subgridConfig);
+			}else{
+				title = title || subgridConfig.title;
 			}
 
 			if (!util.isArray(modulesConfig)) {
