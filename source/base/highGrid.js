@@ -262,9 +262,9 @@ define(function(require, exports){
 					util.extend(c.pager, {'target': el.find('.M-HighGridPager')}),
 					function(mod){
 						mod.setup({
-							'total': data.total,
-							'size': (data.size || undefined),
-							'page': (data.page || undefined)
+							'total': (data && data.total || 0),
+							'size': (data && data.size || undefined),
+							'page': (data && data.page || undefined)
 						});
 					}
 				);
