@@ -65,7 +65,18 @@
 .G-frameHeadMenu li.act a {
   cursor: default;
 }
+.G-frameHeadCtrl {
+  float: right;
+  height: 50px;
+  line-height: 50px;
+  margin-left: 10px;
+}
+.G-frameHeadCtrlMsg i {
+  font-size: 15px;
+  color: #a1a1a1;
+}
 .G-frameHeadLanguage {
+  display: none;
   float: right;
   height: 50px;
 }
@@ -239,24 +250,28 @@
   left: 0;
   width: 100%;
 }
-.G-frameBodyContent {
-  overflow: hidden;
+.G-frameBodyMain {
   position: relative;
   zoom: 1;
   margin-left: 200px;
   background: #ffffff;
   min-height: 0 !important;
 }
-.G-frameBodyContent:after {
-  content: " ";
-  display: table;
-  clear: both;
-}
-.G-frameBodyContent.act_left {
+.G-frameBodyMain.act_left {
   margin-left: 0;
 }
-.G-frameBodyContent.act_right {
+.G-frameBodyMain.act_right {
   margin-right: 0;
+}
+.G-frameBodyContent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .G-frameBodyTools {
   width: 200px;

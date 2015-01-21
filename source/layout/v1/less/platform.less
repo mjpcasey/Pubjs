@@ -80,7 +80,21 @@
 			}
 		}
 
+		&Ctrl {
+			float: right;
+			height: @varHeadHeight;
+			line-height: 50px;
+			margin-left: 10px;
+			&Msg {
+				i {
+					font-size: 15px;
+					color: #a1a1a1;
+				}
+			}
+		}
+
 		&Language {
+			display: none;
 			float: right;
 			height: @varHeadHeight;
 			a {
@@ -291,8 +305,7 @@
 			}
 		}
 
-		&Content {
-			overflow: hidden;
+		&Main {
 			position: relative;
 
 			zoom: 1;
@@ -307,11 +320,11 @@
 			// 	width: 100%;
 			// }
 
-			&:after{
-				content: " ";
-				display: table;
-				clear: both;
-			}
+			// &:after{
+			// 	content: " ";
+			// 	display: table;
+			// 	clear: both;
+			// }
 
 			&.act_left {
 				margin-left: 0;
@@ -320,6 +333,28 @@
 				margin-right: 0;
 			}
 		}
+
+		&Content {
+			position: absolute;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+
+		// &MsgWrap {
+		// 	position: absolute;
+		// 	left: 3px;
+		// 	right: 3px;
+		// 	top: 2px;
+		// 	height: 32px;
+		// 	line-height: 32px;
+		// 	box-shadow: rgba(0,0,0,.3) 1px 1px 3px;
+		// 	z-index: 100;
+		// }
 
 		&Tools {
 			width: 200px;

@@ -46,6 +46,7 @@ define(function(require,exports){
 								'<ul class="G-frameHeadMenu"/>',
 								'<div class="G-frameHeadAdminSwitch" />',
 								'<div class="G-frameHeadToolbar"/>',
+								'<div class="G-frameHeadCtrl" />',
 								'<div class="G-frameHeadLanguage">',
 									'<a href="#i18n/zhCN" title="中文" class="G-frameHeadLanguageCN"/>',
 									'<a href="#i18n/enUS" title="English" class="G-frameHeadLanguageEN"/>',
@@ -62,7 +63,9 @@ define(function(require,exports){
 								'</div>',
 								'<div class="G-frameBodyMenuFooter"/>',
 							'</div>',
-							'<div class="G-frameBodyContent" />',
+							'<div class="G-frameBodyMain">',
+								'<div class="G-frameBodyContent" />',
+							'</div>',
 						'</div>',
 					'</div>',
 				'</div>',
@@ -80,6 +83,7 @@ define(function(require,exports){
 				'logo': $('.G-frameHeadLogo', body),
 				'head': $('.G-frameHead', body),
 				'toolbar': $('.G-frameHeadToolbar', body),
+				'ctrl': $('.G-frameHeadCtrl', body),
 				'adminSwitch': $('.G-frameHeadAdminSwitch', body),
 				'body': $('.G-frameBody', body),
 				'titleCon': $('.G-frameBodyTitle', body),
@@ -90,6 +94,7 @@ define(function(require,exports){
 				'menuListWrapper': $('.G-frameBodyMenuListWrapper', body),
 				'menuList': $('.G-frameBodyMenuList', body),
 				'footer': $('.G-frameBodyMenuFooter', body),
+				'main': $('.G-frameBodyMain', body),
 				'container': $('.G-frameBodyContent', body),
 				'login_container': $('.G-frameLoginContainer', body),
 				'SCENES_MAIN': $('#SCENES_MAIN'),
@@ -104,7 +109,6 @@ define(function(require,exports){
 			// 初始化动态内容
 			var C = app.config;
 			// body.toggleClass('G-frameWideScreen', (WIN.screen.availWidth > 1024));
-
 
 			// 依次创建子模块
 			var mods = self.$config.get('modules');
@@ -144,7 +148,7 @@ define(function(require,exports){
 			var headHeight = self.$headHeight;
 
 			doms.menuListWrapper.height(h-headHeight);
-			doms.container.height(h-headHeight);
+			doms.main.height(h-headHeight);
 
 			return this;
 		},
@@ -239,6 +243,7 @@ define(function(require,exports){
 					attr: {'container-name': name}
 				});
 
+
 			}else {
 				if (scenes){
 					cont.appendTo(self.getDOM(scenes + '_container'));
@@ -331,7 +336,7 @@ define(function(require,exports){
 			doms.menu.toggleClass('act', !self.$menuHide);
 			doms.menuFlex.toggleClass('act', !self.$menuHide);
 			doms.menuFlexIcon.toggleClass('uk-icon-anchor', !self.$menuHide);
-			doms.container.toggleClass('act_left', !self.$menuHide);
+			doms.main.toggleClass('act_left', !self.$menuHide);
 
 			// 更新状态
 			self.$menuHide = !self.$menuHide;
