@@ -82,13 +82,13 @@
 .G-frameHeadLanguageEN {
   background: url(../images/language/en-us.png) no-repeat;
 }
-.G-frameHeadSwitch {
+.G-frameHeadAdminSwitch {
   float: right;
   font-size: 1.2em;
   color: #a1a1a1;
   cursor: pointer;
 }
-.G-frameHeadSwitch ul {
+.G-frameHeadAdminSwitch ul {
   height: 50px;
   line-height: 50px;
   padding: 0 20px !important;
@@ -96,16 +96,16 @@
   background: #000;
   text-align: center;
 }
-.G-frameHeadSwitch ul.act {
+.G-frameHeadAdminSwitch ul.act {
   background: #ab0000;
 }
-.G-frameHeadSwitch ul.act a {
+.G-frameHeadAdminSwitch ul.act a {
   color: #ffffff;
 }
-.G-frameHeadSwitch li {
+.G-frameHeadAdminSwitch li {
   width: 100%;
 }
-.G-frameHeadSwitch li a {
+.G-frameHeadAdminSwitch li a {
   line-height: 50px;
   font-size: 13px;
   text-decoration: none;
@@ -113,24 +113,24 @@
   display: inline-block;
   height: 50px;
 }
-.G-frameHeadSwitch li a:hover {
+.G-frameHeadAdminSwitch li a:hover {
   color: #ffffff;
 }
-.G-frameHeadSwitch li a i {
+.G-frameHeadAdminSwitch li a i {
   margin: 0 4px;
   line-height: 50px;
   height: 50px;
 }
-.G-frameHeadSwitch li.act {
+.G-frameHeadAdminSwitch li.act {
   display: none;
 }
-.G-frameHeadSwitch li.act_hide {
+.G-frameHeadAdminSwitch li.act_hide {
   display: none;
 }
-.G-frameHeadSwitch li.admin i {
+.G-frameHeadAdminSwitch li.admin i {
   float: right;
 }
-.G-frameHeadSwitch li.list i {
+.G-frameHeadAdminSwitch li.list i {
   float: left;
 }
 .G-frameBody {
@@ -163,14 +163,24 @@
   z-index: 100;
   cursor: pointer;
 }
-.G-frameBodyMenuFlex i {
-  position: absolute;
-  top: 50%;
-  left: 4px;
-  color: #d6d6d6;
-}
 .G-frameBodyMenuFlex.act {
   display: block;
+}
+.G-frameBodyMenuFlexIcon {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  color: #fff;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.G-frameBodyMenuFlex .angle_double_left {
+  background: url(../images/angle_double_left.png) no-repeat;
+}
+.G-frameBodyMenuFlex .pin {
+  background: url(../images/pin.png) no-repeat;
 }
 .G-frameBodyMenuListWrapper {
   min-height: 0 !important;
@@ -377,6 +387,22 @@
 }
 .G-frameBodySidebarFlex.act {
   display: block;
+}
+.G-frameBodySidebarFlexIcon {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  color: #fff;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.G-frameBodySidebarFlex .angle_double_right {
+  background: url(../images/angle_double_right.png) no-repeat;
+}
+.G-frameBodySidebarFlex .pin {
+  background: url(../images/pin.png) no-repeat;
 }
 .G-frameBodySidebarWrapper {
   height: 100%;

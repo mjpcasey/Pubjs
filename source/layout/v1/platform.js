@@ -44,7 +44,7 @@ define(function(require,exports){
 									'<a href="/"><img border="0"/></a>',
 								'</div>',
 								'<ul class="G-frameHeadMenu"/>',
-								'<div class="G-frameHeadSwitch" />',
+								'<div class="G-frameHeadAdminSwitch" />',
 								'<div class="G-frameHeadToolbar"/>',
 								'<div class="G-frameHeadLanguage">',
 									'<a href="#i18n/zhCN" title="中文" class="G-frameHeadLanguageCN"/>',
@@ -55,7 +55,7 @@ define(function(require,exports){
 						'<div class="G-frameBody G-frameBodyFull">',
 							'<div class="G-frameBodyMenu">',
 								'<div class="G-frameBodyMenuFlex" data-type="menu">',
-									'<i class="G-frameBodyMenuFlexIcon uk-icon-angle-double-left" ></i>',
+									'<i class="G-frameBodyMenuFlexIcon angle_double_left" ></i>',
 								'</div>',
 								'<div class="G-frameBodyMenuListWrapper">',
 									'<div class="G-frameBodyMenuList"/>',
@@ -330,7 +330,7 @@ define(function(require,exports){
 
 			doms.menu.toggleClass('act', !self.$menuHide);
 			doms.menuFlex.toggleClass('act', !self.$menuHide);
-			doms.menuFlexIcon.toggleClass('uk-icon-anchor', !self.$menuHide);
+			doms.menuFlexIcon.toggleClass('pin', !self.$menuHide);
 			doms.container.toggleClass('act_left', !self.$menuHide);
 
 			// 更新状态

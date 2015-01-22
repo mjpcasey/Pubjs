@@ -87,7 +87,7 @@ define(function(require,exports) {
 			self.$sidebar = $([
 				'<div class="G-frameBodySidebar">',
 					'<div class="G-frameBodySidebarFlex">',
-						'<i class="G-frameBodySidebarIcon  angle_double_right"/>',
+						'<i class="G-frameBodySidebarFlexIcon  angle_double_right"/>',
 					'</div>',
 					'<div class="G-frameBodySidebarWrapper">',
 						'<div class="G-frameBodySidebarContent"/>',
@@ -268,7 +268,7 @@ define(function(require,exports) {
 			self.$sidebar = $([
 				'<div class="G-frameBodySidebar">',
 					'<div class="G-frameBodySidebarFlex">',
-						'<i class="G-frameBodySidebarIcon  angle_double_right"/>',
+						'<i class="G-frameBodySidebarFlexIcon  angle_double_right"/>',
 					'</div>',
 					'<div class="G-frameBodySidebarWrapper">',
 						'<div class="G-frameBodySidebarContent"/>',
