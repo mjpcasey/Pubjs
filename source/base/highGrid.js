@@ -825,19 +825,21 @@ define(function(require, exports){
 					elR.height(max);
 				}
 
-				var offset = 0;
-
 				// 以浏览器高度作为表格的高度
 				if(!c.wrapperClass){
-					offset = this.$el.get(0).offsetTop;
 					c.wrapperClass = 'G-frameBodyContainer';
 				}
 
 				var outsideWapper = this.$el.parents('.'+c.wrapperClass);
 				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
 
+				// 由于下面是按照wrapper的height来计算的，而offset是从border开始算起，所以el和wrapper的相对偏移需要去掉wrapper的padding-top和border-top
+				var outsideWapperPt = parseInt(outsideWapper.css('padding-top'), 10) || 0;
+				var outsideWapperBt = parseInt(outsideWapper.css('border-top'), 10) || 0;
+				var outsideWapperTop = outsideWapper.offset().top + outsideWapperPt + outsideWapperBt;
+				var offset = this.$el.offset().top - outsideWapperTop;
 
-				// var extras = 20;	// 下边据
+				// var extras = 20;	// 下边据由outsideWapper的padding-bottom决定
 				var extras = 0;
 				var border = 2+1;	// 边框
 				var gridHeader = wrap.find('.M-HighGridHeader').outerHeight();
