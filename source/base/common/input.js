@@ -508,7 +508,7 @@ define(function(require, exports){
 	 */
 	var TimeRange = view.container.extend({
 		init: function(config){
-			config = pubjs.conf(config, {
+			config = pubjs.conf(0, config, {
 				'items': [
 					LANG('小时'), LANG('天'), LANG('周'),
 					LANG('月'), LANG('季'), LANG('年')

@@ -80,7 +80,7 @@ define(function(require, exports){
 					'highlight': 'M-HighGridListRowHighlight'	// 高亮样式
 				},
 
-				'wrapperClass': 'G-frameBodyContainer'			// 参照物标识符，计算高宽时使用
+				'wrapperClass': ''			// 参照物标识符，计算高宽时使用
 			});
 
 			this.$data = config.get('data');
@@ -825,10 +825,18 @@ define(function(require, exports){
 					elR.height(max);
 				}
 
+				var offset = 0;
+
 				// 以浏览器高度作为表格的高度
-				var offset = this.$el.get(0).offsetTop;
+				if(!c.wrapperClass){
+					offset = this.$el.get(0).offsetTop;
+					c.wrapperClass = 'G-frameBodyContainer';
+				}
+
 				var outsideWapper = this.$el.parents('.'+c.wrapperClass);
 				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
+
+
 				// var extras = 20;	// 下边据
 				var extras = 0;
 				var border = 2+1;	// 边框
@@ -1516,8 +1524,10 @@ define(function(require, exports){
 
 			// @todo 后端要求命名以_id结尾
 			var subgridConfig = pubjs.config('subgrid_field');
-			if(subgridConfig[key]){
-				key = subgridConfig[key] || (key +'_id');
+			if(subgridConfig && subgridConfig[key]){
+				key = subgridConfig[key];
+			}else{
+				key = key +'_id';
 			}
 
 			var currentParam = {};
@@ -2222,6 +2232,8 @@ define(function(require, exports){
 			if(!this.get('menu')){
 				var ids = this.getConfig('grid').getValue('selects');
 				this.fire('batchShow', ids,'afterFire');
+
+
 				// return false;
 			}else{
 				this.hide();
