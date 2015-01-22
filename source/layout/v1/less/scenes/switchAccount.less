@@ -1,0 +1,45 @@
+.M-switchAccountPanel{
+
+	.M-accountSearch{
+		border-top:1px solid #ccc;
+		border-bottom:1px solid #ccc;
+		position:relative;
+		background-color:#eee;
+		padding:8px 20px;
+
+		.wrapper{position:relative;}
+		.M-accountInput{padding:5px 22px 5px 6px;border:1px solid #ccc;width:100%;}
+		em{
+			position:absolute;
+			z-index:30;
+			line-height:20px;
+			right:0px;
+			bottom:5px;
+			height:20px;
+			font-size:20px;
+			font-style:normal;
+		}
+	}
+
+	.M-accountBoxContainer{height:150px;overflow:hidden;}
+
+	
+	.M-accountBox{
+		padding:0;
+
+		strong{font-weight:800;}
+
+		.M-accountBoxItem{
+			cursor:pointer;
+			padding-left:20px;
+			height:48px;
+			border-bottom:1px solid #ccc;
+
+			&:last-child{border-bottom:none;}
+			&:hover{background:#f5f5f5;}
+			
+			p{line-height:200%;font-size:13px;margin:0;padding:0;}
+			span{color:#9c9c9c}
+		}
+	}
+}
