@@ -186,7 +186,7 @@ define(function(require, exports){
 			var self = this;
 			var c = self.getConfig();
 
-			// 生成到处按钮
+			// 生成导出按钮
 			var exp = c['export'];
 			if (exp){
 				if (!exp.target){
