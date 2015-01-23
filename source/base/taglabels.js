@@ -727,6 +727,7 @@ define(function(require, exports){
 			this.$innerBody.empty();
 			this.$type = -1;
 
+			var c = this.getConfig();
 			if (c.data) {
 				this.setData(c.data);
 			}
