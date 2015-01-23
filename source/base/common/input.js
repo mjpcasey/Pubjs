@@ -533,7 +533,7 @@ define(function(require, exports){
 			var c = this.getConfig();
 			c.selected = +ev.param.selected;
 			this.fire('changeTimeRange', {
-				selected: (c.selected ? c.selected : 6),
+				selected: c.selected,
 				item: ev.param.item
 			});
 			return false;
@@ -551,21 +551,15 @@ define(function(require, exports){
 			var sel = this.getConfig('selected');
 			if (util.index(items, sel) != null){
 				// 粒度已经被禁用, 变为小时粒度
-				this.setData(6);
+				this.setData(0);
 			}
 			return this;
 		},
 		getData: function(detail){
 			var item = this.$.buttons.getData(true);
-			if (!item.id){
-				item.id = 6;
-			}
 			return detail ?  item : item.id;
 		},
 		setData: function(sid){
-			if (sid == 6){
-				sid = 0;
-			}
 			var btns = this.$.buttons;
 			btns.setData.apply(btns, arguments);
 			this.setConfig('selected', sid);
