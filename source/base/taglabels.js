@@ -723,14 +723,16 @@ define(function(require, exports){
 				return false;
 			}
 		},
-		reset: function(){
-			this.$innerBody.empty();
+		// emptyData: 是否清空data
+		reset: function(emptyData){
 			this.$type = -1;
-
+			if (emptyData) {
+				this.$innerBody.empty();
+			}
 			return this;
 		},
 		setData: function(data){
-		this.reset();
+			this.reset(true);
 			this.$data = data;
 			var c = this.getConfig();
 
