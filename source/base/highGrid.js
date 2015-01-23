@@ -66,7 +66,6 @@ define(function(require, exports){
 				'key': pubjs.config('grid/key')||'_id',
 				"reqMethod":"get",		// 数据获取方式
 				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
-				'subFilter': null,		// 子表格过滤函数
 				'subField': '',			// 用于子表格作为父行的标识，如果没有设置此值，缺省使用gridName作为父行标识
 				'auto_load': true,		// 自动加载数据
 				'eventDataLoad': false, // 是否冒泡数据已加载完成事件
@@ -74,6 +73,9 @@ define(function(require, exports){
 				'refreshAuto': 0,		// 自动刷新中
 				'pager': null,			// 分页模块配置信息
 				'gridName': '',			// 本地缓存标识符，用于自定义默认指标、报表导出
+
+				'subFilter': null,		// 子表格过滤函数
+				'formatData': null,		// 格式化数据函数
 
 				'style': {
 					'selected': 'M-HighGridListRowSelected',	// 选中样式
@@ -1088,6 +1090,12 @@ define(function(require, exports){
 			}
 
 			var c = this.getConfig();
+
+			// 格式化数据
+			if(c.formatData && util.isFunc(c.formatData)){
+				data = c.formatData(data);
+			}
+
 			this.setData(data);
 			if(c.eventDataLoad){
 				this.fire("gridDataLoad",data);

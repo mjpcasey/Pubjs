@@ -219,7 +219,7 @@ define(function(require, exports){
 			// 设置图表数据
 			if(self.$list && self.$list.length){
 				self.setData(self.$list);
-			}else if (c.autoLoad){
+			}else if (c.autoLoad && c.url){
 				self.load();
 			}
 			self.fire('sizeChange');
