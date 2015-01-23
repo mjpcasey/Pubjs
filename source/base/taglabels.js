@@ -726,6 +726,12 @@ define(function(require, exports){
 		reset: function(){
 			this.$innerBody.empty();
 			this.$type = -1;
+
+			var c = this.getConfig();
+			if (c.data) {
+				this.setData(c.data);
+			}
+			return this;
 		},
 		setData: function(data){
 			this.reset();
