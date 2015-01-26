@@ -881,59 +881,215 @@
   top: 0;
   left: 0;
 }
-.M-switchAccountPanel .M-accountSearch {
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
+.M-userToolbar {
+  float: right;
   position: relative;
-  background-color: #eee;
-  padding: 8px 20px;
+  line-height: 50px;
+  height: 50px;
+  font-size: 14px;
+  color: #a1a1a1;
+  margin-left: 10px;
 }
-.M-switchAccountPanel .M-accountSearch .wrapper {
+.M-userToolbarConBox {
   position: relative;
+  min-width: 145px;
+  _width: 145px;
+  float: right;
+  height: 50px;
+  line-height: 50px;
+  color: #a1a1a1;
+  cursor: pointer;
+  margin-left: 10px;
 }
-.M-switchAccountPanel .M-accountSearch .M-accountInput {
-  padding: 5px 22px 5px 6px;
-  border: 1px solid #ccc;
+.M-userToolbarConBox:hover {
+  color: #FFFFFF;
+}
+.M-userToolbarConBox.act {
+  color: #FFFFFF;
+}
+.M-userToolbarConBox .resultCon {
+  float: right;
+  height: 50px;
+}
+.M-userToolbarConBox .resultCon .email {
+  display: block;
+  padding-top: 4px;
+  line-height: 40px;
+  text-align: right;
+  font-size: 14px;
+}
+.M-userToolbarConBox .resultCon .email.act {
+  line-height: 25px !important;
+}
+.M-userToolbarConBox .btnCon {
+  margin-left: 14px;
+  margin-right: 25px;
+  float: right;
+  height: 50px;
+  line-height: 50px;
+  font-size: 16px;
+}
+.M-userToolbarConUserInfo {
+  border-bottom: 1px solid #cdcdcd;
+}
+.M-userToolbarConAmount {
+  border-bottom: 1px solid #cdcdcd;
+}
+.M-userToolbarConUserlist {
+  min-height: 200px;
   width: 100%;
 }
-.M-switchAccountPanel .M-accountSearch em {
-  position: absolute;
-  z-index: 30;
-  line-height: 20px;
-  right: 0px;
-  bottom: 5px;
-  height: 20px;
-  font-size: 20px;
+.M-userInfoDetailCon {
+  font-size: 14px;
+  padding: 10px 0 0 20px;
+}
+.M-userInfoDetailCon div {
+  margin: 0 0 5px 0;
+  padding-bottom: 10px;
+}
+.M-userInfoDetailCon div strong {
+  margin: 0 15px 0 0;
+}
+.M-userInfoDetailCon div strong {
+  color: #555;
+  font-size: 18px;
+  line-height: 30px;
+}
+.M-userInfoDetailCon div em {
+  color: #555;
+  clear: both;
   font-style: normal;
 }
-.M-switchAccountPanel .M-accountBoxContainer {
-  height: 150px;
+.M-userInfoDetailCon div em:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  height: 0;
+  overflow: hidden;
+  font-size: 0;
+  font-family: Arial;
+  line-height: 0;
+}
+.M-userInfoDetailCon div span {
+  padding: 0;
+  margin-right: 30px;
+}
+.M-userInfoDetailCon div b {
+  font-size: 12px;
+  margin: 0;
+  font-weight: normal;
+}
+.M-userInfoDetailCon ul.opList {
+  margin: 0;
+  padding: 0;
+  display: block;
+  overflow: hidden;
+  height: 1.2em;
+  margin-bottom: 10px;
+}
+.M-userInfoDetailCon ul.opList li {
+  display: block;
+  float: left;
+  height: 1.2em;
+  padding: 0 13px;
+  overflow: hidden;
+  line-height: 1em;
+  margin: 0 0 0 -1px;
+  border-left: 1px solid #30aeeb;
+}
+.M-userInfoDetailCon ul.opList li a {
+  color: #498fca;
+}
+.M-userInfoDetailCon ul.opList li a:hover {
+  color: #3399ff;
+}
+.M-userInfoDetailCon ul.opList li:nth-child(1) {
+  padding: 0 13px 0 0;
+  border-left: none;
+}
+.M-amountDetailCon {
+  font-size: 14px;
+  padding: 10px 20px;
+}
+.M-amountDetailCon ul {
+  margin: 0;
+  padding: 0;
   overflow: hidden;
 }
-.M-switchAccountPanel .M-accountBox {
-  padding: 0;
+.M-amountDetailCon ul li {
+  color: #555;
+  line-height: 30px;
 }
-.M-switchAccountPanel .M-accountBox strong {
-  font-weight: 800;
+.M-amountDetailCon ul p {
+  margin: 0 0 0 4px;
+  float: none;
+  text-align: left;
+  display: inline-block;
 }
-.M-switchAccountPanel .M-accountBox .M-accountBoxItem {
+.M-amountDetailCon ul span {
+  color: #555;
+  font-size: 16px;
+}
+.M-amountDetailCon ul em {
+  color: #555;
+  font-style: normal;
+}
+.M-userlistDetailCon .searchCon {
+  background: #EEEEEE;
+  height: 44px;
+  text-align: center;
+  line-height: 40px;
+  position: relative;
+}
+.M-userlistDetailCon .searchCon input {
+  width: 90%;
+}
+.M-userlistDetailCon .searchCon i {
+  position: absolute;
+  color: #C7C7C7;
+  right: 28px;
+  top: 15px;
+  font-size: 14px;
   cursor: pointer;
-  padding-left: 20px;
-  height: 48px;
-  border-bottom: 1px solid #ccc;
+  font-style: normal;
 }
-.M-switchAccountPanel .M-accountBox .M-accountBoxItem:last-child {
-  border-bottom: none;
+.M-userlistDetailCon .searchCon i:hover {
+  color: #888;
 }
-.M-switchAccountPanel .M-accountBox .M-accountBoxItem:hover {
-  background: #f5f5f5;
+.M-userlistDetailCon .searchCon i.cancel {
+  top: 1px;
+  font-size: 20px;
+  right: 26px;
 }
-.M-switchAccountPanel .M-accountBox .M-accountBoxItem p {
-  line-height: 200%;
-  font-size: 13px;
+.M-userlistDetailCon .listCon {
+  height: 200px;
+}
+.M-userlistDetailCon .listCon ul {
   margin: 0;
   padding: 0;
 }
-.M-switchAccountPanel .M-accountBox .M-accountBoxItem span {
-  color: #9c9c9c;
+.M-userlistDetailCon .listCon ul li {
+  height: 40px;
+  border-bottom: 1px solid #ccc;
+  line-height: 18px;
+  padding: 5px 20px;
+  font-size: 13px;
+  color: #AAAAAA;
+  cursor: pointer;
+}
+.M-userlistDetailCon .listCon ul li strong {
+  color: #555555;
+}
+.M-userlistDetailCon .listCon ul li em {
+  font-style: normal;
+}
+.M-userlistDetailCon .listCon ul li:hover {
+  background: #F5F5F5;
+}
+.M-userlistDetailCon .listCon ul .hoverClass {
+  background: #F5F5F5;
+}
+.M-userlistDetailCon .listCon ul .act {
+  background: green;
 }

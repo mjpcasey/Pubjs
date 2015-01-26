@@ -464,6 +464,7 @@ label input {
 }
 .M-commonScroller:hover > div,
 .M-commonScroller.act > div {
+  opacity: 0.3;
   padding: 4px !important;
   border-radius: 8px;
 }
@@ -476,11 +477,13 @@ label input {
   cursor: pointer;
 }
 .M-commonScroller div:hover {
+  opacity: 0.3;
   background: #999;
   padding: 4px !important;
   border-radius: 8px;
 }
 .M-commonScroller.act div {
+  opacity: 0.3;
   background: #999;
   padding: 4px !important;
   border-radius: 8px;

@@ -1,0 +1,230 @@
+.M-userToolbar {
+	float: right;
+	position:relative;
+	line-height: 50px;
+	height: 50px;
+	font-size: 14px;
+	color: #a1a1a1;
+	margin-left: 10px;
+
+	&Con {
+		&Box{
+			position:relative;
+			min-width: 145px;
+			_width: 145px;
+			float: right;
+			height: 50px;
+			line-height: 50px;
+			color: #a1a1a1;
+			cursor: pointer;
+			margin-left: 10px;
+
+			&:hover{
+				color: #FFFFFF;
+			}
+			&.act {
+				color: #FFFFFF;
+			}
+
+			.resultCon {
+				float: right;
+				height: 50px;
+
+				.email, {
+					display: block;
+					padding-top: 4px;
+					line-height: 40px;
+					text-align: right;
+					font-size: 14px;
+					&.act {
+						line-height: 25px !important;
+					}
+				}
+			}
+
+			.btnCon{
+				margin-left: 14px;
+				margin-right: 25px;
+				float: right;
+				height: 50px;
+				line-height: 50px;
+				font-size: 16px;
+			}
+		}
+
+		&UserInfo {
+			border-bottom: 1px solid #cdcdcd;
+		}
+
+		&Amount {
+			border-bottom: 1px solid #cdcdcd;
+		}
+
+		&Userlist {
+			min-height: 200px;
+			width: 100%;
+		}
+
+	}
+}
+
+.M-userInfoDetail {
+	&Con {
+		font-size: 14px;
+		padding: 10px 0 0 20px;
+		div {
+			margin: 0 0 5px 0;
+			padding-bottom: 10px;
+			strong {
+				margin: 0 15px 0 0;
+			}
+			strong {
+				color: #555;
+				font-size: 18px;
+				line-height: 30px;
+			}
+			em {
+				color: #555;
+				#lib > .clearFix;
+				font-style: normal;
+			}
+			span {
+				padding: 0;
+				margin-right: 30px;
+			}
+			b {
+				font-size: 12px;
+				margin: 0;
+				font-weight: normal;
+			}
+		}
+
+		ul.opList {
+			margin: 0;
+			padding: 0;
+			display:block;
+			overflow:hidden;
+			height:1.2em;
+			margin-bottom: 10px;
+			li {
+				display:block;
+				float:left;
+				height:1.2em;
+				padding:0 13px;
+				overflow:hidden;
+				line-height:1em;
+				margin:0 0 0 -1px;
+				border-left:1px solid #30aeeb;
+				a {
+					color: #498fca;
+					&:hover {
+						color: #3399ff;
+					}
+				}
+			}
+			li:nth-child(1) {
+				padding:0 13px 0 0;
+				border-left: none;
+			}
+		}
+
+	}
+}
+
+.M-amountDetail {
+	&Con {
+		font-size: 14px;
+		padding: 10px 20px;
+		ul {
+			margin: 0;
+			padding: 0;
+			overflow:hidden;
+			li {
+				color:#555;
+				line-height: 30px;
+			}
+			p {
+				margin: 0 0 0 4px;
+				float: none;
+				text-align: left;
+				display: inline-block;
+			}
+			span {
+				color:#555;
+				font-size:16px;
+			}
+			em {
+				color: #555;
+				font-style: normal;
+			}
+		}
+	}
+}
+
+.M-userlistDetail {
+	&Con {
+		.searchCon {
+			background: #EEEEEE;
+			height: 44px;
+			text-align: center;
+			line-height: 40px;
+			position: relative;
+			input {
+				width: 90%;
+			}
+			i {
+				position: absolute;
+				color: #C7C7C7;
+				right: 28px;
+				top: 15px;
+				font-size: 14px;
+				cursor: pointer;
+				font-style: normal;
+				&:hover {
+					color: #888;
+				}
+			}
+			i.cancel {
+				top: 1px;
+				font-size: 20px;
+				right: 26px;
+			}
+		}
+		.listCon {
+				height: 200px;
+			ul{
+				margin: 0;
+				padding: 0;
+				li {
+					height: 40px;
+					border-bottom: 1px solid #ccc;
+					line-height: 18px;
+					padding: 5px 20px;
+					font-size: 13px;
+					color: #AAAAAA;
+					cursor: pointer;
+					strong {
+						//font-weight: normal;
+						color: #555555;
+					}
+					em {
+						font-style: normal;
+					}
+					&:hover {
+						background: #F5F5F5;
+					}
+				}
+				.hoverClass {
+					background: #F5F5F5;
+				}
+				.act {
+					background: green;
+				}
+
+				li:nth-child(even) {
+					//background: #F5F5F5;
+				}
+			}
+		}
+	}
+}
