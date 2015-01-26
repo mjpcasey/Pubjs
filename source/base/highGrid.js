@@ -62,7 +62,6 @@ define(function(require, exports){
 				'key': pubjs.config('grid/key')||'_id',
 				"reqMethod":"get",		// 数据获取方式
 				"reqType": "ajax",		// 默认通信方式使用ajax，可选websocket
-				'subFilter': null,		// 子表格过滤函数
 				'subField': '',			// 用于子表格作为父行的标识，如果没有设置此值，缺省使用gridName作为父行标识
 				'auto_load': true,		// 自动加载数据
 				'eventDataLoad': false, // 是否冒泡数据已加载完成事件
@@ -71,12 +70,15 @@ define(function(require, exports){
 				'pager': null,			// 分页模块配置信息
 				'gridName': '',			// 本地缓存标识符，用于自定义默认指标、报表导出
 
+				'subFilter': null,		// 子表格过滤函数
+				'formatData': null,		// 格式化数据函数
+
 				'style': {
 					'selected': 'M-HighGridListRowSelected',	// 选中样式
 					'highlight': 'M-HighGridListRowHighlight'	// 高亮样式
 				},
 
-				'wrapperClass': 'G-frameBodyContainer'			// 参照物标识符，计算高宽时使用
+				'wrapperClass': ''			// 参照物标识符，计算高宽时使用
 			});
 
 			this.$data = config.get('data');
@@ -822,10 +824,20 @@ define(function(require, exports){
 				}
 
 				// 以浏览器高度作为表格的高度
-				var offset = this.$el.get(0).offsetTop;
+				if(!c.wrapperClass){
+					c.wrapperClass = 'G-frameBodyContainer';
+				}
+
 				var outsideWapper = this.$el.parents('.'+c.wrapperClass);
 				outsideWapper = outsideWapper.length ? outsideWapper: this.$el;
-				// var extras = 20;	// 下边据
+
+				// 由于下面是按照wrapper的height来计算的，而offset是从border开始算起，所以el和wrapper的相对偏移需要去掉wrapper的padding-top和border-top
+				var outsideWapperPt = parseInt(outsideWapper.css('padding-top'), 10) || 0;
+				var outsideWapperBt = parseInt(outsideWapper.css('border-top'), 10) || 0;
+				var outsideWapperTop = outsideWapper.offset().top + outsideWapperPt + outsideWapperBt;
+				var offset = this.$el.offset().top - outsideWapperTop;
+
+				// var extras = 20;	// 下边据由outsideWapper的padding-bottom决定
 				var extras = 0;
 				var border = 2+1;	// 边框
 				var gridHeader = wrap.find('.M-HighGridHeader').outerHeight();
@@ -1074,6 +1086,12 @@ define(function(require, exports){
 			}
 
 			var c = this.getConfig();
+
+			// 格式化数据
+			if(c.formatData && util.isFunc(c.formatData)){
+				data = c.formatData(data);
+			}
+
 			this.setData(data);
 			if(c.eventDataLoad){
 				this.fire("gridDataLoad",data);
@@ -1512,8 +1530,10 @@ define(function(require, exports){
 
 			// @todo 后端要求命名以_id结尾
 			var subgridConfig = pubjs.config('subgrid_field');
-			if(subgridConfig[key]){
-				key = subgridConfig[key] || (key +'_id');
+			if(subgridConfig && subgridConfig[key]){
+				key = subgridConfig[key];
+			}else{
+				key = key +'_id';
 			}
 
 			var currentParam = {};
@@ -2218,6 +2238,8 @@ define(function(require, exports){
 			if(!this.get('menu')){
 				var ids = this.getConfig('grid').getValue('selects');
 				this.fire('batchShow', ids,'afterFire');
+
+
 				// return false;
 			}else{
 				this.hide();

@@ -186,7 +186,7 @@ define(function(require, exports){
 			var self = this;
 			var c = self.getConfig();
 
-			// 生成到处按钮
+			// 生成导出按钮
 			var exp = c['export'];
 			if (exp){
 				if (!exp.target){
@@ -219,7 +219,7 @@ define(function(require, exports){
 			// 设置图表数据
 			if(self.$list && self.$list.length){
 				self.setData(self.$list);
-			}else if (c.autoLoad){
+			}else if (c.autoLoad && c.url){
 				self.load();
 			}
 			self.fire('sizeChange');

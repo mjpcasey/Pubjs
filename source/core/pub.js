@@ -1746,13 +1746,15 @@ define(function(require, exports, module){
 		}
 	}
 
-	// 判断当前容器是否处于显示状态，
-	// 若否，放入定时器函数中，等待显示时才执行回调函数
+	// 监控容器是否处于显示状态，可见时则执行回调函数
 	var doms = [], timerId;
-	exports.checkDisplay = function(mod, type, callback){
+	exports.checkDisplay = function(mod, type, callback, context /*,...param*/){
 		// 判断当前模块是否处于显示状态（即有宽高）
 		var el = mod.getDOM();
+		var param = [].slice.call(arguments, 4);
+		context = context || mod;
 		if(el.is(':visible')){
+			callback.apply(context, param);
 			return true;
 		}else{
 			var id = mod._.guid + '/'+type;
@@ -1760,9 +1762,11 @@ define(function(require, exports, module){
 			if(!util.find(doms, id, 'id')){
 				// 放入全局数组
 				doms.push({
-					id: id,			// 唯一id: 模块+消息类型
-					el: el,			// DOM元素
-					cb: callback	// 回调函数
+					id: id,			   // 唯一id: 模块+消息类型
+					el: el,			   // DOM元素
+					context: context,  // 回调运行域
+					param: param,      // 回调参数
+					cb: callback	   // 回调函数
 				});
 			}
 
@@ -1777,7 +1781,7 @@ define(function(require, exports, module){
 							// 循环判断数组中元素是否处于显示状态
 							if(element.el.is(':visible')){
 								// 执行回调函数
-								element.cb();
+								element.cb.apply(element.context, element.param);
 
 								// 并把它从数组中去除
 								doms.splice(i, 1);
@@ -1794,6 +1798,16 @@ define(function(require, exports, module){
 			}
 
 		}
+	}
+	// 取消监听可见回调
+	// @param type [可选] 不传则取消该模块的所有监听
+	exports.uncheckDisplay = function(mod, type) {
+		var guid = mod._.guid;
+		util.each(doms, function(item) {
+			if (type === UDF && item.id.split('/').shift() == guid || item.id == guid + '/' + type) {
+				return null;
+			}
+		});
 	}
 
 });
