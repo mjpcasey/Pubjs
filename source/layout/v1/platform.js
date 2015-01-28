@@ -47,8 +47,6 @@ define(function(require,exports){
 								'<div class="G-frameHeadAdminSwitch" />',
 								'<div class="G-frameHeadToolbar"/>',
 								'<div class="G-frameHeadLanguage">',
-									'<a href="#i18n/zhCN" title="中文" class="G-frameHeadLanguageCN"/>',
-									'<a href="#i18n/enUS" title="English" class="G-frameHeadLanguageEN"/>',
 								'</div>',
 							'</div>',
 						'</div>',
@@ -79,6 +77,7 @@ define(function(require,exports){
 				'wrapper': $('.G-frameWrapper', body),
 				'logo': $('.G-frameHeadLogo', body),
 				'head': $('.G-frameHead', body),
+				'language': $('.G-frameHeadLanguage', body),
 				'toolbar': $('.G-frameHeadToolbar', body),
 				'adminSwitch': $('.G-frameHeadAdminSwitch', body),
 				'body': $('.G-frameBody', body),
@@ -120,8 +119,6 @@ define(function(require,exports){
 				.find('img').attr('src', C('app_logo/small'));
 
 			doms.footer.html(C('app_footer'));
-
-			self.uiProxy(body, '.G-frameHeadLanguage > a', 'click', 'eventSwitchLang');
 
 			self.uiBind(document, 'mousemove mouseout','eventToggleFlexBtn');
 			self.uiBind(doms.menuFlex, 'click', 'eventToggleMenu');
@@ -272,13 +269,6 @@ define(function(require,exports){
 
 				}
 			});
-		},
-		// 语言切换响应事件
-		eventSwitchLang: function(evt, elm){
-			var lang = $(elm).attr('href').substr(6);
-			app.i18n.load(lang);
-			location.reload();
-			return false;
 		},
 		// 窗口大小改变更新高度
 		eventResizeSyncHeight: function(evt, elm){
