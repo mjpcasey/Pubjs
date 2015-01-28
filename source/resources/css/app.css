@@ -504,7 +504,7 @@ label input {
   white-space: nowrap;
   height: 100%;
 }
-.M-commonDropdown .list {
+.M-commonDropdownList {
   left: -1px;
   z-index: 99;
   cursor: default;
@@ -514,16 +514,16 @@ label input {
   border: 1px solid #CCC;
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
 }
-.M-commonDropdown .list .search {
+.M-commonDropdownList .search {
   padding: 5px;
   border-bottom: 1px solid #CCC;
   position: relative;
 }
-.M-commonDropdown .list .search input {
+.M-commonDropdownList .search input {
   width: auto;
   display: block;
 }
-.M-commonDropdown .list .btnSearch {
+.M-commonDropdownList .btnSearch {
   background-image: url("../images/icons.png?0112");
   background-repeat: no-repeat;
   background-position: -48px -64px;
@@ -534,7 +534,7 @@ label input {
   right: 9px;
   cursor: pointer;
 }
-.M-commonDropdown .list .btnCancel {
+.M-commonDropdownList .btnCancel {
   position: absolute;
   top: 9px;
   right: 9px;
@@ -546,11 +546,11 @@ label input {
   width: 20px;
   height: 20px;
 }
-.M-commonDropdown .list .btnCancel:hover {
+.M-commonDropdownList .btnCancel:hover {
   background-image: url("../images/icons_act.png?0112");
   background-repeat: no-repeat;
 }
-.M-commonDropdown .list .dragIcon {
+.M-commonDropdownList .dragIcon {
   position: absolute;
   bottom: 0;
   right: 0;
@@ -563,11 +563,11 @@ label input {
   height: 10px;
   cursor: se-resize;
 }
-.M-commonDropdown .list .options {
+.M-commonDropdownList .options {
   margin-top: -1px;
   min-width: 100px;
 }
-.M-commonDropdown .list .option {
+.M-commonDropdownList .option {
   color: #333;
   padding: 5px;
   display: block;
@@ -575,19 +575,19 @@ label input {
   background: #fff;
   text-decoration: none;
 }
-.M-commonDropdown .list .option:hover {
+.M-commonDropdownList .option:hover {
   background: #f0f0f0;
   box-shadow: rgba(255, 255, 255, 0.8) 0 1px 1px inset, rgba(255, 255, 255, 0.8) 0 -1px 1px inset;
 }
-.M-commonDropdown .list .option.act {
+.M-commonDropdownList .option.act {
   font-weight: 700;
   color: #333;
   cursor: default;
 }
-.M-commonDropdown .list .option.has-sub {
+.M-commonDropdownList .option.has-sub {
   background: #f0f0f0;
 }
-.M-commonDropdown .list .sub-list .subs {
+.M-commonDropdownList .sub-list .subs {
   position: absolute;
   margin-left: 8px;
   border: 1px solid #CCC;
@@ -598,7 +598,7 @@ label input {
   display: none;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
 }
-.M-commonDropdown .list .sub-list .sub_arrow {
+.M-commonDropdownList .sub-list .sub_arrow {
   position: absolute;
   left: -16px;
   width: 0px;
