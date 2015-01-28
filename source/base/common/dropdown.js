@@ -377,10 +377,12 @@ define(function(require, exports){
 			var doms = self.$doms;
 			var c = self.getConfig();
 			var el = self.getDOM();
+			var offset = el.offset();
 
-			doms.list = $('<div class="list"/>').appendTo(el);
+			doms.list = $('<div class="M-commonDropdownList"/>').appendTo(pubjs.DEFAULT_POPUP_CONTAINER);
 			doms.list.css('min-width', c.option_width || c.width);
-			doms.list.css('top', el.outerHeight());
+			doms.list.css('top', offset.top + el.outerHeight());
+			doms.list.css('left', offset.left);
 
 			if (c.search){
 				doms.search = $('<div class="search uk-form" />').appendTo(doms.list);
@@ -871,6 +873,7 @@ define(function(require, exports){
 				self.uiProxy(doms.subOption, '.search_key', 'change', 'eventSearch');
 				self.uiProxy(doms.list, 'a.option', 'mouseenter mouseleave', 'eventOptionMouse');
 				self.uiProxy(doms.list, 'a.option', 'click', 'eventSelect');
+				self.uiBind(doms.list, 'mouseup', 'eventTrackMe');
 			}
 
 			// 列表容器
