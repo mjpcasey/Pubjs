@@ -891,6 +891,9 @@ define(function(require, exports){
 		,getSelectRowIds:function(){
 			return this.$.list.getSelectRowIds();
 		}
+		,toggleColumn:function(name, show){
+			this.$.list.toggleColumn(name, show);
+		}
 	});
 	exports.baseNoDate = BaseNoDate;
 

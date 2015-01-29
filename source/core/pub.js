@@ -1486,7 +1486,7 @@ define(function(require, exports, module){
 			}
 
 			// 销毁子模块
-			var childs = this.childs();
+			var childs = this.childs().slice();
 			for (var i=0; i<childs.length; i++){
 				if (childs[i].destroy) {childs[i].destroy(-1);}
 			}

@@ -23,116 +23,6 @@
   z-index: 100;
   position: relative;
 }
-.G-frameHeadLogo {
-  float: left;
-  height: 50px;
-  line-height: 50px;
-  overflow: hidden;
-  padding-right: 20px;
-  padding-left: 20px;
-  width: 160px;
-}
-.G-frameHeadMenu {
-  float: left;
-  height: 50px;
-}
-.G-frameHeadMenu li {
-  float: left;
-  height: 46px;
-  padding: 0 15px;
-  cursor: pointer;
-  width: 80px;
-  text-align: center;
-}
-.G-frameHeadMenu li a {
-  line-height: 50px;
-  font-size: 1.2em;
-  text-decoration: none;
-  color: #ffffff;
-  display: inline-block;
-  height: 50px;
-  width: 100%;
-}
-.G-frameHeadMenu li:hover {
-  background: #cf2222;
-  border-bottom: 4px solid #cf2222;
-}
-.G-frameHeadMenu li.act {
-  cursor: default;
-  background: #000;
-  border-bottom: 4px solid #cf2222;
-}
-.G-frameHeadMenu li.act a {
-  cursor: default;
-}
-.G-frameHeadLanguage {
-  float: right;
-  height: 50px;
-}
-.G-frameHeadLanguage a {
-  float: left;
-  display: block;
-  width: 16px;
-  height: 11px;
-  margin: 20px 7px 0 0;
-}
-.G-frameHeadLanguageCN {
-  background: url(../images/language/zh-cn.png) no-repeat;
-}
-.G-frameHeadLanguageEN {
-  background: url(../images/language/en-us.png) no-repeat;
-}
-.G-frameHeadAdminSwitch {
-  float: right;
-  font-size: 1.2em;
-  color: #a1a1a1;
-  cursor: pointer;
-}
-.G-frameHeadAdminSwitch ul {
-  height: 50px;
-  line-height: 50px;
-  padding: 0 20px !important;
-  max-width: 110px;
-  background: #000;
-  text-align: center;
-}
-.G-frameHeadAdminSwitch ul.act {
-  background: #ab0000;
-}
-.G-frameHeadAdminSwitch ul.act a {
-  color: #ffffff;
-}
-.G-frameHeadAdminSwitch li {
-  width: 100%;
-}
-.G-frameHeadAdminSwitch li a {
-  line-height: 50px;
-  font-size: 13px;
-  text-decoration: none;
-  color: #a1a1a1;
-  display: inline-block;
-  height: 50px;
-}
-.G-frameHeadAdminSwitch li a:hover {
-  color: #ffffff;
-}
-.G-frameHeadAdminSwitch li a i {
-  margin: 0 4px;
-  line-height: 50px;
-  height: 50px;
-}
-.G-frameHeadAdminSwitch li.act {
-  display: none;
-}
-.G-frameHeadAdminSwitch li.act_hide {
-  display: none;
-}
-.G-frameHeadAdminSwitch li.admin i {
-  float: right;
-}
-.G-frameHeadAdminSwitch li.list i {
-  float: left;
-}
 .G-frameBody {
   position: relative;
   background: #ffffff;
@@ -163,14 +53,24 @@
   z-index: 100;
   cursor: pointer;
 }
-.G-frameBodyMenuFlex i {
-  position: absolute;
-  top: 50%;
-  left: 4px;
-  color: #d6d6d6;
-}
 .G-frameBodyMenuFlex.act {
   display: block;
+}
+.G-frameBodyMenuFlexIcon {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  color: #fff;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.G-frameBodyMenuFlex .angle_double_left {
+  background: url(../images/angle_double_left.png) no-repeat;
+}
+.G-frameBodyMenuFlex .pin {
+  background: url(../images/pin.png) no-repeat;
 }
 .G-frameBodyMenuListWrapper {
   min-height: 0 !important;
@@ -239,24 +139,28 @@
   left: 0;
   width: 100%;
 }
-.G-frameBodyContent {
-  overflow: hidden;
+.G-frameBodyMain {
   position: relative;
   zoom: 1;
   margin-left: 200px;
   background: #ffffff;
   min-height: 0 !important;
 }
-.G-frameBodyContent:after {
-  content: " ";
-  display: table;
-  clear: both;
-}
-.G-frameBodyContent.act_left {
+.G-frameBodyMain.act_left {
   margin-left: 0;
 }
-.G-frameBodyContent.act_right {
+.G-frameBodyMain.act_right {
   margin-right: 0;
+}
+.G-frameBodyContent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .G-frameBodyTools {
   width: 200px;
@@ -332,14 +236,6 @@
   margin-left: 0;
   margin-right: 0;
 }
-.G-frameBodyWithoutTools .G-frameBodyTools {
-  display: none;
-}
-.G-frameBodyWithoutTools .G-frameBodyContent {
-  border: none;
-  box-shadow: none;
-  margin-right: 0;
-}
 .G-frameBodyContainer {
   position: relative;
   padding: 20px;
@@ -378,6 +274,22 @@
 .G-frameBodySidebarFlex.act {
   display: block;
 }
+.G-frameBodySidebarFlexIcon {
+  position: absolute;
+  top: 50%;
+  left: 2px;
+  color: #fff;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.G-frameBodySidebarFlex .angle_double_right {
+  background: url(../images/angle_double_right.png) no-repeat;
+}
+.G-frameBodySidebarFlex .pin {
+  background: url(../images/pin.png) no-repeat;
+}
 .G-frameBodySidebarWrapper {
   height: 100%;
 }
@@ -385,188 +297,6 @@
   margin-top: 26px;
   margin-left: 20px;
   min-height: 34px;
-}
-.G-frameUserToolbar {
-  float: right;
-  height: 50px;
-  position: relative;
-  line-height: 50px;
-  font-size: 1.2em;
-  color: #a1a1a1;
-  margin-left: 10px;
-}
-.G-frameUserToolbarBox {
-  position: relative;
-  min-width: 145px;
-  _width: 145px;
-  float: right;
-  height: 50px;
-  line-height: 50px;
-  color: #a1a1a1;
-  cursor: pointer;
-}
-.G-frameUserToolbarBox:hover {
-  color: #ffffff;
-}
-.G-frameUserToolbarBoxResult {
-  float: right;
-  height: 50px;
-}
-.G-frameUserToolbarBoxName,
-.G-frameUserToolbarBoxSiteName {
-  display: block;
-  text-align: right;
-}
-.G-frameUserToolbarBoxName.act,
-.G-frameUserToolbarBoxSiteName.act {
-  line-height: 25px !important;
-}
-.G-frameUserToolbarBoxName {
-  padding-top: 4px;
-  line-height: 40px;
-}
-.G-frameUserToolbarBoxSiteName {
-  font-size: 12px;
-  line-height: 18px;
-}
-.G-frameUserToolbarBoxBtn {
-  margin-left: 14px;
-  margin-right: 25px;
-  float: right;
-  height: 50px;
-  line-height: 50px;
-  font-size: 16px;
-}
-.G-frameUserToolbarBox.act {
-  color: #ffffff;
-}
-.G-frameUserToolbarList {
-  display: none;
-  position: absolute;
-  top: 50px;
-  right: 0px;
-  z-index: 999;
-  width: 380px;
-  padding: 3px 0;
-  background: #ffffff;
-  border-left: 1px solid #dfdfdf;
-  box-shadow: rgba(0, 0, 0, 0.3) 1px 1px 3px;
-}
-.G-frameUserToolbarList li {
-  width: 100%;
-}
-.G-frameUserToolbarList li a {
-  display: block;
-  color: #525252;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 0 0 15px;
-}
-.G-frameUserToolbarList li a:hover,
-.G-frameUserToolbarList li a:active {
-  background: #FDF6DD;
-  color: #272727;
-}
-.G-frameUserToolbarConUserInfo {
-  border-bottom: 1px solid #cdcdcd;
-  font-size: 13px;
-  height: 36px;
-  padding: 20px;
-}
-.G-frameUserToolbarConUserInfoName {
-  color: #7e7e7e;
-}
-.G-frameUserToolbarConUserInfoOp {
-  padding: 0;
-  margin: 0;
-  height: 30px;
-  line-height: 30px;
-}
-.G-frameUserToolbarConUserInfoOp li {
-  float: left;
-  margin-right: 20px;
-}
-.G-frameUserToolbarConUserFinance {
-  border-bottom: 1px solid #cdcdcd;
-  height: 20px;
-  padding: 10px;
-  text-align: center;
-  font-size: 14px;
-}
-.G-frameUserToolbarConSitelistCon {
-  min-height: 200px;
-  width: 100%;
-}
-.G-frameUserToolbarConSitelistConList {
-  width: 100% !important;
-}
-.G-frameUserToolbarConSitelistConList .title {
-  text-align: center;
-  padding: 10px;
-}
-.G-frameUserToolbarConSitelistConList .list {
-  cursor: default;
-  background: white;
-}
-.G-frameUserToolbarConSitelistConList .list .search {
-  height: 44px;
-  line-height: 44px;
-  background: #eeeeee;
-  position: relative;
-  text-align: center;
-}
-.G-frameUserToolbarConSitelistConList .list .search input {
-  width: 336px !important;
-  height: 30px;
-  border: 1px solid #ddd;
-  padding: 0 5px;
-  outline: none;
-}
-.G-frameUserToolbarConSitelistConList .list .search input:focus {
-  border-color: #99baca;
-}
-.G-frameUserToolbarConSitelistConList .list .btnSearch,
-.G-frameUserToolbarConSitelistConList .list .btnCancel {
-  width: 20px;
-  height: 20px;
-  color: #c4c4c4;
-  position: absolute;
-  top: 17px;
-  right: 28px;
-  cursor: pointer;
-}
-.G-frameUserToolbarConSitelistConList .list .btnCancel {
-  display: none;
-}
-.G-frameUserToolbarConSitelistConList .list > div {
-  padding: 0 !important;
-}
-.G-frameUserToolbarConSitelistConList .list .options {
-  min-width: 100px;
-}
-.G-frameUserToolbarConSitelistConList .list .option {
-  display: block;
-  text-decoration: none;
-  position: relative;
-  height: 38px;
-  background: #ffffff;
-  cursor: pointer;
-  color: #9c9c9c;
-  text-align: left;
-  padding: 5px 20px;
-  border-top: 1px solid #cdcdcd;
-}
-.G-frameUserToolbarConSitelistConList .list .option strong {
-  font-weight: normal;
-  color: #444;
-  font-size: 13px;
-}
-.G-frameUserToolbarConSitelistConList .list .option:hover {
-  background: #fafafa;
-}
-.G-frameUserToolbarConSitelistConList .list .option.act {
-  cursor: default;
-  background: #f5f5f5;
 }
 .G-framePopGridOpenBtn {
   position: fixed;

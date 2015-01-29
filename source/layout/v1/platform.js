@@ -39,30 +39,22 @@ define(function(require,exports){
 				'<div id="SCENES_MAIN" class="G-frameScenes">',
 					'<div class="G-frameWrapper">',
 						'<div class="G-frameHeadWrapper">',
-							'<div class="G-frameHead">',
-								'<div class="G-frameHeadLogo">',
-									'<a href="/"><img border="0"/></a>',
-								'</div>',
-								'<ul class="G-frameHeadMenu"/>',
-								'<div class="G-frameHeadAdminSwitch" />',
-								'<div class="G-frameHeadToolbar"/>',
-								'<div class="G-frameHeadLanguage">',
-									'<a href="#i18n/zhCN" title="中文" class="G-frameHeadLanguageCN"/>',
-									'<a href="#i18n/enUS" title="English" class="G-frameHeadLanguageEN"/>',
-								'</div>',
+							'<div class="G-frameHead"></div>',
 							'</div>',
 						'</div>',
 						'<div class="G-frameBody G-frameBodyFull">',
 							'<div class="G-frameBodyMenu">',
 								'<div class="G-frameBodyMenuFlex" data-type="menu">',
-									'<i class="G-frameBodyMenuFlexIcon uk-icon-angle-double-left" ></i>',
+									'<i class="G-frameBodyMenuFlexIcon angle_double_left" ></i>',
 								'</div>',
 								'<div class="G-frameBodyMenuListWrapper">',
 									'<div class="G-frameBodyMenuList"/>',
 								'</div>',
 								'<div class="G-frameBodyMenuFooter"/>',
 							'</div>',
-							'<div class="G-frameBodyContent" />',
+							'<div class="G-frameBodyMain">',
+								'<div class="G-frameBodyContent" />',
+							'</div>',
 						'</div>',
 					'</div>',
 				'</div>',
@@ -77,19 +69,15 @@ define(function(require,exports){
 			var body = self.$target = $(self.$config.get('target')).append(html);
 			var doms = self.$doms = {
 				'wrapper': $('.G-frameWrapper', body),
-				'logo': $('.G-frameHeadLogo', body),
 				'head': $('.G-frameHead', body),
-				'toolbar': $('.G-frameHeadToolbar', body),
-				'adminSwitch': $('.G-frameHeadAdminSwitch', body),
 				'body': $('.G-frameBody', body),
-				'titleCon': $('.G-frameBodyTitle', body),
-				'title': $('.G-frameBodyTitleText', body),
 				'menu': $('.G-frameBodyMenu', body),
 				'menuFlex': $('.G-frameBodyMenuFlex', body),
 				'menuFlexIcon': $('.G-frameBodyMenuFlexIcon', body),
 				'menuListWrapper': $('.G-frameBodyMenuListWrapper', body),
 				'menuList': $('.G-frameBodyMenuList', body),
 				'footer': $('.G-frameBodyMenuFooter', body),
+				'main': $('.G-frameBodyMain', body),
 				'container': $('.G-frameBodyContent', body),
 				'login_container': $('.G-frameLoginContainer', body),
 				'SCENES_MAIN': $('#SCENES_MAIN'),
@@ -105,7 +93,6 @@ define(function(require,exports){
 			var C = app.config;
 			// body.toggleClass('G-frameWideScreen', (WIN.screen.availWidth > 1024));
 
-
 			// 依次创建子模块
 			var mods = self.$config.get('modules');
 			var mod;
@@ -115,13 +102,7 @@ define(function(require,exports){
 				self.createAsync(mod.name, mod.uri, mod.config);
 			}
 
-			// 顶部信息设置
-			doms.logo.find('a').attr('title', LANG(C('app_logo/title')))
-				.find('img').attr('src', C('app_logo/small'));
-
 			doms.footer.html(C('app_footer'));
-
-			self.uiProxy(body, '.G-frameHeadLanguage > a', 'click', 'eventSwitchLang');
 
 			self.uiBind(document, 'mousemove mouseout','eventToggleFlexBtn');
 			self.uiBind(doms.menuFlex, 'click', 'eventToggleMenu');
@@ -144,7 +125,7 @@ define(function(require,exports){
 			var headHeight = self.$headHeight;
 
 			doms.menuListWrapper.height(h-headHeight);
-			doms.container.height(h-headHeight);
+			doms.main.height(h-headHeight);
 
 			return this;
 		},
@@ -156,9 +137,8 @@ define(function(require,exports){
 				if(this.$.menu){
 					this.$.menu.updateMenu(mod, act);
 				}
-				if(this.$.adminSwitch){
-					this.$.adminSwitch.updateAdminSwitch(mod, act);
-				}
+				// 广播变更事件
+				this.cast('updateMenu', mod);
 			}else {
 				self.$delayUpdate = [mod, act];
 			}
@@ -239,6 +219,7 @@ define(function(require,exports){
 					attr: {'container-name': name}
 				});
 
+
 			}else {
 				if (scenes){
 					cont.appendTo(self.getDOM(scenes + '_container'));
@@ -272,13 +253,6 @@ define(function(require,exports){
 
 				}
 			});
-		},
-		// 语言切换响应事件
-		eventSwitchLang: function(evt, elm){
-			var lang = $(elm).attr('href').substr(6);
-			app.i18n.load(lang);
-			location.reload();
-			return false;
 		},
 		// 窗口大小改变更新高度
 		eventResizeSyncHeight: function(evt, elm){
@@ -330,8 +304,8 @@ define(function(require,exports){
 
 			doms.menu.toggleClass('act', !self.$menuHide);
 			doms.menuFlex.toggleClass('act', !self.$menuHide);
-			doms.menuFlexIcon.toggleClass('uk-icon-anchor', !self.$menuHide);
-			doms.container.toggleClass('act_left', !self.$menuHide);
+			doms.menuFlexIcon.toggleClass('pin', !self.$menuHide);
+			doms.main.toggleClass('act_left', !self.$menuHide);
 
 			// 更新状态
 			self.$menuHide = !self.$menuHide;

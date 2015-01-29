@@ -42,5 +42,25 @@
 	       -moz-@{property}: @value;
 	            @{property}: @value;
 	}
+
+	// 清浮动伪类
+	.clearFix(){
+		clear:both;
+		.clearFixAfter;
+	}
+
+	.clearFixAfter(){
+		&:after {
+			content:".";
+			display:block;
+			clear:both;
+			visibility:hidden;
+			height:0;
+			overflow: hidden;
+			font-size: 0;
+			font-family: Arial;
+			line-height: 0;
+		}
+	}
 }
 
