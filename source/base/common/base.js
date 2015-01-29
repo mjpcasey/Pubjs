@@ -22,7 +22,7 @@ define(function(require, exports){
 				'pad': true, // 插入滚动条间隔
 				'side': false, // 是否反方向放置滚动条
 				'margin': 2, // 滚动条两端偏移位置支持数组形式分别制定两端偏移量
-				'offset': 2, // 滚动条侧面偏移位置
+				'offset': 0, // 滚动条侧面偏移位置
 				'width': 0, // 指定滚动容器宽度
 				'height': 0, // 指定滚动容器高度
 				'auto': true, // 自动隐藏

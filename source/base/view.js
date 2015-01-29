@@ -383,16 +383,18 @@ define(function(require,exports) {
 			util.each(this.$doms, this.cbRemoveDoms);
 			var el = this.$el;
 
+			this.Super("destroy");
+
 			if (this.vm) {
 				this.vm.destroy();
 				this.vm = null;
 			}
 
-			this.Super("destroy");
 			if(el){
 				el.find("*").unbind();
 				el.remove();
 			}
+
 			this.$doms = this.$el = null;
 
 			return this;
@@ -403,7 +405,7 @@ define(function(require,exports) {
 		 * @return {None}
 		 */
 		cbRemoveDoms: function(dom){
-			if (dom.jquery){
+			if (dom && dom.jquery){
 				dom.remove();
 			}
 		},

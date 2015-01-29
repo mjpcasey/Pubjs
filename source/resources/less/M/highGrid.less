@@ -379,16 +379,26 @@
 
 	&Subgrid{
 		z-index: 3;
-		opacity: 0.2;
+		// opacity: 0.2;
 		position: absolute;
 		background: rgba(255, 255, 255, 0);
 		&Act{
-			opacity: 1;
+			//opacity: 1;
 		}
+
 		a{
 			.icon;
 			margin-right: 6px;
 			display: inline-block;
+			opacity: 0.2;
+			&:hover {
+				opacity: 1;
+			}
+		}
+		a.M-HighGrid-subgridArrow {
+			&:hover {
+				opacity: 0.2;
+			}
 		}
 	}
 }

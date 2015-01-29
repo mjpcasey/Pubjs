@@ -1,16 +1,12 @@
 define(function(require, exports){
 	var $ = require('jquery');
-	var pubjs = require('@core/pub');
+	var util = require('util');
+	var pubjs = require('pubjs');
 	var view = require('@base/view');
 	var common = require('@base/common/base');
-	var util = require('util');
 	var dialog = require('@base/dialog');
-
 	var menu = require('@base/common/menu');
-
-	var labels = require('modules/labels');
-	// var format = labels.format;
-	labels = labels.labels;
+	var labels = require('@sys_labels').labels;
 
 	/**
 	 *	参数说明 -@todo
@@ -270,9 +266,9 @@ define(function(require, exports){
 					util.extend(c.pager, {'target': el.find('.M-HighGridPager')}),
 					function(mod){
 						mod.setup({
-							'total': data.total,
-							'size': (data.size || undefined),
-							'page': (data.page || undefined)
+							'total': (data && data.total || 0),
+							'size': (data && data.size || undefined),
+							'page': (data && data.page || undefined)
 						});
 					}
 				);

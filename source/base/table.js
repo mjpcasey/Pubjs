@@ -4,7 +4,7 @@ define(function(require, exports){
 	var util = require('../core/util');
 	var tip = require('./tip');
 	var view = require('./view');
-	var labels = require('modules/labels');
+	var labels = require('@sys_labels');
 	var base = require('./common/base');
 	var format = labels.format;
 	labels = labels.labels;

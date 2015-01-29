@@ -62,6 +62,10 @@ define(function(require, ex){
 		return !(val === null || isNaN(+val));
 	}
 
+	function isPositiveNumber(val){
+		return !(!isNumber(val) || val <= 0);
+	}
+
 	function typeOfObject(val){
 		return (val && typeof(val) === 'object');
 	}
@@ -115,6 +119,7 @@ define(function(require, ex){
 	ex.isPlainObject = isPlainObject;
 	ex.typeOfObject = typeOfObject;
 	ex.isNumber = isNumber;
+	ex.isPositiveNumber = isPositiveNumber;
 
 	var email_regx = /^[a-zA-Z0-9][a-zA-Z0-9_\.\-]+@[a-zA-Z0-9\-]+(\.[a-zA-Z0-9]{2,4})+$/;
 	ex.isEmail = function(email){
