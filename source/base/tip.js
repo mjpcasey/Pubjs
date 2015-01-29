@@ -31,6 +31,7 @@ define(function(require, exports){
 				'delayShow': 0, // 显示延迟时间
 				'delayHide': 0, // 隐藏延迟时间
 				'anchor': null, // 定位对象
+				'location': null, // 定位指标
 				'pos': 'tm', // 定位模式
 				'offsetX': 0, // 水平偏移位置
 				'offsetY': 0, // 垂直偏移位置
@@ -269,16 +270,24 @@ define(function(require, exports){
 				// 指定位置
 				pos = c.pos;
 			}else if (!anchor){
-				// 全屏幕显示居中
-				var h = Math.max(0,(BODY_BOUND.clientHeight - el.outerHeight(true))/2),
-					w = Math.max(0,(BODY_BOUND.clientWidth - el.outerWidth(true))/2),
-					sh = Math.max(DOC_ELEMENT.scrollTop, BODY_ELEMENT.scrollTop),
-					sw = Math.max(DOC_ELEMENT.scrollLeft, BODY_ELEMENT.scrollLeft);
+				// 坐标
+				if(c.location){
+					pos = {
+						'left': c.location.x,
+						'top': c.location.y
+					};
+				}else{
+					// 全屏幕显示居中
+					var h = Math.max(0,(BODY_BOUND.clientHeight - el.outerHeight(true))/2),
+						w = Math.max(0,(BODY_BOUND.clientWidth - el.outerWidth(true))/2),
+						sh = Math.max(DOC_ELEMENT.scrollTop, BODY_ELEMENT.scrollTop),
+						sw = Math.max(DOC_ELEMENT.scrollLeft, BODY_ELEMENT.scrollLeft);
 
-				pos = {
-					'left': parseInt(sw + w, 10) + c.offsetX,
-					'top': parseInt(sh + h, 10) + c.offsetY
-				};
+					pos = {
+						'left': parseInt(sw + w, 10) + c.offsetX,
+						'top': parseInt(sh + h, 10) + c.offsetY
+					};
+				}
 			}else {
 				anchor = $(anchor);
 				var content_width  = el.outerWidth();
