@@ -23,55 +23,6 @@
   z-index: 100;
   position: relative;
 }
-.G-frameHeadLogo {
-  float: left;
-  height: 50px;
-  line-height: 50px;
-  overflow: hidden;
-  padding-right: 20px;
-  padding-left: 20px;
-  width: 160px;
-}
-.G-frameHeadMenu {
-  float: left;
-  height: 50px;
-}
-.G-frameHeadMenu li {
-  float: left;
-  height: 46px;
-  padding: 0 15px;
-  cursor: pointer;
-  width: 80px;
-  text-align: center;
-}
-.G-frameHeadMenu li a {
-  line-height: 50px;
-  font-size: 1.2em;
-  text-decoration: none;
-  color: #ffffff;
-  display: inline-block;
-  height: 50px;
-  width: 100%;
-}
-.G-frameHeadMenu li:hover {
-  background: #cf2222;
-  border-bottom: 4px solid #cf2222;
-}
-.G-frameHeadMenu li.act {
-  cursor: default;
-  background: #000;
-  border-bottom: 4px solid #cf2222;
-}
-.G-frameHeadMenu li.act a {
-  cursor: default;
-}
-.G-frameHeadLanguage {
-  float: right;
-  height: 50px;
-}
-.G-frameHeadAdminSwitch {
-  float: right;
-}
 .G-frameBody {
   position: relative;
   background: #ffffff;
@@ -188,24 +139,28 @@
   left: 0;
   width: 100%;
 }
-.G-frameBodyContent {
-  overflow: hidden;
+.G-frameBodyMain {
   position: relative;
   zoom: 1;
   margin-left: 200px;
   background: #ffffff;
   min-height: 0 !important;
 }
-.G-frameBodyContent:after {
-  content: " ";
-  display: table;
-  clear: both;
-}
-.G-frameBodyContent.act_left {
+.G-frameBodyMain.act_left {
   margin-left: 0;
 }
-.G-frameBodyContent.act_right {
+.G-frameBodyMain.act_right {
   margin-right: 0;
+}
+.G-frameBodyContent {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .G-frameBodyTools {
   width: 200px;
