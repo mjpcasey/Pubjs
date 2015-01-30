@@ -203,11 +203,7 @@ define(function(require, exports){
 			if (!c.data){
 				if (c.auto_load && c.url) {
 					// 如果当前模块是隐藏状态，放入队列，等显示时候再加载数据 --eg:选项卡情况
-					var isShowing = pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
-					if(isShowing){
-						// 更新列表数据
-						this.reload();
-					}
+					pubjs.checkDisplay(this, 'highgrid', this.load.bind(this));
 				}
 			}else{
 				this.buildTable(); // 开始构建表格
@@ -1512,11 +1508,7 @@ define(function(require, exports){
 		},
 		// 响应日期条事件
 		onDateRangeChange: function(ev){
-			var isShowing = pubjs.checkDisplay(this, ev.type, this.load.bind(this));
-			if(isShowing){
-				// 更新列表数据
-				this.reload();
-			}
+			pubjs.checkDisplay(this, ev.type, this.load.bind(this));
 			return false;
 		},
 		// 子表格图标点击事件
