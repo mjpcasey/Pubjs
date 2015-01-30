@@ -8,29 +8,6 @@ define(function(require, exports){
 	var menu = require('@base/common/menu');
 	var labels = require('@sys_labels').labels;
 
-	/**
-	 *	参数说明 -@todo
-	 *		@cols					主列（左侧）定义，
-	 *		@metrics				副列（右侧），通常是指标列
-	 *			@sort					默认是为true
-	 *			@render					渲染函数，支持字符串和函数
-	 *			@headerRender			标题渲染函数
-	 *		@tab						tab 配置，如果没有就使用缺省配置；
-	 *			{
-	 *				"组名": true,			// 只传true时，以缺省配置补全
-	 *				"组名":{Object 具体配置}
-	 *			}
-	 *		@操作列
-	 *				支持cols中设置，也支持参数hasMenu
-	 *				cols{ type: 'op'}}
-	 *		@$sysParam:
-	 *			metrics
-	 *			page
-	 *			limit
-	 *			begindate、enddate
-	 *			stastic_all_time
-	 *
-	 */
 	var HighGrid = view.container.extend({
 		init: function(config, parent){
 			config = pubjs.conf(config, {
@@ -1616,6 +1593,28 @@ define(function(require, exports){
 		}
 	});
 	exports.base = HighGrid;
+	/**
+		HighGrid详细参数说明
+			@cols						主列（左侧）定义，
+			@metrics					副列（右侧），通常是指标列
+				@sort					默认是为true
+				@render					渲染函数，支持字符串和函数
+				@headerRender			标题渲染函数
+			@tab						tab 配置，如果没有就使用缺省配置；
+				{
+					"组名": true,				只传true时，以缺省配置补全
+					"组名":{Object 具体配置}
+				}
+			@操作列
+					支持cols中设置，也支持参数hasMenu
+					cols{ type: 'op'}}
+			@数据参数：$sysParam
+				metrics
+				page
+				limit
+				begindate、enddate
+				stastic_all_time
+	**/
 
 	// 刷新模块
 	var Refresh  = view.container.extend({
